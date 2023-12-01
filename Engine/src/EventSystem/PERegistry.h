@@ -11,6 +11,7 @@ namespace Picasso::Engine::EventSystem
 {
     using Events::BaseEvent;
     using Events::PEvent;
+    using Events::PEventData;
 
     class PicassoRegistry
     {
@@ -19,9 +20,9 @@ namespace Picasso::Engine::EventSystem
             {
                 Dispatcher::Instance = new Dispatcher();
             }
-            static void Dispatch(PEvent event)
+            static void Dispatch(PEvent event, PEventData eventData)
             {
-                Dispatcher::Instance->Post(event);
+                Dispatcher::Instance->Post(event, eventData);
             }
             static void Reset()
             {

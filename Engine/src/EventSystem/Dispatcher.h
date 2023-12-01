@@ -18,6 +18,7 @@ namespace Picasso::Engine::EventSystem
 {
     using Events::BaseEvent;
     using Events::PEvent;
+    using Events::PEventData;
 
     class Dispatcher
     {
@@ -28,7 +29,7 @@ namespace Picasso::Engine::EventSystem
         static Dispatcher* Instance;
 
         void Subscribe(const PEvent& eventName, SlotType&& slot);
-        void Post(const PEvent eventType) const;
+        void Post(const PEvent eventType, PEventData eventData) const;
     private:
         std::map<PEvent, std::vector<SlotType>, Events::BaseEventComparator> m_listeners;
         std::unique_ptr<EventFactory> m_eventFactory;

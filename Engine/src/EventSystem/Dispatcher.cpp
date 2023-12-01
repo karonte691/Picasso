@@ -3,6 +3,7 @@
 namespace Picasso::Engine::EventSystem
 {
     using Events::PEvent;
+    using Events::PEventData;
     using Events::BaseEvent;
 
     Dispatcher* Dispatcher::Instance = nullptr;
@@ -17,7 +18,7 @@ namespace Picasso::Engine::EventSystem
         m_listeners[eventName].push_back(slot);   
     }
 
-    void Dispatcher::Post(const PEvent eventType) const
+    void Dispatcher::Post(const PEvent eventType, PEventData eventData) const
     {
         std::shared_ptr<BaseEvent<PEvent>> event = m_eventFactory->GetEvent(eventType);
         

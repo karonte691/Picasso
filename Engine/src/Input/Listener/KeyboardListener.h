@@ -12,6 +12,7 @@
 namespace Picasso::Engine::Input::Listener
 {
     using Picasso::Engine::EventSystem::Events::PEvent;
+    using Picasso::Engine::EventSystem::Events::PEventData;
     using Picasso::Engine::EventSystem::Events::BaseEvent;
     using Picasso::Engine::EventSystem::EventFactory;
     using Picasso::Engine::EventSystem::PicassoRegistry;
@@ -20,10 +21,10 @@ namespace Picasso::Engine::Input::Listener
     class KeyboardListener
     {
         public:
-            bool IsKeyDown(KEYS key);
-            bool IsKeyUp(KEYS key);
-            bool WasKeyDown(KEYS key);
-            bool WasKeyUp(KEYS key);
+            bool IsKeyDown(KEYS key, pInputState& inputState);
+            bool IsKeyUp(KEYS key, pInputState& inputState);
+            bool WasKeyDown(KEYS key, pInputState& inputState);
+            bool WasKeyUp(KEYS key, pInputState& inputState);
 
             void ProcessKey(KEYS key, bool pressed, pInputState& inputState);
     };

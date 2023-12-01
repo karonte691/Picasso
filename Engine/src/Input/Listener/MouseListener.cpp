@@ -1,6 +1,5 @@
 #include "MouseListener.h"
 
-
 namespace Picasso::Engine::Input::Listener
 {
     void MouseListener::ProcessButton(BUTTONS button, bool pressed, pInputState& inputState)
@@ -12,6 +11,54 @@ namespace Picasso::Engine::Input::Listener
         
         inputState.mouseCurrent.buttons[button] = pressed;
 
-        PicassoRegistry::Dispatch(pressed ? PEvent::BUTTON_PRESSED : PEvent::BUTTON_RELEASED);   
+        PEventData eData;
+        eData.data.u16[0] = button;
+
+        PicassoRegistry::Dispatch(pressed ? PEvent::BUTTON_PRESSED : PEvent::BUTTON_RELEASED, eData);   
+    }
+
+    void MouseListener::ProcessMouseMove(float x, float y, pInputState& inputState)
+    {
+        if(inputState.mouseCurrent.x == x && inputState.mouseCurrent.y == y)
+        {
+            return;
+        }
+
+        inputState.mouseCurrent.x = x;
+        inputState.mouseCurrent.y = y;
+
+        PEventData eData;
+        eData.data.u16[0] = x;
+        eData.data.u16[1] = y;
+
+        PicassoRegistry::Dispatch(PEvent::MOUSE_MOVED, eData);
+    }
+
+    void MouseListener::ProcessMouseWheels(int zDelta)
+    {
+        PEventData eData;
+        eData.data.u8[0] = zDelta;
+
+        PicassoRegistry::Dispatch(PEvent::MOUSE_WHEEL, eData);
+    }
+
+    bool MouseListener::IsButtonDown(BUTTONS button, pInputState& inputState)
+    {
+        return inputState.mouseCurrent.buttons[button] == true;
+    }
+
+    bool MouseListener::IsButtonUp(BUTTONS button, pInputState& inputState)
+    {
+        return inputState.mouseCurrent.buttons[button] == false;
+    }
+
+    bool MouseListener::WasButtonDown(BUTTONS button, pInputState& inputState)
+    {
+        return inputState.mousePrev.buttons[button] == true;
+    }
+
+    bool MouseListener::WasButtonUp(BUTTONS button, pInputState& inputState)
+    {
+        return inputState.mousePrev.buttons[button] == false;
     }
 }
