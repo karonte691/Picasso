@@ -177,7 +177,11 @@ namespace Picasso::Engine::Platform
 
                 }   break;
                 case XCB_MOTION_NOTIFY:
-                    break;
+                {
+                    //mouse movement
+                    m_inputManager->ProcessXCBMouseMovement(event, m_inputState);
+                    
+                }   break;
                 case XCB_CONFIGURE_NOTIFY:
                     break;
                 case XCB_EXPOSE:
@@ -186,7 +190,7 @@ namespace Picasso::Engine::Platform
                 {
                     //application event
                     quitRaised = m_inputManager->ProcessXCBClientMessage(event, m_pstate);
-                    
+
                 } break;
                 default:
                     break;

@@ -35,10 +35,10 @@ namespace Picasso::Engine::Platform::Linux
             return;
         }
 
+        m_keyboardListener->ProcessKey(keyValue, keyPressed, inputState);
+
         Picasso::Logger::Logger::Debug("Event XCB_KEY_PRESS|XCB_KEY_RELEASE received...");
         Picasso::Logger::Logger::FDebug("Key %d pressed: %d", keyValue, keyPressed);
-
-        m_keyboardListener->ProcessKey(keyValue, keyPressed, inputState);
     }
 
     void PlatformInputManager::ProcessXCBMouseEvent(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state, pInputState& inputState)
@@ -62,6 +62,22 @@ namespace Picasso::Engine::Platform::Linux
         m_mouseListener->ProcessButton(buttonValue, buttonPressed, inputState);
 
         Picasso::Logger::Logger::Debug("Event XCB_BUTTON_PRESS|XCB_BUTTON_RELEASE received...");
+        Picasso::Logger::Logger::FDebug("Button %d pressed: %d", buttonValue, buttonPressed);
+    }
+
+    void PlatformInputManager::ProcessXCBMouseMovement(xcb_generic_event_t* event, pInputState& inputState)
+    {
+        xcb_motion_notify_event_t* movementEvent = (xcb_motion_notify_event_t*)event;
+
+         if(movementEvent == nullptr){
+            Picasso::Logger::Logger::Error("Error while casting event to buttonEvent");
+            return;
+        }
+
+        m_mouseListener->ProcessMouseMove(movementEvent->event_x, movementEvent->event_y, inputState);
+
+        Picasso::Logger::Logger::Debug("Event XCB_MOTION_NOTIFY received...");
+        Picasso::Logger::Logger::FDebug("x %d y: %d", movementEvent->event_x, movementEvent->event_y);
     }
 
     bool PlatformInputManager::ProcessXCBClientMessage(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state)

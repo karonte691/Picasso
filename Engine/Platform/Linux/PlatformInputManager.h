@@ -38,6 +38,7 @@ namespace Picasso::Engine::Platform::Linux
 
             void ProcessXCBKeyBoardEvent(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state, pInputState& inputState);
             void ProcessXCBMouseEvent(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state, pInputState& inputState);
+            void ProcessXCBMouseMovement(xcb_generic_event_t* event, pInputState& inputState);
             bool ProcessXCBClientMessage(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state);
         private:
             std::unique_ptr<KeyCodeTranslator> m_keyCodeTranslator;
