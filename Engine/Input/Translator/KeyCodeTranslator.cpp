@@ -1,4 +1,4 @@
-#include "KeyCodeTranslator.h"
+#include <Engine/Input/Translator/KeyCodeTranslator.h>
 
 #include <X11/keysym.h>
 #include <unordered_map>

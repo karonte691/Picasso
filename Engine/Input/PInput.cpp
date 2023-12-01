@@ -1,4 +1,4 @@
-#include "PInput.h"
+#include <Engine/Input/PInput.h>
 
 namespace Picasso::Engine::Input
 {

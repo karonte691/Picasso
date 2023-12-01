@@ -8,6 +8,8 @@
 #include <memory>
 #include <string.h>
 
+#include <Engine/PBuild.h>
+
 namespace Picasso::Logger
 {
     enum LOG_LEVEL
@@ -24,9 +26,20 @@ namespace Picasso::Logger
     public:
         static void Debug(const char* str)
         {
+            if(!PICASSO_DEBUG_ENABLE)
+            {
+                return;
+            }
+
             Log(DEBUG, str);
         }
-        static void FDebug(const std::string fmt_str, ...) {
+        static void FDebug(const std::string fmt_str, ...) 
+        {
+            if(!PICASSO_DEBUG_ENABLE)
+            {
+                return;
+            }
+
             int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
             std::unique_ptr<char[]> formatted;
             va_list ap;

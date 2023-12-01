@@ -3,16 +3,15 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "PConfig.h"
-#include "Logger.h"
-#include "EventSystem/PERegistry.h"
-#include "Platform/Platform.h"
-#include "Input/PInput.h"
+#include <Engine/PConfig.h>
+#include <Engine/Logger.h>
+#include <Engine/EventSystem/PERegistry.h>
+#include <Engine/Platform/Platform.h>
+#include <Engine/Input/PInput.h>
 
 
 namespace Picasso::Engine
 {
-    using Picasso::Engine::EventSystem::Dispatcher;
     using Picasso::Engine::EventSystem::Events::BaseEvent;
     using Picasso::Engine::EventSystem::Events::PEvent;
     using Picasso::Engine::EventSystem::PicassoRegistry;

@@ -1,4 +1,4 @@
-#include "Platform/Platform.h"
+#include <Engine/Platform/Platform.h>
 
 #include <xcb/xcb.h>
 #include <X11/keysym.h>
@@ -10,17 +10,18 @@
 #include <cstdlib>
 #include <cstdio>
 
-
-#include "Input/Maps/Keyboard.h"
+#include <Engine/Input/Maps/Keyboard.h>
+#include <Engine/Input/Maps/Mouse.h>
 
 namespace Picasso::Engine::Platform
 {
     using Picasso::Engine::Input::KEYS;
+    using Picasso::Engine::Input::BUTTONS;
     using Picasso::Engine::Input::pInputState;
 
     bool PPlatform::Init(std::string appName, int x, int y, int width, int height)
     {
-        m_pstate = std::make_unique<LinuxPlatformInternalState>(LinuxPlatformInternalState{
+        m_pstate = std::make_shared<LinuxPlatformInternalState>(LinuxPlatformInternalState{
             nullptr,
             nullptr,
             0,
@@ -131,14 +132,14 @@ namespace Picasso::Engine::Platform
 
         Picasso::Logger::Logger::Debug("Platform setting up and flushing is completed.");
 
-        //at this point, we instanciate the KeyboardListener module
-        m_keyboardListener = std::make_unique<KeyboardListener>();
+        //at this point, we init the input manager
+        m_inputManager = std::make_unique<Picasso::Engine::Platform::Linux::PlatformInputManager>();       
+
         //and a new inputState
         m_inputState = {};
 
         return true;
     }
-
 
     void PPlatform::Shutdown()
     {
@@ -151,12 +152,6 @@ namespace Picasso::Engine::Platform
 
     bool PPlatform::Process()
     {
-        if(m_keyCodeTranslator == nullptr)
-        {
-            //instance the keyboard translator
-            m_keyCodeTranslator = std::make_unique<KeyCodeTranslator>();
-        }
-
         xcb_generic_event_t* event;
         xcb_client_message_event_t* clientMessange;
         bool quitRaised = false;
@@ -171,59 +166,27 @@ namespace Picasso::Engine::Platform
                 case XCB_KEY_RELEASE:
                 {
                     //keyboard input
-                    xcb_key_press_event_t* keyEvent = (xcb_key_press_event_t*)event;
-
-                    if(keyEvent == nullptr){
-                        Picasso::Logger::Logger::Error("Error while casting event to keyEvent");
-                        continue;
-                    }
-
-                    bool keyPressed = event->response_type == XCB_KEY_PRESS;
-                    xcb_keycode_t kCode = keyEvent->detail;
-
-                    KeySym keySym = XkbKeycodeToKeysym(m_pstate->display, (KeyCode)kCode, 0, kCode & ShiftMask ? 1 : 0);
-
-                    KEYS keyValue = m_keyCodeTranslator->TranslateKey(keySym);
-
-                    if(keyValue == 0)
-                    {
-                        Picasso::Logger::Logger::Warn("Key event translated to P_KEY_UNKNOWN. Skipping event...");
-                        continue;
-                    }
-
-                    Picasso::Logger::Logger::Debug("Event XCB_KEY_PRESS|XCB_KEY_RELEASE received...");
-                    Picasso::Logger::Logger::FDebug("Key %d pressed: %d", keyValue, keyPressed);
-
-                    m_keyboardListener->ProcessKey(keyValue, keyPressed, m_inputState);
+                    m_inputManager->ProcessXCBKeyBoardEvent(event, m_pstate, m_inputState);
                     
                 }   break;
                 case XCB_BUTTON_PRESS:
                 case XCB_BUTTON_RELEASE:
-                    Picasso::Logger::Logger::Debug("Event XCB_BUTTON_PRESS|XCB_BUTTON_RELEASE received...");
+                {
                     //mouse input
-                    break;
+                    m_inputManager->ProcessXCBMouseEvent(event, m_pstate, m_inputState);
+
+                }   break;
                 case XCB_MOTION_NOTIFY:
-                    //mouse movement
-                    Picasso::Logger::Logger::Debug("Event XCB_MOTION_NOTIFY received...");
                     break;
                 case XCB_CONFIGURE_NOTIFY:
-                    Picasso::Logger::Logger::Debug("Event XCB_CONFIGURE_NOTIFY received...");
-                    //resize
                     break;
                 case XCB_EXPOSE:
-                    Picasso::Logger::Logger::Debug("Event XCB_EXPOSE received...");
                     break;
                 case XCB_CLIENT_MESSAGE:
                 {
-                    Picasso::Logger::Logger::Debug("Event XCB_CLIENT_MESSAGE received...");
-
-                    clientMessange = (xcb_client_message_event_t*)event;
-
-                    if(clientMessange->data.data32[0] == m_pstate->wmDestroyWindow)
-                    {
-                        Picasso::Logger::Logger::Info("Quit event raised");
-                        quitRaised = true;
-                    }
+                    //application event
+                    quitRaised = m_inputManager->ProcessXCBClientMessage(event, m_pstate);
+                    
                 } break;
                 default:
                     break;

@@ -3,9 +3,9 @@
 #ifndef PICASSO_ENGINE_H
 #define PICASSO_ENGINE_H
 
-#include "Common.h"
-#include "PBuild.h"
-#include "Application.h"
+#include <Engine/PBuild.h>
+#include <Engine/Application.h>
+
 
 namespace Picasso
 {

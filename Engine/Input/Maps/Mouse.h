@@ -18,6 +18,8 @@ namespace Picasso::Engine::Input
         P_MOUSE_BUTTON_LAST   =   P_MOUSE_BUTTON_8,
         P_MOUSE_BUTTON_LEFT   =   P_MOUSE_BUTTON_1,
         P_MOUSE_BUTTON_RIGHT  =   P_MOUSE_BUTTON_2,
+
+        P_MOUSE_BUTTON_UNKW   =   -1
     };
 
 }

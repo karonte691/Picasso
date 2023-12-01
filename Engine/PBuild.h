@@ -5,4 +5,6 @@
 
 #define PICASSO_LINUX_BUILD 1
 
+#define PICASSO_DEBUG_ENABLE 1
+
 #endif

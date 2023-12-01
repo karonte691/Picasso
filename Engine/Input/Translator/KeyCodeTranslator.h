@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-#include "../Maps/Keyboard.h"
+#include <Engine/Input/Maps/Keyboard.h>
 
 namespace Picasso::Engine::Input::Translators
 {

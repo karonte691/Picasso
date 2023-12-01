@@ -1,6 +1,6 @@
 #include <dlfcn.h>
 #include <iostream>
-#include "Engine/src/PicassoEngine.h"
+#include "Engine/PicassoEngine.h"
 
 
 int main(int argc, char **argv)
