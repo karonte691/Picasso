@@ -25,8 +25,8 @@ namespace Picasso::Engine::Input::Listener
             bool WasButtonUp(BUTTONS button, pInputState& inputState);
             bool WasButtonDown(BUTTONS button, pInputState& inputState);
 
-            void GetMousePosition(float x, float y);
-            void GetPrevMousePosition(float x, float y);
+            void GetMousePosition(float* x, float* y, pInputState& inputState);
+            void GetPrevMousePosition(float* x, float* y, pInputState& inputState);
 
             void ProcessButton(BUTTONS button, bool pressed, pInputState& inputState);
             void ProcessMouseMove(float x, float y, pInputState& inputState);

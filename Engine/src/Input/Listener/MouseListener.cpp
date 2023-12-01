@@ -34,6 +34,38 @@ namespace Picasso::Engine::Input::Listener
         PicassoRegistry::Dispatch(PEvent::MOUSE_MOVED, eData);
     }
 
+    void MouseListener::GetMousePosition(float* x, float* y, pInputState& inputState)
+    {
+        if(x == nullptr){
+            *x = 0;
+            return;
+        }
+
+        if(y == nullptr){
+            *y = 0;
+            return;
+        }
+
+        *x = inputState.mouseCurrent.x;
+        *y = inputState.mouseCurrent.y;
+    }
+
+    void MouseListener::GetPrevMousePosition(float* x, float* y, pInputState& inputState)
+    {
+        if(x == nullptr){
+            *x = 0;
+            return;
+        }
+
+        if(y == nullptr){
+            *y = 0;
+            return;
+        }
+
+        *x = inputState.mousePrev.x;
+        *y = inputState.mousePrev.y;
+    }
+
     void MouseListener::ProcessMouseWheels(int zDelta)
     {
         PEventData eData;
