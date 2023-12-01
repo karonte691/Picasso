@@ -7,6 +7,7 @@
 #include "Logger.h"
 #include "EventSystem/PERegistry.h"
 #include "Platform/Platform.h"
+#include "Input/PInput.h"
 
 
 namespace Picasso::Engine
@@ -16,6 +17,7 @@ namespace Picasso::Engine
     using Picasso::Engine::EventSystem::Events::PEvent;
     using Picasso::Engine::EventSystem::PicassoRegistry;
     using Picasso::Engine::Platform::PPlatform;
+    using Picasso::Engine::Input::PInput;
 
     struct EngineState
     {
@@ -38,6 +40,7 @@ namespace Picasso::Engine
         static Picasso::Engine::EngineState* engineState;
     private:
         PPlatform* m_platform;
+        PInput* m_input;
     };
 }
 

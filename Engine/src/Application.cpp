@@ -28,6 +28,9 @@ namespace Picasso::Engine
         delete m_platform;
         m_platform = nullptr;
 
+        delete m_input;
+        m_input = nullptr;
+
         PicassoRegistry::Reset();
     }
 
@@ -42,7 +45,7 @@ namespace Picasso::Engine
 
         Picasso::Logger::Logger::Info("Platform layer startup...");
 
-        m_platform = new Picasso::Engine::Platform::PPlatform();
+        m_platform = new PPlatform();
 
         bool platformInitResult = m_platform->Init(
                                         config->appName,
@@ -57,6 +60,11 @@ namespace Picasso::Engine
             Picasso::Logger::Logger::Fatal("Error while loading platform layer");
             return false;
         }
+
+        Picasso::Logger::Logger::Info("Input layer startup...");
+
+        m_input = new PInput();
+        m_input->Init();
    
         engineState->running = true;
         engineState->suspended = false;
@@ -68,15 +76,27 @@ namespace Picasso::Engine
     {
         while (engineState->running)
         {
+            if(engineState->suspended)
+            {
+                //we should not continue the processing 
+                engineState->running = false;
+                continue;
+            }
+
             if(!m_platform->Process())
             {
                 //quitting event
-                break;
+                engineState->running = false;   
+                continue;         
             }
+
+            m_input->Update(0);
         }
 
-        Picasso::Logger::Logger::Debug("Shutting down Platform layer");
+        Picasso::Logger::Logger::Debug("Shutting down Input system");
+        m_input->Shutdown();
 
+        Picasso::Logger::Logger::Debug("Shutting down Platform layer");
         m_platform->Shutdown();    
         
         return true;  

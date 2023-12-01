@@ -17,6 +17,4 @@ namespace Picasso::Engine::Input
     {
         
     }
-
-
 }
