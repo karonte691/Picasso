@@ -14,12 +14,6 @@ namespace Picasso::Engine::Platform
 {
     bool PPlatform::Init(std::string appName, int x, int y, int width, int height)
     {
-        Picasso::Logger::Logger::Debug("Configuration:");
-        Picasso::Logger::Logger::Debug(std::to_string(x).c_str());
-        Picasso::Logger::Logger::Debug(std::to_string(y).c_str());
-        Picasso::Logger::Logger::Debug(std::to_string(width).c_str());
-        Picasso::Logger::Logger::Debug(std::to_string(height).c_str());
-
         m_pstate = std::make_unique<LinuxPlatformInternalState>(LinuxPlatformInternalState{
             nullptr,
             nullptr,
@@ -153,7 +147,7 @@ namespace Picasso::Engine::Platform
            
             Picasso::Logger::Logger::Debug("Processing XCB event...");
 
-            switch(event->response_type)
+            switch(event->response_type & ~0x80)
             {
                 case XCB_KEY_PRESS:
                 case XCB_KEY_RELEASE:
@@ -184,6 +178,7 @@ namespace Picasso::Engine::Platform
 
                     if(clientMessange->data.data32[0] == m_pstate->wmDestroyWindow)
                     {
+                        Picasso::Logger::Logger::Info("Quit event raised");
                         quitRaised = true;
                     }
                 } break;
@@ -205,7 +200,7 @@ namespace Picasso::Engine::Platform
         return  XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE 
                 | XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_KEY_RELEASE
                 | XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_POINTER_MOTION 
-                | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
+                | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
     }
 
     void PPlatform::_registerWindowDestroyEvent()
