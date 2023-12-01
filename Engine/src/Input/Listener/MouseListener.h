@@ -3,10 +3,10 @@
 #ifndef MOUSE_LISTENER_H
 #define MOUSE_LISTENER_H
 
-#include "EventSystem/PERegistry.h"
-#include "Input/Listener/Maps/Mouse.h"
-#include "Input/InputState.h"
-#include "Maps/Mouse.h"
+#include "../../EventSystem/PERegistry.h"
+#include "../Maps/Mouse.h"
+#include "../InputState.h"
+#include "../Maps/Mouse.h"
 
 namespace Picasso::Engine::Input::Listener
 {

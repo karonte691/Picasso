@@ -4,13 +4,13 @@ if(UNIX AND NOT APPLE)
                 EventSystem/EventFactory.cpp
                 EventSystem/Dispatcher.cpp
 
-                Platform/Linux/Platform.cpp
-                
+                Input/Translator/KeyCodeTranslator.cpp
                 Input/Listener/KeyboardListener.cpp
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
 
-
+                Platform/Linux/Platform.cpp
+                
                 Application.cpp
                 PicassoEngine.cpp
         )

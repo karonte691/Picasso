@@ -3,10 +3,10 @@
 #ifndef KEYBOARD_LISTENER_H
 #define KEYBOARD_LISTENER_H
 
-#include "Logger.h"
-#include "EventSystem/PERegistry.h"
-#include "Input/Listener/Maps/Keyboard.h"
-#include "Input/InputState.h"
+#include "../../Logger.h"
+#include "../../EventSystem/PERegistry.h"
+#include "../Maps/Keyboard.h"
+#include "../InputState.h"
 
 
 namespace Picasso::Engine::Input::Listener
