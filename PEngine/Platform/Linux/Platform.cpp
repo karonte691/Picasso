@@ -12,6 +12,7 @@
 
 #include <PEngine/Input/Maps/Keyboard.h>
 #include <PEngine/Input/Maps/Mouse.h>
+#include <unistd.h>
 
 namespace Picasso::Engine::Platform
 {
@@ -256,5 +257,22 @@ namespace Picasso::Engine::Platform
             1,
             &wmDeleteReply->atom
         );
+    }
+
+    _Float64 PPlatform::GetAbsoluteTime()
+    {
+        struct timespec now;
+        clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+        return now.tv_sec + now.tv_nsec * 0.000000001;
+    }
+
+    void PPlatform::Suspend(u_int64_t ms)
+    {
+        if (ms >= 1000) {
+            sleep(ms / 1000);
+            return;
+        }
+        
+        usleep((ms % 1000) * 1000);
     }
 }

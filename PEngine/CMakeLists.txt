@@ -1,6 +1,8 @@
 if(UNIX AND NOT APPLE)
         add_library(PEngine SHARED          
-                                
+                
+                Core/Clock.cpp
+                
                 EventSystem/EventFactory.cpp
                 EventSystem/Dispatcher.cpp
 

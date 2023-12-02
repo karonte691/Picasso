@@ -33,6 +33,9 @@ namespace Picasso::Engine::Platform
         bool Init(std::string appName, int x, int y, int width, int height);
         void Shutdown();
         bool Process();  
+        void Suspend(u_int64_t ms);
+        _Float64 GetAbsoluteTime();
+        
     private:
         pInputState m_inputState;
 
