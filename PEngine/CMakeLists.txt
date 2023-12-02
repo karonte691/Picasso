@@ -1,5 +1,5 @@
 if(UNIX AND NOT APPLE)
-        add_library(Engine SHARED          
+        add_library(PEngine SHARED          
                                 
                 EventSystem/EventFactory.cpp
                 EventSystem/Dispatcher.cpp
@@ -17,10 +17,10 @@ if(UNIX AND NOT APPLE)
                 PicassoEngine.cpp
         )
 
-        target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR})
+        target_include_directories(PEngine PUBLIC ${CMAKE_SOURCE_DIR})
 
-        target_link_libraries(Engine /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0)
-        target_link_libraries(Engine /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0)
-        target_link_libraries(Engine /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0)
 endif()
 

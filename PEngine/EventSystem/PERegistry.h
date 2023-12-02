@@ -3,9 +3,9 @@
 #ifndef PICASSO_REGISTRY_H
 #define PICASSO_REGISTRY_H
 
-#include "Events/BaseEvent.h"
-#include "Events/EventTypes.h"
-#include "Dispatcher.h"
+#include <PEngine/EventSystem/Events/BaseEvent.h>
+#include <PEngine/EventSystem/Events/EventTypes.h>
+#include <PEngine/EventSystem/Dispatcher.h>
 
 namespace Picasso::Engine::EventSystem
 {

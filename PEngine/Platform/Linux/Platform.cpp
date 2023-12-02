@@ -1,4 +1,4 @@
-#include <Engine/Platform/Platform.h>
+#include <PEngine/Platform/Platform.h>
 
 #include <xcb/xcb.h>
 #include <X11/keysym.h>
@@ -10,8 +10,8 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include <Engine/Input/Maps/Keyboard.h>
-#include <Engine/Input/Maps/Mouse.h>
+#include <PEngine/Input/Maps/Keyboard.h>
+#include <PEngine/Input/Maps/Mouse.h>
 
 namespace Picasso::Engine::Platform
 {

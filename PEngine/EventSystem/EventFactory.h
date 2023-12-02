@@ -5,8 +5,8 @@
 
 #include <memory>
 
-#include "Events/BaseEvent.h"
-#include "Events/EventTypes.h"
+#include <PEngine/EventSystem/Events/BaseEvent.h>
+#include <PEngine/EventSystem/Events/EventTypes.h>
 
 namespace Picasso::Engine::EventSystem
 {

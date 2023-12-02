@@ -10,16 +10,16 @@ IF(CMAKE_BUILD_TYPE MATCHES Debug)
 ENDIF()
 
 
-add_subdirectory(Engine)
-include_directories(Engine)
+add_subdirectory(PEngine)
+include_directories(PEngine)
 
 
 
 file(GLOB SRC_FILES *.cpp)
 add_executable(PRunner ${SRC_FILES})
 
-target_link_options(Engine PRIVATE -Wl,-z,defs)
+target_link_options(PEngine PRIVATE -Wl,-z,defs)
 
-target_link_libraries(PRunner Engine) 
+target_link_libraries(PRunner PEngine) 
     
 

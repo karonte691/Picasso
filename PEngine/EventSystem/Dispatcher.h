@@ -9,10 +9,10 @@
 #include <vector>
 #include <memory>
 
-#include "Events/BaseEvent.h"
-#include "Events/EventTypes.h"
-#include "EventFactory.h"
-#include "../Logger.h"
+#include <PEngine/EventSystem/Events/BaseEvent.h>
+#include <PEngine/EventSystem/Events/EventTypes.h>
+#include <PEngine/EventSystem/EventFactory.h>
+#include <PEngine/Logger.h>
 
 namespace Picasso::Engine::EventSystem
 {

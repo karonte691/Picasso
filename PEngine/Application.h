@@ -3,11 +3,11 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <Engine/PConfig.h>
-#include <Engine/Logger.h>
-#include <Engine/EventSystem/PERegistry.h>
-#include <Engine/Platform/Platform.h>
-#include <Engine/Input/PInput.h>
+#include <PEngine/PConfig.h>
+#include <PEngine/Logger.h>
+#include <PEngine/EventSystem/PERegistry.h>
+#include <PEngine/Platform/Platform.h>
+#include <PEngine/Input/PInput.h>
 
 
 namespace Picasso::Engine

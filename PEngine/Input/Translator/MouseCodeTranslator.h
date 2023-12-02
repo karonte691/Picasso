@@ -4,7 +4,7 @@
 #define MOUSE_CODE_TRANSLATOR_H
 
 #include <cstdint>
-#include <Engine/Input/Maps/Mouse.h>
+#include <PEngine/Input/Maps/Mouse.h>
 
 namespace Picasso::Engine::Input::Translators
 {

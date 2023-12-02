@@ -1,11 +1,11 @@
 #include <dlfcn.h>
 #include <iostream>
-#include "Engine/PicassoEngine.h"
 
+#include "PEngine/PicassoEngine.h"
 
 int main(int argc, char **argv)
 {
-  void* handle = dlopen("Engine/libEngine.so", RTLD_LAZY);
+  void* handle = dlopen("PEngine/libPEngine.so", RTLD_LAZY);
 
   if (!handle) {
     std::cout << "[PRUNNER] Unable to open the dynamic library: " << dlerror() << std::endl;
