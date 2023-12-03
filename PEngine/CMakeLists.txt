@@ -12,6 +12,9 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
 
+                Render/RCore/DriverManager.cpp
+                Render/RCore/RCore.cpp
+                
                 Platform/Linux/PlatformInputManager.cpp
                 Platform/Linux/Platform.cpp
                 
