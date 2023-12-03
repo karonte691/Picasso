@@ -1,13 +1,13 @@
-#include <PEngine/Render/RCore/RCore.h>
+#include <PEngine/Render/RCore/RAPICore.h>
 
 namespace Picasso::Engine::Render::Core
 {
-    RCore::RCore()
+    RAPICore::RAPICore()
     {
         m_driverManager = std::make_unique<DriverManager>();
     }
 
-    bool RCore::Create(RDRIVERS driver, platformState* pState, rCoreData* rcData)
+    bool RAPICore::Create(const char* appName, RDRIVERS driver, EngineState* pState, std::shared_ptr<RAPIData> rcData)
     {
         rcData->pState = pState;
 
@@ -18,6 +18,7 @@ namespace Picasso::Engine::Render::Core
             Picasso::Logger::Logger::Fatal("Render driver not supported");
             return false;
         }
+
         
         return true;
     }

@@ -13,8 +13,9 @@ if(UNIX AND NOT APPLE)
                 Input/PInput.cpp
 
                 Render/RCore/DriverManager.cpp
-                Render/RCore/RCore.cpp
-                
+                Render/RCore/RAPICore.cpp
+                Render/PRender.cpp
+
                 Platform/Linux/PlatformInputManager.cpp
                 Platform/Linux/Platform.cpp
                 

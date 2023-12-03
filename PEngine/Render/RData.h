@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <bits/floatn-common.h>
 
+#include <PEngine/PState.h>
 namespace Picasso::Engine::Render
 {
     struct meshData;
@@ -15,6 +16,12 @@ namespace Picasso::Engine::Render
     {
         _Float32 deltaTime;
     };
+
+    struct RAPIData
+    {
+        EngineState* pState;
+        u_int64_t frameNumber;
+    };   
 }
 
 #endif

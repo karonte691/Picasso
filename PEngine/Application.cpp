@@ -69,6 +69,11 @@ namespace Picasso::Engine
         m_input = new PInput();
         m_input->Init();
 
+        //render system
+        Picasso::Logger::Logger::Info("Render layer startup...");
+        m_render = new PRender();
+        m_render->Init(config->appName, engineState);
+
         //setting up the internal clock
         m_internalClock = new Clock();
    
@@ -98,7 +103,6 @@ namespace Picasso::Engine
         Picasso::Logger::Logger::Debug("Shutting down Platform layer");
         m_platform->Shutdown();    
         
-      
 
         return true;  
     }
