@@ -1,5 +1,5 @@
 #include <PEngine/Core/PTime.h>
-
+#include <PEngine/PBuild.h>
 namespace Picasso::Engine::Core
 {
     PTime::PTime()
@@ -47,7 +47,7 @@ namespace Picasso::Engine::Core
         m_state = SLEEP;
 
         std::chrono::duration<double, std::milli> frameTime = m_endDeltaMoment - m_startDeltaMoment;
-        std::chrono::duration<double, std::milli> sleepTime(200.0 - frameTime.count());
+        std::chrono::duration<double, std::milli> sleepTime(PICASSO_FRAME_MS_LIMIT - frameTime.count());
 
         auto sleepDuration = std::chrono::duration_cast<std::chrono::milliseconds>(sleepTime);
 
