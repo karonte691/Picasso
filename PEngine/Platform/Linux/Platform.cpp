@@ -16,8 +16,8 @@
 
 namespace Picasso::Engine::Platform
 {
-    using Picasso::Engine::Input::KEYS;
     using Picasso::Engine::Input::BUTTONS;
+    using Picasso::Engine::Input::KEYS;
     using Picasso::Engine::Input::pInputState;
 
     bool PPlatform::Init(std::string appName, int x, int y, int width, int height)
@@ -32,10 +32,10 @@ namespace Picasso::Engine::Platform
             0,
         });
 
-        //connect to X Server
+        // connect to X Server
         m_pstate->display = XOpenDisplay(0);
-        
-        if(m_pstate->display == nullptr)
+
+        if (m_pstate->display == nullptr)
         {
             Picasso::Logger::Logger::Fatal("Display Connection NOT granted");
             return false;
@@ -43,28 +43,27 @@ namespace Picasso::Engine::Platform
 
         Picasso::Logger::Logger::Debug("Display Connection granted");
 
-        //This disable GLOBALLY(OS Speaking) the input auto repeat...
-        //REMEMBER TO TURN IT ON AGAIN IN THE SHUTDOWN METHOD OTHERWISE...
+        // This disable GLOBALLY(OS Speaking) the input auto repeat...
+        // REMEMBER TO TURN IT ON AGAIN IN THE SHUTDOWN METHOD OTHERWISE...
         XAutoRepeatOff(m_pstate->display);
         m_pstate->screenCount = XScreenCount(m_pstate->display);
 
         Picasso::Logger::Logger::FDebug("Screen detected %d", m_pstate->screenCount);
 
-        //init XCB
+        // init XCB
         m_pstate->connection = XGetXCBConnection(m_pstate->display);
 
-        if(m_pstate->connection == nullptr || xcb_connection_has_error(m_pstate->connection))
+        if (m_pstate->connection == nullptr || xcb_connection_has_error(m_pstate->connection))
         {
             Picasso::Logger::Logger::Fatal("Unable to init xcb connection");
             return false;
         }
 
-
         Picasso::Logger::Logger::Debug("XCB Connection granted");
 
-        const xcb_setup_t* setup = xcb_get_setup(m_pstate->connection);
-        
-        m_pstate->screen  = xcb_setup_roots_iterator(setup).data;
+        const xcb_setup_t *setup = xcb_get_setup(m_pstate->connection);
+
+        m_pstate->screen = xcb_setup_roots_iterator(setup).data;
 
         Picasso::Logger::Logger::FDebug("Screen width detected: %d", m_pstate->screen->width_in_pixels);
         Picasso::Logger::Logger::FDebug("Screen height detected: %d", m_pstate->screen->height_in_pixels);
@@ -88,10 +87,9 @@ namespace Picasso::Engine::Platform
             XCB_WINDOW_CLASS_INPUT_OUTPUT,
             m_pstate->screen->root_visual,
             eventsMask,
-            valueList
-        );
-        
-        if(cookie.sequence == 0)
+            valueList);
+
+        if (cookie.sequence == 0)
         {
             Picasso::Logger::Logger::Fatal("Unable to create XCB window");
             return false;
@@ -99,7 +97,7 @@ namespace Picasso::Engine::Platform
 
         Picasso::Logger::Logger::Debug("XCB window created succesfully");
 
-        //change window title
+        // change window title
         xcb_change_property(
             m_pstate->connection,
             XCB_PROP_MODE_REPLACE,
@@ -108,24 +106,23 @@ namespace Picasso::Engine::Platform
             XCB_ATOM_STRING,
             0,
             appName.length(),
-            appName.c_str()
-        );
+            appName.c_str());
 
-        //register destroy events
+        // register destroy events
         this->_registerWindowDestroyEvent();
 
         xcb_void_cookie_t mappingCookie = xcb_map_window(m_pstate->connection, m_pstate->window);
 
-        if(mappingCookie.sequence == 0)
+        if (mappingCookie.sequence == 0)
         {
             Picasso::Logger::Logger::Fatal("Unable to map XCB window");
             return false;
         }
 
-        //flush the stream
+        // flush the stream
         int flushResult = xcb_flush(m_pstate->connection);
 
-        if(flushResult <= 0)
+        if (flushResult <= 0)
         {
             Picasso::Logger::Logger::Fatal("Error while flushing xcb stream");
             return false;
@@ -133,10 +130,10 @@ namespace Picasso::Engine::Platform
 
         Picasso::Logger::Logger::Debug("Platform setting up and flushing is completed.");
 
-        //at this point, we init the input manager
-        m_inputManager = std::make_unique<Picasso::Engine::Platform::Linux::PlatformInputManager>();       
+        // at this point, we init the input manager
+        m_inputManager = std::make_unique<Picasso::Engine::Platform::Linux::PlatformInputManager>();
 
-        //and a new inputState
+        // and a new inputState
         m_inputState = {};
 
         return true;
@@ -144,7 +141,7 @@ namespace Picasso::Engine::Platform
 
     void PPlatform::Shutdown()
     {
-        m_inputState = {}; //reset anyway
+        m_inputState = {}; // reset anyway
 
         XAutoRepeatOn(m_pstate->display);
 
@@ -153,50 +150,51 @@ namespace Picasso::Engine::Platform
 
     bool PPlatform::Process()
     {
-        xcb_generic_event_t* event;
-        xcb_client_message_event_t* clientMessange;
+        xcb_generic_event_t *event;
+        xcb_client_message_event_t *clientMessange;
         bool quitRaised = false;
 
-        while ((event = xcb_poll_for_event(m_pstate->connection))) {
-           
+        while ((event = xcb_poll_for_event(m_pstate->connection)))
+        {
+
             Picasso::Logger::Logger::Debug("Processing XCB event...");
 
-            switch(event->response_type & ~0x80)
+            switch (event->response_type & ~0x80)
             {
-                case XCB_KEY_PRESS:
-                case XCB_KEY_RELEASE:
-                {
-                    //keyboard input
-                    m_inputManager->ProcessXCBKeyBoardEvent(event, m_pstate, m_inputState);
-                    
-                }   break;
-                case XCB_BUTTON_PRESS:
-                case XCB_BUTTON_RELEASE:
-                {
-                    //mouse input
-                    m_inputManager->ProcessXCBMouseEvent(event, m_pstate, m_inputState);
-
-                }   break;
-                case XCB_MOTION_NOTIFY:
-                {
-                    //mouse movement
-                    m_inputManager->ProcessXCBMouseMovement(event, m_inputState);
-                    
-                }   break;
-                case XCB_CONFIGURE_NOTIFY:
-                    break;
-                case XCB_EXPOSE:
-                    break;
-                case XCB_CLIENT_MESSAGE:
-                {
-                    //application event
-                    quitRaised = m_inputManager->ProcessXCBClientMessage(event, m_pstate);
-
-                } break;
-                default:
-                    break;
+            case XCB_KEY_PRESS:
+            case XCB_KEY_RELEASE:
+            {
+                // keyboard input
+                m_inputManager->ProcessXCBKeyBoardEvent(event, m_pstate, m_inputState);
             }
-        } 
+            break;
+            case XCB_BUTTON_PRESS:
+            case XCB_BUTTON_RELEASE:
+            {
+                // mouse input
+                m_inputManager->ProcessXCBMouseEvent(event, m_pstate, m_inputState);
+            }
+            break;
+            case XCB_MOTION_NOTIFY:
+            {
+                // mouse movement
+                m_inputManager->ProcessXCBMouseMovement(event, m_inputState);
+            }
+            break;
+            case XCB_CONFIGURE_NOTIFY:
+                break;
+            case XCB_EXPOSE:
+                break;
+            case XCB_CLIENT_MESSAGE:
+            {
+                // application event
+                quitRaised = m_inputManager->ProcessXCBClientMessage(event, m_pstate);
+            }
+            break;
+            default:
+                break;
+            }
+        }
 
         return !quitRaised;
     }
@@ -208,10 +206,7 @@ namespace Picasso::Engine::Platform
 
     unsigned int PPlatform::_getEventsValue() const
     {
-        return  XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE 
-                | XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_KEY_RELEASE
-                | XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_POINTER_MOTION 
-                | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+        return XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE | XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_KEY_RELEASE | XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_POINTER_MOTION | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
     }
 
     void PPlatform::_registerWindowDestroyEvent()
@@ -220,29 +215,24 @@ namespace Picasso::Engine::Platform
             m_pstate->connection,
             0,
             m_strWmDeleteWindow.length(),
-            m_strWmDeleteWindow.c_str()
-        );
+            m_strWmDeleteWindow.c_str());
 
         xcb_intern_atom_cookie_t wmProtocolsCookie = xcb_intern_atom(
             m_pstate->connection,
             0,
             m_strWmProtocols.length(),
-            m_strWmProtocols.c_str()
-        );
+            m_strWmProtocols.c_str());
 
-
-        //reply
-        xcb_intern_atom_reply_t* wmDeleteReply = xcb_intern_atom_reply(
+        // reply
+        xcb_intern_atom_reply_t *wmDeleteReply = xcb_intern_atom_reply(
             m_pstate->connection,
             wmDeleteCookie,
-            nullptr
-        );
+            nullptr);
 
-        xcb_intern_atom_reply_t* wmProtocolsReply = xcb_intern_atom_reply(
+        xcb_intern_atom_reply_t *wmProtocolsReply = xcb_intern_atom_reply(
             m_pstate->connection,
             wmProtocolsCookie,
-            nullptr
-        );
+            nullptr);
 
         m_pstate->wmDestroyWindow = wmDeleteReply->atom;
         m_pstate->wmDeleteProtocols = wmProtocolsReply->atom;
@@ -255,24 +245,6 @@ namespace Picasso::Engine::Platform
             4,
             32,
             1,
-            &wmDeleteReply->atom
-        );
-    }
-
-    _Float64 PPlatform::GetAbsoluteTime()
-    {
-        struct timespec now;
-        clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-        return now.tv_sec + now.tv_nsec * 0.000000001;
-    }
-
-    void PPlatform::Suspend(u_int64_t ms)
-    {
-        if (ms >= 1000) {
-            sleep(ms / 1000);
-            return;
-        }
-        
-        usleep((ms % 1000) * 1000);
+            &wmDeleteReply->atom);
     }
 }

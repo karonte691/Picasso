@@ -15,15 +15,15 @@ namespace Picasso::Engine
         bool suspended;
         int width;
         int height;
-        ClockData* clockData;
+        ClockData *clockData;
         float lastTime;
 
-        EngineState(bool run, bool suspend, int w, int h, double startTime, double elapsed, float last)
-        : running(run), suspended(suspend), width(w), height(h), lastTime(last)
+        EngineState(bool run, bool suspend, int w, int h, float startTime, float elapsed, float last)
+            : running(run), suspended(suspend), width(w), height(h), lastTime(last)
         {
             clockData = new ClockData{startTime, elapsed};
         }
-        
+
         ~EngineState()
         {
             delete clockData;

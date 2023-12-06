@@ -26,16 +26,13 @@ namespace Picasso::Engine::Platform
 {
     using Picasso::Engine::Input::pInputState;
 
-    
     class PPlatform
     {
     public:
         bool Init(std::string appName, int x, int y, int width, int height);
         void Shutdown();
-        bool Process();  
-        void Suspend(u_int64_t ms);
-        _Float64 GetAbsoluteTime();
-        
+        bool Process();
+
     private:
         pInputState m_inputState;
 
@@ -48,7 +45,7 @@ namespace Picasso::Engine::Platform
 
         int _getEventsMask() const;
         unsigned int _getEventsValue() const;
-        void _registerWindowDestroyEvent();   
+        void _registerWindowDestroyEvent();
 #endif
     };
 }

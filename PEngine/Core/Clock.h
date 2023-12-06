@@ -3,22 +3,20 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-#include <bits/floatn-common.h>
-
 namespace Picasso::Engine::Core
 {
     struct ClockData
     {
-        _Float64 startTime;
-        _Float64 elapsed;
+        float startTime;
+        float elapsed;
     };
 
     class Clock
     {
-        public:
-            void Start(ClockData* clockData, _Float64 pAbsoluteTime);
-            void Update(ClockData* clockData, _Float64 pAbsoluteTime);
-            void Stop(ClockData* clockData);
+    public:
+        void Start(ClockData *clockData, float pAbsoluteTime);
+        void Update(ClockData *clockData, float pAbsoluteTime);
+        void Stop(ClockData *clockData);
     };
 }
 
