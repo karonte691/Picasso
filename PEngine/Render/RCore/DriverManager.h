@@ -12,16 +12,16 @@ namespace Picasso::Engine::Render::Core
     enum RDRIVERS
     {
         VULKAN,
-        //OPENGL NOT SUPPORTED
-        //DIRECTX NOT SUPPORTED
+        // OPENGL NOT SUPPORTED
+        // DIRECTX NOT SUPPORTED
     };
 
     using Picasso::Engine::Render::Core::Drivers::DriverImplementation;
 
     class DriverManager
     {
-        public:
-            std::shared_ptr<DriverImplementation> GetDriver(RDRIVERS driver);
+    public:
+        std::shared_ptr<DriverImplementation> GetDriver(RDRIVERS driver);
     };
 }
 

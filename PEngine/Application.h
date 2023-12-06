@@ -11,6 +11,7 @@
 #include <PEngine/EventSystem/PERegistry.h>
 #include <PEngine/Platform/Platform.h>
 #include <PEngine/Render/PRender.h>
+#include <PEngine/Render/RData.h>
 #include <PEngine/Input/PInput.h>
 
 namespace Picasso::Engine
@@ -24,6 +25,7 @@ namespace Picasso::Engine
     using Picasso::Engine::Input::PInput;
     using Picasso::Engine::Platform::PPlatform;
     using Picasso::Engine::Render::PRender;
+    using Picasso::Engine::Render::RenderData;
 
     class Application
     {
@@ -40,6 +42,7 @@ namespace Picasso::Engine
         PPlatform *m_platform;
         PInput *m_input;
         PRender *m_render;
+        RenderData *m_frameData;
         Clock *m_internalClock;
         PTime *m_time;
 

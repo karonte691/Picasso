@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.9)
 project(picasso LANGUAGES CXX)
 
+set(ENV{VULKAN_SDK} "Lib/Linux/Vulkan")
+
 set(CMAKE_BUILD_TYPE Debug)
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)

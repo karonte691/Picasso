@@ -19,6 +19,12 @@ namespace Picasso::Engine::Render::Core
             return false;
         }
 
+        if (!m_renderDriver->InitDriver(rcData, appName, pState))
+        {
+            Picasso::Logger::Logger::Fatal("Unable to initialize the driver");
+            return false;
+        }
+
         return true;
     }
 

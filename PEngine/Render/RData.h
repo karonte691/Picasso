@@ -14,14 +14,14 @@ namespace Picasso::Engine::Render
 
     struct RenderData
     {
-        _Float32 deltaTime;
+        float deltaTime;
     };
 
     struct RAPIData
     {
-        EngineState* pState;
-        u_int64_t frameNumber;
-    };   
+        EngineState *pState;
+        uint64_t frameNumber;
+    };
 }
 
 #endif

@@ -28,6 +28,12 @@ namespace Picasso::Engine
             engineState = nullptr;
         }
 
+        if (m_frameData != nullptr)
+        {
+            delete m_frameData;
+            m_frameData = nullptr;
+        }
+
         delete m_platform;
         m_platform = nullptr;
 
@@ -77,7 +83,14 @@ namespace Picasso::Engine
         // render system
         Picasso::Logger::Logger::Info("Render layer startup...");
         m_render = new PRender();
-        m_render->Init(config->appName, engineState);
+
+        if (!m_render->Init(config->appName, engineState))
+        {
+            Picasso::Logger::Logger::Fatal("Unable to start render layer...");
+            return false;
+        }
+
+        m_frameData = new RenderData{0};
 
         // setting up the internal clock
         m_internalClock = new Clock();
@@ -101,6 +114,9 @@ namespace Picasso::Engine
 
         Picasso::Logger::Logger::Debug("Shutting down Input system");
         m_input->Shutdown();
+
+        Picasso::Logger::Logger::Debug("Shutting down Rendering system");
+        m_render->Shutdown();
 
         Picasso::Logger::Logger::Debug("Shutting down Platform layer");
         m_platform->Shutdown();
@@ -134,10 +150,16 @@ namespace Picasso::Engine
             std::this_thread::sleep_for(m_time->GetSleepTime());
         }
 
-        float deltaTime = m_time->GetDeltaTime();
+        m_frameData->deltaTime = m_time->GetDeltaTime();
+        Picasso::Logger::Logger::FDebug("Delta time: %f", m_frameData->deltaTime);
 
-        Picasso::Logger::Logger::FDebug("Delta time: %f", deltaTime);
+        if (!m_render->RenderFrame(m_frameData))
+        {
+            // not a critical error ONE corrupted frame..but..
+            engineState->running = false;
+            return;
+        }
 
-        m_input->Update(deltaTime);
+        m_input->Update(m_frameData->deltaTime);
     }
 }
