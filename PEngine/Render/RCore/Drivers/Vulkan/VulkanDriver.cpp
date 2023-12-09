@@ -5,67 +5,73 @@ namespace Picasso::Engine::Render::Core::Drivers
 {
     bool VulkanDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, EngineState *pState)
     {
-        m_context = {VK_NULL_HANDLE};
+        std::vector<const char *> extensionList;
 
-        if (!rcData || !appName || !pState)
+        this->_getVkExtensionList(&extensionList);
+
+        if (!this->_initVulkan(appName, PICASSO_MAJOR_VERSION, extensionList))
         {
-            Picasso::Logger::Logger::Fatal("Invalid input parameters.");
-            return false;
-        }
-
-        VkApplicationInfo vkAppInfo = this->_getVkAppInfo(appName);
-        VkInstanceCreateInfo vkInstanceInfo = this->_getVkInstanceInfo(&vkAppInfo);
-
-        if (vkInstanceInfo.sType != VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
-        {
-            Picasso::Logger::Logger::Fatal("VkInstanceCreateInfo is not initialized correctly.");
-            return false;
-        }
-
-        VkResult instanceCreateResult = vkCreateInstance(&vkInstanceInfo, nullptr, &m_context.vulkanInstance);
-
-        if (instanceCreateResult != VK_SUCCESS)
-        {
-            Picasso::Logger::Logger::FDebug("vkCreateInstance returned a non-success code: %d", instanceCreateResult);
-            return false;
-        }
-
-        if (m_context.vulkanInstance == VK_NULL_HANDLE)
-        {
-            Picasso::Logger::Logger::Fatal("Vulkan instance is null after initialization.");
+            Picasso::Logger::Logger::Fatal("Cannot initialize Vulkan driver...");
             return false;
         }
 
         return true;
     }
 
-    VkApplicationInfo VulkanDriver::_getVkAppInfo(const char *appName)
+    bool VulkanDriver::_initVulkan(const char *app_name,
+                                   unsigned app_version,
+                                   const std::vector<const char *> &instance_extensions)
     {
-        VkApplicationInfo vkApplicationInfo = {VK_STRUCTURE_TYPE_APPLICATION_INFO};
+        VkApplicationInfo vk_app_info = {};
+        vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        vk_app_info.pNext = nullptr;
+        vk_app_info.pApplicationName = app_name;
+        vk_app_info.applicationVersion = app_version;
+        vk_app_info.pEngineName = app_name;
+        vk_app_info.engineVersion = PICASSO_MAJOR_VERSION;
+        vk_app_info.apiVersion = VK_API_VERSION_1_2;
 
-        vkApplicationInfo.apiVersion = VK_API_VERSION_1_2;
-        vkApplicationInfo.pApplicationName = appName;
-        vkApplicationInfo.applicationVersion = VK_MAKE_VERSION(PICASSO_MAJOR_VERSION, PICASSO_MINOR_VERSION, PICASSO_PATCH_VERSION);
-        vkApplicationInfo.pEngineName = "Picasso";
-        vkApplicationInfo.engineVersion = VK_MAKE_VERSION(PICASSO_MAJOR_VERSION, PICASSO_MINOR_VERSION, PICASSO_PATCH_VERSION);
+        VkInstanceCreateInfo inst_info = {};
+        inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+        inst_info.pNext = nullptr;
+        inst_info.flags = 0;
+        inst_info.enabledExtensionCount = static_cast<std::uint32_t>(instance_extensions.size());
+        inst_info.ppEnabledExtensionNames = &instance_extensions[0];
+        inst_info.enabledLayerCount = 0;
+        inst_info.ppEnabledLayerNames = 0;
+        inst_info.pApplicationInfo = &vk_app_info;
 
-        return vkApplicationInfo;
+        VkInstance inst;
+        VkResult res = vkCreateInstance(&inst_info, 0, &inst);
+
+        if (res != VK_SUCCESS)
+        {
+            const char *error = this->_parseReturnError(res);
+            Picasso::Logger::Logger::FDebug("vkCreateInstance return %s", error);
+        }
+
+        return res == VK_SUCCESS;
     }
 
-    VkInstanceCreateInfo VulkanDriver::_getVkInstanceInfo(VkApplicationInfo *info)
+    const char *VulkanDriver::_parseReturnError(VkResult result)
     {
-        std::vector<const char *> extensionList;
-
-        this->_getVkExtensionList(&extensionList);
-
-        VkInstanceCreateInfo vkInfo = {VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
-        vkInfo.enabledExtensionCount = extensionList.size();
-        vkInfo.pApplicationInfo = info;
-        vkInfo.ppEnabledExtensionNames = extensionList.data();
-        vkInfo.enabledLayerCount = 0;
-        vkInfo.ppEnabledLayerNames = 0;
-
-        return vkInfo;
+        switch (result)
+        {
+        case VK_ERROR_OUT_OF_HOST_MEMORY:
+            return "OUT OF HOST MEMORY";
+        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+            return "OUT OF DEVICE MEMORY";
+        case VK_ERROR_INITIALIZATION_FAILED:
+            return "INITIALIZATION FAILED";
+        case VK_ERROR_LAYER_NOT_PRESENT:
+            return "LAYER NOT PRESENT";
+        case VK_ERROR_EXTENSION_NOT_PRESENT:
+            return "EXTENSION NOT PRESENT";
+        case VK_ERROR_INCOMPATIBLE_DRIVER:
+            return "INCOMPATIBLE DRIVER";
+        default:
+            return "UNKNOWN RESULT '" + result;
+        }
     }
 
     void VulkanDriver::_getVkExtensionList(std::vector<const char *> *extList)

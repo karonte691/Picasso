@@ -33,9 +33,11 @@ namespace Picasso::Engine::Render::Core::Drivers
     private:
         DriverContext m_context;
 
-        VkApplicationInfo _getVkAppInfo(const char *appName);
-        VkInstanceCreateInfo _getVkInstanceInfo(VkApplicationInfo *info);
         void _getVkExtensionList(std::vector<const char *> *extList);
+        bool _initVulkan(const char *app_name,
+                         unsigned app_version,
+                         const std::vector<const char *> &instance_extensions);
+        const char *_parseReturnError(VkResult result);
     };
 }
 
