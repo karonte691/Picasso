@@ -75,6 +75,8 @@ namespace Picasso::Engine
             return false;
         }
 
+        std::shared_ptr<PPlatformState> pState = m_platform->GetState();
+
         Picasso::Logger::Logger::Info("Input layer startup...");
 
         m_input = new PInput();
@@ -84,7 +86,7 @@ namespace Picasso::Engine
         Picasso::Logger::Logger::Info("Render layer startup...");
         m_render = new PRender();
 
-        if (!m_render->Init(config->appName, engineState))
+        if (!m_render->Init(config->appName, pState, engineState))
         {
             Picasso::Logger::Logger::Fatal("Unable to start render layer...");
             return false;

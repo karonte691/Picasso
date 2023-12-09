@@ -11,18 +11,27 @@
 #include <sys/time.h>
 #include <time.h>
 #include <stdlib.h>
+#include <PEngine/PBuild.h>
+
+#if PICASSO_VULKAN_BUILD
+#include <vulkan/vulkan.h>
+#endif
 
 namespace Picasso::Engine::Platform
 {
     struct LinuxPlatformInternalState
     {
-        Display* display;
-        xcb_connection_t* connection;
+        Display *display;
+        xcb_connection_t *connection;
         xcb_window_t window;
-        xcb_screen_t* screen;
+        xcb_screen_t *screen;
         xcb_atom_t wmDeleteProtocols;
         xcb_atom_t wmDestroyWindow;
         int screenCount;
+
+#if PICASSO_VULKAN_BUILD
+        VkSurfaceKHR surface;
+#endif
     };
 }
 

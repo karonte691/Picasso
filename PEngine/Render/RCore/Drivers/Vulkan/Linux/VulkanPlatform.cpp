@@ -19,4 +19,31 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         return extList;
     }
+
+    bool VulkanPlatform::CreateSurface(std::shared_ptr<LinuxPlatformInternalState> pState, DriverContext *dContext)
+    {
+        if (!pState->connection || !pState->window)
+        {
+            Picasso::Logger::Logger::Fatal("Invalid connection or window handle");
+            return false;
+        }
+
+        VkXcbSurfaceCreateInfoKHR cInfo = {VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR};
+
+        cInfo.connection = pState->connection;
+        cInfo.window = pState->window;
+
+        VkResult result = vkCreateXcbSurfaceKHR(dContext->vulkanInstance, &cInfo, 0, &pState->surface);
+
+        if (result != VK_SUCCESS)
+        {
+            Picasso::Logger::Logger::Fatal("Unable to create vulkan xcb surface");
+            return false;
+        }
+
+        dContext->surface = pState->surface;
+
+        return true;
+    }
+
 }

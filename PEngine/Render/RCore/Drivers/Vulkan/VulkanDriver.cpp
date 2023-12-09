@@ -3,21 +3,28 @@
 
 namespace Picasso::Engine::Render::Core::Drivers
 {
-    bool VulkanDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, EngineState *pState)
+    bool VulkanDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState)
     {
+        m_context = new DriverContext{};
         m_vulkanPlatform = new VulkanPlatform();
 
         std::vector<const char *> extensionList = m_vulkanPlatform->GetPlatformExtensions();
 
-        if (!this->_initVulkan(appName, PICASSO_MAJOR_VERSION, extensionList) || m_driverInstance == nullptr)
+        if (!this->_initVulkan(appName, PICASSO_MAJOR_VERSION, extensionList) || m_context->vulkanInstance == nullptr)
         {
             Picasso::Logger::Logger::Fatal("Cannot initialize Vulkan driver...");
             return false;
         }
 
+        if (!m_vulkanPlatform->CreateSurface(pState->state, m_context))
+        {
+            Picasso::Logger::Logger::Fatal("Unable to create the vulkan surface...");
+            return false;
+        }
+
         m_device = new VulkanDevice();
 
-        if (!m_device->Create(m_context))
+        if (!m_device->Create(*m_context))
         {
             Picasso::Logger::Logger::Fatal("Cannot initialize Vulkan devices...");
             return false;
@@ -28,11 +35,14 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     void VulkanDriver::Shutdown()
     {
-        if (m_driverInstance != nullptr)
+        if (m_context != nullptr && m_context->vulkanInstance != nullptr)
         {
             Picasso::Logger::Logger::Info("Shutting down Vulkan driver...");
 
-            vkDestroyInstance(m_driverInstance, 0);
+            vkDestroyInstance(m_context->vulkanInstance, 0);
+
+            delete m_context;
+            m_context = nullptr;
         }
 
         delete m_device;
@@ -65,7 +75,16 @@ namespace Picasso::Engine::Render::Core::Drivers
         instCreate.ppEnabledLayerNames = 0;
         instCreate.pApplicationInfo = &vk_app_info;
 
-        VkResult res = vkCreateInstance(&instCreate, 0, &m_driverInstance);
+        for (const auto &extension : instance_extensions)
+        {
+            if (!this->_IsExtensionSupported(extension))
+            {
+                Picasso::Logger::Logger::FDebug("Required extension not supported: %s", extension);
+                return false;
+            }
+        }
+
+        VkResult res = vkCreateInstance(&instCreate, 0, &m_context->vulkanInstance);
 
         if (res != VK_SUCCESS)
         {
@@ -74,6 +93,25 @@ namespace Picasso::Engine::Render::Core::Drivers
         }
 
         return res == VK_SUCCESS;
+    }
+
+    bool VulkanDriver::_IsExtensionSupported(const char *extensionName)
+    {
+        uint32_t extensionCount;
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
+        std::vector<VkExtensionProperties> extensions(extensionCount);
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+
+        for (const auto &ext : extensions)
+        {
+            if (strcmp(ext.extensionName, extensionName) == 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     const char *VulkanDriver::_parseReturnError(VkResult result)

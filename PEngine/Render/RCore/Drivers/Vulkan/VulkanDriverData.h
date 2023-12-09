@@ -21,8 +21,9 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     struct DriverContext
     {
-        VkInstance vulkanInstance;
-        Devices devices;
+        VkInstance vulkanInstance = VK_NULL_HANDLE;
+        VkSurfaceKHR surface = VK_NULL_HANDLE;
+        Devices devices = {VK_NULL_HANDLE, VK_NULL_HANDLE};
     };
 }
 #endif

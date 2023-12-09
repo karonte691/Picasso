@@ -30,7 +30,7 @@ namespace Picasso::Engine::Platform
             0,
             0,
             0,
-        });
+            nullptr});
 
         // connect to X Server
         m_pstate->display = XOpenDisplay(0);
@@ -197,6 +197,15 @@ namespace Picasso::Engine::Platform
         }
 
         return !quitRaised;
+    }
+
+    std::shared_ptr<PPlatformState> PPlatform::GetState()
+    {
+        auto pState = std::make_shared<PPlatformState>();
+
+        pState->state = m_pstate;
+
+        return pState;
     }
 
     int PPlatform::_getEventsMask() const

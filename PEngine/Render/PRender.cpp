@@ -4,7 +4,7 @@ namespace Picasso::Engine::Render
 {
     using Picasso::Engine::Render::Core::RDRIVERS;
 
-    bool PRender::Init(const char *appName, EngineState *platformState)
+    bool PRender::Init(const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *engineState)
     {
         if (m_renderData != nullptr)
         {
@@ -15,7 +15,7 @@ namespace Picasso::Engine::Render
         m_internalRender = std::make_unique<RAPICore>();
         m_renderData = std::make_shared<RAPIData>();
 
-        if (!m_internalRender->Create(appName, RDRIVERS::VULKAN, platformState, m_renderData))
+        if (!m_internalRender->Create(appName, RDRIVERS::VULKAN, pState, engineState, m_renderData))
         {
             Picasso::Logger::Logger::Fatal("Error trying to setup the internal render...");
             return false;

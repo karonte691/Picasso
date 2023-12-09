@@ -18,6 +18,7 @@
 #include <PEngine/Input/Listener/KeyboardListener.h>
 #include <PEngine/Input/Listener/MouseListener.h>
 #include <PEngine/Input/InputState.h>
+#include <PEngine/PState.h>
 
 #include <PEngine/Platform/Linux/PlatformInputManager.h>
 #endif
@@ -32,6 +33,7 @@ namespace Picasso::Engine::Platform
         bool Init(std::string appName, int x, int y, int width, int height);
         void Shutdown();
         bool Process();
+        std::shared_ptr<PPlatformState> GetState();
 
     private:
         pInputState m_inputState;

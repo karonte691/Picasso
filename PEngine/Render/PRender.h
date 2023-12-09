@@ -11,19 +11,20 @@
 
 namespace Picasso::Engine::Render
 {
-    using Picasso::Engine::Render::Core::RAPICore;
-    using Picasso::Engine::Render::RAPIData;
     using Picasso::Engine::EngineState;
+    using Picasso::Engine::Render::RAPIData;
+    using Picasso::Engine::Render::Core::RAPICore;
     class PRender
     {
-        public:
-            bool Init(const char *appName, EngineState* platformState);
-            bool RenderFrame(RenderData* rData);
-            void OnResize(uint16_t width, uint16_t height);
-            void Shutdown();
-        private:
-            std::unique_ptr<RAPICore> m_internalRender;
-            std::shared_ptr<RAPIData> m_renderData;
+    public:
+        bool Init(const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *engineState);
+        bool RenderFrame(RenderData *rData);
+        void OnResize(uint16_t width, uint16_t height);
+        void Shutdown();
+
+    private:
+        std::unique_ptr<RAPICore> m_internalRender;
+        std::shared_ptr<RAPIData> m_renderData;
     };
 }
 

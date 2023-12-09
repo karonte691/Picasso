@@ -3,11 +3,18 @@
 #ifndef P_STATE_H
 #define P_STATE_H
 
+#include <memory>
 #include <PEngine/Core/Clock.h>
+#include <PEngine/PBuild.h>
+
+#ifdef PICASSO_LINUX_BUILD
+#include <PEngine/Platform/Linux/LinuxPlatformInternalState.h>
+#endif
 
 namespace Picasso::Engine
 {
     using Picasso::Engine::Core::ClockData;
+    using Picasso::Engine::Platform::LinuxPlatformInternalState;
 
     struct EngineState
     {
@@ -29,6 +36,13 @@ namespace Picasso::Engine
             delete clockData;
         }
     };
+
+    struct PPlatformState
+    {
+#ifdef PICASSO_LINUX_BUILD
+        std::shared_ptr<LinuxPlatformInternalState> state;
+    };
+#endif
 }
 
 #endif

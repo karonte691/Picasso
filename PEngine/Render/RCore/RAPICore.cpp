@@ -7,9 +7,9 @@ namespace Picasso::Engine::Render::Core
         m_driverManager = std::make_unique<DriverManager>();
     }
 
-    bool RAPICore::Create(const char *appName, RDRIVERS driver, EngineState *pState, std::shared_ptr<RAPIData> rcData)
+    bool RAPICore::Create(const char *appName, RDRIVERS driver, std::shared_ptr<PPlatformState> pState, EngineState *eState, std::shared_ptr<RAPIData> rcData)
     {
-        rcData->pState = pState;
+        rcData->pState = eState;
 
         m_renderDriver = m_driverManager->GetDriver(driver);
 
@@ -19,7 +19,7 @@ namespace Picasso::Engine::Render::Core
             return false;
         }
 
-        if (!m_renderDriver->InitDriver(rcData, appName, pState))
+        if (!m_renderDriver->InitDriver(rcData, appName, pState, eState))
         {
             Picasso::Logger::Logger::Fatal("Unable to initialize the driver");
             m_renderDriver->Shutdown();
