@@ -15,6 +15,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         virtual ~DriverImplementation() {}
 
         virtual bool InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, EngineState *pState) = 0;
+        virtual void Shutdown() = 0;
     };
 }
 

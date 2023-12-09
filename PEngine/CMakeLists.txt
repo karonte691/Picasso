@@ -16,6 +16,9 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
 
+                        
+                Render/RCore/Drivers/Vulkan/Linux/VulkanPlatform.cpp
+                Render/RCore/Drivers/Vulkan/VulkanDevice.cpp
                 Render/RCore/Drivers/Vulkan/VulkanDriver.cpp
                 Render/RCore/DriverManager.cpp
                 Render/RCore/RAPICore.cpp

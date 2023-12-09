@@ -22,14 +22,16 @@ namespace Picasso::Engine::Render::Core
         if (!m_renderDriver->InitDriver(rcData, appName, pState))
         {
             Picasso::Logger::Logger::Fatal("Unable to initialize the driver");
+            m_renderDriver->Shutdown();
             return false;
         }
 
         return true;
     }
 
-    void RAPICore::Destroy(std::shared_ptr<RAPIData> rcData)
+    void RAPICore::Destroy()
     {
+        m_renderDriver->Shutdown();
     }
 
     void RAPICore::Resize(std::shared_ptr<RAPIData> apiData, uint16_t width, u_int16_t height)
