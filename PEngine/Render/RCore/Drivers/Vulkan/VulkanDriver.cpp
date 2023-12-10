@@ -24,7 +24,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 
         m_device = new VulkanDevice();
 
-        if (!m_device->Create(*m_context))
+        if (!m_device->Create(m_context))
         {
             Picasso::Logger::Logger::Fatal("Cannot initialize Vulkan devices...");
             return false;
