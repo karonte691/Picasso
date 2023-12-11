@@ -55,7 +55,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         pDeviceRequirements.compute = true;
         pDeviceRequirements.present = true;
         pDeviceRequirements.transfer = true;
-        pDeviceRequirements.discreteGpu = true;
+        pDeviceRequirements.discreteGpu = false;
         pDeviceRequirements.sampleAnisotropy = true;
 
         pDeviceRequirements.deviceExtensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -271,9 +271,9 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         std::vector<VkSurfaceFormatKHR> availableFormats;
-        VkResult gFormatCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, availableFormats.data());
+        VkResult gAvailableFormatsCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, availableFormats.data());
 
-        if (gFormatCountResult != VK_SUCCESS)
+        if (gAvailableFormatsCountResult != VK_SUCCESS)
         {
             Picasso::Logger::Logger::Warn("Unable to get surface format for the physical device");
         }
@@ -368,7 +368,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     void VulkanDevice::_printPhysicalDeviceInfo(const VkPhysicalDeviceProperties *props)
     {
         std::cout << "Device  | Graphics  | Present  | Compute | Transfer\n";
-        char buff[100];
+        char buff[255];
         snprintf(buff,
                  sizeof(buff),
                  "%s       | %d         | %d        | %d       | %d       \n",
