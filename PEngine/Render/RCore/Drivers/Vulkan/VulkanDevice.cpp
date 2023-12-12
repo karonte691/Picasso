@@ -15,6 +15,111 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return false;
         }
 
+        if (!this->_createLogicalDevice(context))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    void VulkanDevice::Destroy(DriverContext *context)
+    {
+        context->devices.physicalDevice = 0;
+
+        if (context->devices.swapChainSupport.formatCount > 0)
+        {
+            context->devices.swapChainSupport.formatCount = 0;
+            context->devices.swapChainSupport.formats = 0;
+        }
+
+        if (context->devices.swapChainSupport.presentModeCount > 0)
+        {
+            context->devices.swapChainSupport.presentModeCount = 0;
+            context->devices.swapChainSupport.presentMode = 0;
+        }
+
+        context->devices.graphicsQueueIndex = -1;
+        context->devices.presentQueueIndex = -1;
+        context->devices.transferQueueIndex = -1;
+    }
+
+    bool VulkanDevice::_createLogicalDevice(DriverContext *context)
+    {
+        Picasso::Logger::Logger::Info("Creating logical device");
+
+        bool presentGraphicsQueue = context->devices.graphicsQueueIndex == context->devices.presentQueueIndex;
+        bool trasfertGraphicsQueue = context->devices.graphicsQueueIndex == context->devices.transferQueueIndex;
+        u_int32_t indexCount = 1;
+
+        if (!presentGraphicsQueue)
+        {
+            indexCount++;
+        }
+
+        if (!trasfertGraphicsQueue)
+        {
+            indexCount++;
+        }
+
+        std::vector<u_int32_t> logicaDevicesIndex(indexCount);
+
+        indexCount = 0; // reusing same var for different purpose
+        logicaDevicesIndex[indexCount++] = context->devices.graphicsQueueIndex;
+
+        if (!presentGraphicsQueue)
+        {
+            logicaDevicesIndex[indexCount++] = context->devices.presentQueueIndex;
+        }
+
+        if (!trasfertGraphicsQueue)
+        {
+            logicaDevicesIndex[indexCount++] = context->devices.transferQueueIndex;
+        }
+
+        std::vector<VkDeviceQueueCreateInfo> qCreateInfo(indexCount);
+        _Float32 queuePriority = 1.0f;
+
+        for (u_int32_t i = 0; i < indexCount; ++i)
+        {
+            qCreateInfo[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            qCreateInfo[i].queueFamilyIndex = logicaDevicesIndex[i];
+            qCreateInfo[i].queueCount = 1;
+
+            if (logicaDevicesIndex[i] == context->devices.graphicsQueueIndex)
+            {
+                qCreateInfo[i].queueCount = 2;
+            }
+
+            qCreateInfo[i].flags = 0;
+            qCreateInfo[i].pNext = 0;
+            qCreateInfo[i].pQueuePriorities = &queuePriority;
+        }
+
+        VkPhysicalDeviceFeatures deviceFeatures = {};
+
+        deviceFeatures.samplerAnisotropy = VK_TRUE;
+
+        VkDeviceCreateInfo dCreateInfo = {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
+        dCreateInfo.queueCreateInfoCount = indexCount;
+        dCreateInfo.pQueueCreateInfos = qCreateInfo.data();
+        dCreateInfo.pEnabledFeatures = &deviceFeatures;
+        dCreateInfo.enabledExtensionCount = 1;
+
+        const char *extName = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+        dCreateInfo.ppEnabledExtensionNames = &extName;
+
+        dCreateInfo.enabledLayerCount = 0;
+        dCreateInfo.ppEnabledLayerNames = 0;
+
+        VkResult createDeviceRes = vkCreateDevice(context->devices.physicalDevice, &dCreateInfo, 0, &context->devices.logicalDevice);
+
+        if (createDeviceRes != VK_SUCCESS)
+        {
+            Picasso::Logger::Logger::Error("unable to create the logical device");
+            return false;
+        }
+
         return true;
     }
 
@@ -151,7 +256,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             // Check transfer queue requirements
             (!requirements->transfer || (requirements->transfer && m_queueFamilyInfo.transferFamilyIndex != -1)))
         {
-            Picasso::Logger::Logger::FDebug("Device %s meets the requirement");
+            Picasso::Logger::Logger::FDebug("Device %s meets the requirement", pdProps->deviceName);
 
             this->_querySwapChainSupport(device, surface, swSupportInfo);
 
@@ -302,6 +407,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return false;
         }
 
+        Picasso::Logger::Logger::FDebug("Found %d available extensions", availableExtCount);
+
         if (availableExtCount != 0)
         {
             VkResult deviceExtensionResult = vkEnumerateDeviceExtensionProperties(device, 0, &availableExtCount, availableExtensions);
@@ -320,10 +427,14 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                 isExtFound = false;
                 for (u_int32_t j = 0; i < availableExtCount; ++i)
                 {
-                    if (strcmp(requirements->deviceExtensionNames[i], availableExtensions[j].extensionName) == 0)
+                    if (requirements->deviceExtensionNames[i] != nullptr && availableExtensions[j].extensionName != nullptr)
                     {
-                        isExtFound = true;
-                        break;
+                        Picasso::Logger::Logger::FDebug("Checking required extension %s", requirements->deviceExtensionNames[i]);
+                        if (strcmp(requirements->deviceExtensionNames[i], availableExtensions[j].extensionName) == 0)
+                        {
+                            isExtFound = true;
+                            break;
+                        }
                     }
                 }
 
@@ -345,7 +456,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                                                        const std::vector<VkSurfaceFormatKHR> &availableFormats,
                                                        const std::vector<VkPresentModeKHR> &availablePresentModes)
     {
-        if (info.formatCount > 0)
+        if (info.formatCount > 0 && availableFormats.size() >= info.formatCount)
         {
             info.formats = std::make_unique<VkSurfaceFormatKHR[]>(info.formatCount);
             for (size_t i = 0; i < info.formatCount; ++i)
@@ -354,7 +465,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             }
         }
 
-        if (info.presentModeCount > 0)
+        if (info.presentModeCount > 0 && availablePresentModes.size() >= info.presentModeCount)
         {
             info.presentMode = std::make_unique<VkPresentModeKHR[]>(info.presentModeCount);
             for (size_t i = 0; i < info.presentModeCount; ++i)
@@ -368,7 +479,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     void VulkanDevice::_printPhysicalDeviceInfo(const VkPhysicalDeviceProperties *props)
     {
         std::cout << "Device  | Graphics  | Present  | Compute | Transfer\n";
-        char buff[255];
+        char buff[500];
         snprintf(buff,
                  sizeof(buff),
                  "%s       | %d         | %d        | %d       | %d       \n",

@@ -34,7 +34,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
     public:
         bool Create(DriverContext *context);
-        void Destroy();
+        void Destroy(DriverContext *context);
 
     private:
         PhysicalDeviceQueueFamilyInfo m_queueFamilyInfo;
@@ -53,6 +53,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         void _initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
                                              const std::vector<VkSurfaceFormatKHR> &availableFormats,
                                              const std::vector<VkPresentModeKHR> &availablePresentModes);
+        bool _createLogicalDevice(DriverContext *context);
 
 #if PICASSO_DEBUG_ENABLE
         void _printPhysicalDeviceInfo(const VkPhysicalDeviceProperties *props);

@@ -27,7 +27,7 @@ namespace Picasso::Engine::Render::Core::Drivers
     struct Devices
     {
         VkPhysicalDevice physicalDevice;
-        VkDevice device;
+        VkDevice logicalDevice;
         SwapChainSupportInfo swapChainSupport;
         u_int32_t graphicsQueueIndex;
         u_int32_t presentQueueIndex;
@@ -41,7 +41,7 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
         VkInstance vulkanInstance = VK_NULL_HANDLE;
         VkSurfaceKHR surface = VK_NULL_HANDLE;
-        Devices devices = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+        Devices devices;
     };
 }
 #endif

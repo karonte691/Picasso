@@ -35,14 +35,21 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     void VulkanDriver::Shutdown()
     {
-        if (m_context != nullptr && m_context->vulkanInstance != nullptr)
+        if (m_context != nullptr)
         {
-            Picasso::Logger::Logger::Info("Shutting down Vulkan driver...");
+            Picasso::Logger::Logger::Info("Shutting down Vulkan device data...");
 
-            vkDestroyInstance(m_context->vulkanInstance, 0);
+            m_device->Destroy(m_context);
 
-            delete m_context;
-            m_context = nullptr;
+            if (m_context->vulkanInstance != nullptr)
+            {
+                Picasso::Logger::Logger::Info("Shutting down Vulkan driver...");
+
+                vkDestroyInstance(m_context->vulkanInstance, 0);
+
+                delete m_context;
+                m_context = nullptr;
+            }
         }
 
         delete m_device;
