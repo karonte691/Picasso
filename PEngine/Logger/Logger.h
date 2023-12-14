@@ -6,10 +6,12 @@
 #include <iostream>
 #include <stdarg.h>
 #include <memory>
+#include <iomanip>
 #include <string>
 #include <cstdarg>
 #include <vector>
 #include <cstdlib>
+#include <chrono>
 
 #include <PEngine/PBuild.h>
 #include <PEngine/Logger/LogLevel.h>
@@ -80,11 +82,6 @@ namespace Picasso::Engine::Logger
             const int iLen = std::vsnprintf(nullptr, 0, zcFormat, vaArgsCopy);
             va_end(vaArgsCopy);
 
-            if (sizeof(vaArgs) == 0)
-            {
-                return std::string(zcFormat);
-            }
-
             // return a formatted string without risking memory mismanagement
             // and without assuming any compiler or platform specific behavior
             std::vector<char> zc(iLen + 1);
@@ -97,11 +94,20 @@ namespace Picasso::Engine::Logger
         {
             const char *levelName = Levels::ToString(level);
 
-            int size = snprintf(nullptr, 0, "[%s] %s", levelName, str.c_str());
-            char *sBuffer = (char *)malloc(size + 1);
-            sprintf(sBuffer, "[%s] %s", levelName, str.c_str());
+            auto now = std::chrono::system_clock::now();
+            auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-            std::cout << sBuffer << str << std::endl;
+            std::stringstream stringStream;
+            stringStream << std::put_time(std::localtime(&in_time_t), "%Y-%m-%dT%H:%M:%S");
+            std::string dateNow = stringStream.str();
+
+            int size = snprintf(nullptr, 0, "[%s][%s] %s", dateNow.c_str(), levelName, str.c_str());
+            char *sBuffer = (char *)malloc(size + 1);
+            sprintf(sBuffer, "[%s][%s] %s", dateNow.c_str(), levelName, str.c_str());
+
+            std::cout << sBuffer << std::endl;
+
+            free(sBuffer);
         }
     };
 
