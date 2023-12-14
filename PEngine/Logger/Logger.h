@@ -35,34 +35,24 @@ namespace Picasso::Engine::Logger
         template <typename... FuncArgs>
         static void Info(const char *fmt_str, FuncArgs... args)
         {
-            std::string srt = std::string(fmt_str);
-
             _log(Levels::LogLevels::INFO, _formatStr(fmt_str, args...));
         }
 
         template <typename... FuncArgs>
         static void Error(const char *fmt_str, FuncArgs... args)
         {
-
-            std::string srt = std::string(fmt_str);
-
             _log(Levels::LogLevels::ERROR, _formatStr(fmt_str, args...));
         }
 
         template <typename... FuncArgs>
         static void Warn(const char *fmt_str, FuncArgs... args)
         {
-            std::string srt = std::string(fmt_str);
-
             _log(Levels::LogLevels::WARN, _formatStr(fmt_str, args...));
         }
 
         template <typename... FuncArgs>
         static void Fatal(const char *fmt_str, FuncArgs... args)
         {
-
-            std::string srt = std::string(fmt_str);
-
             _log(Levels::LogLevels::FATAL, _formatStr(fmt_str, args...));
         }
 
