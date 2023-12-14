@@ -8,7 +8,7 @@ namespace Picasso::Engine::Render
     {
         if (m_renderData != nullptr)
         {
-            Picasso::Logger::Logger::Warn("Trying to call Init() method of PRender class again...ignoring and quitting");
+            Picasso::Engine::Logger::Logger::Warn("Trying to call Init() method of PRender class again...ignoring and quitting");
             return true;
         }
 
@@ -17,7 +17,7 @@ namespace Picasso::Engine::Render
 
         if (!m_internalRender->Create(appName, RDRIVERS::VULKAN, pState, engineState, m_renderData))
         {
-            Picasso::Logger::Logger::Fatal("Error trying to setup the internal render...");
+            Picasso::Engine::Logger::Logger::Fatal("Error trying to setup the internal render...");
             return false;
         }
 
@@ -37,21 +37,21 @@ namespace Picasso::Engine::Render
     {
         if (m_renderData == nullptr)
         {
-            Picasso::Logger::Logger::Warn("Trying to call RenderFrame() method of PRender class without proper Init() before...ignoring and quitting");
+            Picasso::Engine::Logger::Logger::Warn("Trying to call RenderFrame() method of PRender class without proper Init() before...ignoring and quitting");
             return true;
         }
 
         // start rendering the frame...
         if (!m_internalRender->BeginFrame(m_renderData, rData->deltaTime))
         {
-            Picasso::Logger::Logger::Error("Unable to start rendering the frame...");
+            Picasso::Engine::Logger::Logger::Error("Unable to start rendering the frame...");
             return false;
         }
 
         //...and end it
         if (!m_internalRender->EndFrame(m_renderData, rData->deltaTime))
         {
-            Picasso::Logger::Logger::Error("Unable to finish rendering the frame...");
+            Picasso::Engine::Logger::Logger::Error("Unable to finish rendering the frame...");
             return false;
         }
 

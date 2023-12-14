@@ -54,11 +54,11 @@ namespace Picasso::Engine
         // avoid running multiple instance
         if (engineState->running == true)
         {
-            Picasso::Logger::Logger::Fatal("An instance of PicassoEngine is already running");
+            Picasso::Engine::Logger::Logger::Fatal("An instance of PicassoEngine is already running");
             return false;
         }
 
-        Picasso::Logger::Logger::Info("Platform layer startup...");
+        Picasso::Engine::Logger::Logger::Info("Platform layer startup...");
 
         m_platform = new PPlatform();
 
@@ -71,24 +71,24 @@ namespace Picasso::Engine
 
         if (!platformInitResult)
         {
-            Picasso::Logger::Logger::Fatal("Error while loading platform layer");
+            Picasso::Engine::Logger::Logger::Fatal("Error while loading platform layer");
             return false;
         }
 
         std::shared_ptr<PPlatformState> pState = m_platform->GetState();
 
-        Picasso::Logger::Logger::Info("Input layer startup...");
+        Picasso::Engine::Logger::Logger::Info("Input layer startup...");
 
         m_input = new PInput();
         m_input->Init();
 
         // render system
-        Picasso::Logger::Logger::Info("Render layer startup...");
+        Picasso::Engine::Logger::Logger::Info("Render layer startup...");
         m_render = new PRender();
 
         if (!m_render->Init(config->appName, pState, engineState))
         {
-            Picasso::Logger::Logger::Fatal("Unable to start render layer...");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to start render layer...");
             return false;
         }
 
@@ -111,16 +111,16 @@ namespace Picasso::Engine
             this->_Paint();
         }
 
-        Picasso::Logger::Logger::Debug("Shutting down Internal clock");
+        Picasso::Engine::Logger::Logger::Debug("Shutting down Internal clock");
         m_internalClock->Stop(engineState->clockData);
 
-        Picasso::Logger::Logger::Debug("Shutting down Input system");
+        Picasso::Engine::Logger::Logger::Debug("Shutting down Input system");
         m_input->Shutdown();
 
-        Picasso::Logger::Logger::Debug("Shutting down Rendering system");
+        Picasso::Engine::Logger::Logger::Debug("Shutting down Rendering system");
         m_render->Shutdown();
 
-        Picasso::Logger::Logger::Debug("Shutting down Platform layer");
+        Picasso::Engine::Logger::Logger::Debug("Shutting down Platform layer");
         m_platform->Shutdown();
 
         return true;
@@ -153,7 +153,7 @@ namespace Picasso::Engine
         }
 
         m_frameData->deltaTime = m_time->GetDeltaTime();
-        Picasso::Logger::Logger::FDebug("Delta time: %f", m_frameData->deltaTime);
+        Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
         if (!m_render->RenderFrame(m_frameData))
         {

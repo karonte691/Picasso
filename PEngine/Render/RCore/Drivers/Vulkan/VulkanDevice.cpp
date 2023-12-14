@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <cstring>
 
 #if PICASSO_DEBUG_ENABLE
 #include <iostream>
@@ -26,6 +27,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     void VulkanDevice::Destroy(DriverContext *context)
     {
         context->devices.physicalDevice = 0;
+        context->devices.logicalDevice = 0;
 
         if (context->devices.swapChainSupport.formatCount > 0)
         {
@@ -46,7 +48,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     bool VulkanDevice::_createLogicalDevice(DriverContext *context)
     {
-        Picasso::Logger::Logger::Info("Creating logical device");
+        Picasso::Engine::Logger::Logger::Info("Creating logical device");
 
         bool presentGraphicsQueue = context->devices.graphicsQueueIndex == context->devices.presentQueueIndex;
         bool trasfertGraphicsQueue = context->devices.graphicsQueueIndex == context->devices.transferQueueIndex;
@@ -116,7 +118,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (createDeviceRes != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Error("unable to create the logical device");
+            Picasso::Engine::Logger::Logger::Error("unable to create the logical device");
             return false;
         }
 
@@ -131,13 +133,13 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (countResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Error("Cannot count physical devices...");
+            Picasso::Engine::Logger::Logger::Error("Cannot count physical devices...");
             return false;
         }
 
         if (physicalDeviceCount == 0)
         {
-            Picasso::Logger::Logger::Error("No physical devices found...");
+            Picasso::Engine::Logger::Logger::Error("No physical devices found...");
             return false;
         }
 
@@ -147,7 +149,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (fetchPhysicalDevicesRes != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Error("Cannot fetch physical devices...");
+            Picasso::Engine::Logger::Logger::Error("Cannot fetch physical devices...");
             return false;
         }
 
@@ -187,20 +189,20 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                 continue;
             }
 
-            Picasso::Logger::Logger::FDebug("Selected device %s", pdProps.deviceName);
+            Picasso::Engine::Logger::Logger::Debug("Selected device %s", pdProps.deviceName);
 
 #if PICASSO_DEBUG_ENABLE
             this->_printGpuInformation(&pdProps);
 #endif
-            Picasso::Logger::Logger::FDebug("GPU Driver version %d.%d.%d",
-                                            VK_VERSION_MAJOR(pdProps.driverVersion),
-                                            VK_VERSION_MINOR(pdProps.driverVersion),
-                                            VK_VERSION_PATCH(pdProps.driverVersion));
+            Picasso::Engine::Logger::Logger::Debug("GPU Driver version %d.%d.%d",
+                                                   VK_VERSION_MAJOR(pdProps.driverVersion),
+                                                   VK_VERSION_MINOR(pdProps.driverVersion),
+                                                   VK_VERSION_PATCH(pdProps.driverVersion));
 
-            Picasso::Logger::Logger::FDebug("Vulkan API Version %d.%d.%d",
-                                            VK_VERSION_MAJOR(pdProps.apiVersion),
-                                            VK_VERSION_MINOR(pdProps.apiVersion),
-                                            VK_VERSION_PATCH(pdProps.apiVersion));
+            Picasso::Engine::Logger::Logger::Debug("Vulkan API Version %d.%d.%d",
+                                                   VK_VERSION_MAJOR(pdProps.apiVersion),
+                                                   VK_VERSION_MINOR(pdProps.apiVersion),
+                                                   VK_VERSION_PATCH(pdProps.apiVersion));
 
             context->devices.physicalDevice = detectedDevices[i];
             context->devices.graphicsQueueIndex = m_queueFamilyInfo.graphicsFamilyIndex;
@@ -216,7 +218,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (!context->devices.physicalDevice)
         {
-            Picasso::Logger::Logger::Error("Unable to select a physical device");
+            Picasso::Engine::Logger::Logger::Error("Unable to select a physical device");
             return false;
         }
         return true;
@@ -236,7 +238,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         {
             if (pdProps->deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
             {
-                Picasso::Logger::Logger::Error("Picasso requires discreteGpu, but the device does not support it");
+                Picasso::Engine::Logger::Logger::Error("Picasso requires discreteGpu, but the device does not support it");
                 return false;
             }
         }
@@ -256,25 +258,25 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             // Check transfer queue requirements
             (!requirements->transfer || (requirements->transfer && m_queueFamilyInfo.transferFamilyIndex != -1)))
         {
-            Picasso::Logger::Logger::FDebug("Device %s meets the requirement", pdProps->deviceName);
+            Picasso::Engine::Logger::Logger::Debug("Device %s meets the requirement", pdProps->deviceName);
 
             this->_querySwapChainSupport(device, surface, swSupportInfo);
 
             if (swSupportInfo->formatCount < 1 || swSupportInfo->presentModeCount < 1)
             {
-                Picasso::Logger::Logger::Error("Required swapchain support not present, skipping device...");
+                Picasso::Engine::Logger::Logger::Error("Required swapchain support not present, skipping device...");
                 return false;
             }
 
             if (!this->_checkDeviceExtension(device, requirements, swSupportInfo))
             {
-                Picasso::Logger::Logger::Error("Unable to check the extensions, skipping device...");
+                Picasso::Engine::Logger::Logger::Error("Unable to check the extensions, skipping device...");
                 return false;
             }
 
             if (requirements->sampleAnisotropy && !pdFeatures->samplerAnisotropy)
             {
-                Picasso::Logger::Logger::Error("sampleAnisotropy is not compatible, skipping device...");
+                Picasso::Engine::Logger::Logger::Error("sampleAnisotropy is not compatible, skipping device...");
                 return false;
             }
 
@@ -330,7 +332,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
             if (supportPresentResult != VK_SUCCESS)
             {
-                Picasso::Logger::Logger::Warn("Unable to check if the physical device supports surface");
+                Picasso::Engine::Logger::Logger::Warn("Unable to check if the physical device supports surface");
                 continue;
             }
 
@@ -339,10 +341,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                 m_queueFamilyInfo.presentFamilyIndex = i;
             }
         }
-
-#if PICASSO_DEBUG_ENABLE
-        this->_printPhysicalDeviceInfo(pdProps);
-#endif
     }
 
     void VulkanDevice::_resetQueueFamilyInfo()
@@ -359,7 +357,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (gCapabilitiesResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Warn("Unable to get surface capabilities for the physical device");
+            Picasso::Engine::Logger::Logger::Warn("Unable to get surface capabilities for the physical device");
         }
 
         VkResult gFormatCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, 0);
@@ -367,12 +365,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (gFormatCountResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Warn("Unable to get count surface format for the physical device");
+            Picasso::Engine::Logger::Logger::Warn("Unable to get count surface format for the physical device");
         }
 
         if (gPresentModeCountResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Warn("Unable to get count surface presents mode for the physical device");
+            Picasso::Engine::Logger::Logger::Warn("Unable to get count surface presents mode for the physical device");
         }
 
         std::vector<VkSurfaceFormatKHR> availableFormats;
@@ -380,7 +378,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (gAvailableFormatsCountResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Warn("Unable to get surface format for the physical device");
+            Picasso::Engine::Logger::Logger::Warn("Unable to get surface format for the physical device");
         }
 
         std::vector<VkPresentModeKHR> availablePresentModes;
@@ -388,7 +386,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (gPresentModeResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Warn("Unable to get surface presents mode for the physical device");
+            Picasso::Engine::Logger::Logger::Warn("Unable to get surface presents mode for the physical device");
         }
 
         this->_initializeSwapChainSupportInfo(*swSupportInfo, availableFormats, availablePresentModes);
@@ -403,11 +401,11 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (deviceExtensionCountResult != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Warn("Unable to count available extensions on this device");
+            Picasso::Engine::Logger::Logger::Warn("Unable to count available extensions on this device");
             return false;
         }
 
-        Picasso::Logger::Logger::FDebug("Found %d available extensions", availableExtCount);
+        Picasso::Engine::Logger::Logger::Debug("Found %d available extensions", availableExtCount);
 
         if (availableExtCount != 0)
         {
@@ -415,7 +413,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
             if (deviceExtensionResult != VK_SUCCESS)
             {
-                Picasso::Logger::Logger::Warn("Unable to fetch available extensions on this device");
+                Picasso::Engine::Logger::Logger::Warn("Unable to fetch available extensions on this device");
                 return false;
             }
 
@@ -429,7 +427,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                 {
                     if (requirements->deviceExtensionNames[i] != nullptr && availableExtensions[j].extensionName != nullptr)
                     {
-                        Picasso::Logger::Logger::FDebug("Checking required extension %s", requirements->deviceExtensionNames[i]);
+                        Picasso::Engine::Logger::Logger::Debug("Checking required extension %s", requirements->deviceExtensionNames[i]);
                         if (strcmp(requirements->deviceExtensionNames[i], availableExtensions[j].extensionName) == 0)
                         {
                             isExtFound = true;
@@ -440,7 +438,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
                 if (!isExtFound)
                 {
-                    Picasso::Logger::Logger::FDebug("Required extension %s not found...", requirements->deviceExtensionNames[i]);
+                    Picasso::Engine::Logger::Logger::Debug("Required extension %s not found...", requirements->deviceExtensionNames[i]);
                     free(availableExtensions);
                     return false;
                 }
@@ -476,21 +474,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     }
 
 #if PICASSO_DEBUG_ENABLE
-    void VulkanDevice::_printPhysicalDeviceInfo(const VkPhysicalDeviceProperties *props)
-    {
-        std::cout << "Device  | Graphics  | Present  | Compute | Transfer\n";
-        char buff[500];
-        snprintf(buff,
-                 sizeof(buff),
-                 "%s       | %d         | %d        | %d       | %d       \n",
-                 props->deviceName,
-                 m_queueFamilyInfo.graphicsFamilyIndex,
-                 m_queueFamilyInfo.presentFamilyIndex,
-                 m_queueFamilyInfo.computeFamilyIndex,
-                 m_queueFamilyInfo.transferFamilyIndex);
-        std::string buffAsStdStr = buff;
-        std::cout << buffAsStdStr;
-    }
 
     void VulkanDevice::_printGpuInformation(const VkPhysicalDeviceProperties *pdProps)
     {
@@ -516,7 +499,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             break;
         }
 
-        Picasso::Logger::Logger::Info(gpuDeviceType);
+        Picasso::Engine::Logger::Logger::Info(gpuDeviceType);
     }
 #endif
 }

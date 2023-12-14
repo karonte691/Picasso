@@ -23,7 +23,7 @@ namespace Picasso::Engine::EventSystem
         std::shared_ptr<BaseEvent<PEvent>> event = m_eventFactory->GetEvent(eventType);
         
         if(event == nullptr){
-            Picasso::Logger::Logger::Fatal("Error while trying to factor event");
+            Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
             return;
         }
 

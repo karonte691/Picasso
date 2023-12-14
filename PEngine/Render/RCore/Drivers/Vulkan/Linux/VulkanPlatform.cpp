@@ -24,7 +24,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
         if (!pState->connection || !pState->window)
         {
-            Picasso::Logger::Logger::Fatal("Invalid connection or window handle");
+            Picasso::Engine::Logger::Logger::Fatal("Invalid connection or window handle");
             return false;
         }
 
@@ -37,7 +37,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (result != VK_SUCCESS)
         {
-            Picasso::Logger::Logger::Fatal("Unable to create vulkan xcb surface");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to create vulkan xcb surface");
             return false;
         }
 

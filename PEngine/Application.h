@@ -5,7 +5,7 @@
 
 #include <PEngine/PConfig.h>
 #include <PEngine/PState.h>
-#include <PEngine/Logger.h>
+#include <PEngine/Logger/Logger.h>
 #include <PEngine/Core/Clock.h>
 #include <PEngine/Core/PTime.h>
 #include <PEngine/EventSystem/PERegistry.h>

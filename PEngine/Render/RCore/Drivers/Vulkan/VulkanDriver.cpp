@@ -1,6 +1,8 @@
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriver.h>
 #include <PEngine/PBuild.h>
 
+#include <cstring>
+
 namespace Picasso::Engine::Render::Core::Drivers
 {
     bool VulkanDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState)
@@ -12,13 +14,13 @@ namespace Picasso::Engine::Render::Core::Drivers
 
         if (!this->_initVulkan(appName, PICASSO_MAJOR_VERSION, extensionList) || m_context->vulkanInstance == nullptr)
         {
-            Picasso::Logger::Logger::Fatal("Cannot initialize Vulkan driver...");
+            Picasso::Engine::Logger::Logger::Fatal("Cannot initialize Vulkan driver...");
             return false;
         }
 
         if (!m_vulkanPlatform->CreateSurface(pState->state, m_context))
         {
-            Picasso::Logger::Logger::Fatal("Unable to create the vulkan surface...");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to create the vulkan surface...");
             return false;
         }
 
@@ -26,7 +28,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 
         if (!m_device->Create(m_context))
         {
-            Picasso::Logger::Logger::Fatal("Cannot initialize Vulkan devices...");
+            Picasso::Engine::Logger::Logger::Fatal("Cannot initialize Vulkan devices...");
             return false;
         }
 
@@ -37,13 +39,13 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
         if (m_context != nullptr)
         {
-            Picasso::Logger::Logger::Info("Shutting down Vulkan device data...");
+            Picasso::Engine::Logger::Logger::Info("Shutting down Vulkan device data...");
 
             m_device->Destroy(m_context);
 
             if (m_context->vulkanInstance != nullptr)
             {
-                Picasso::Logger::Logger::Info("Shutting down Vulkan driver...");
+                Picasso::Engine::Logger::Logger::Info("Shutting down Vulkan driver...");
 
                 vkDestroyInstance(m_context->vulkanInstance, 0);
 
@@ -86,7 +88,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         {
             if (!this->_IsExtensionSupported(extension))
             {
-                Picasso::Logger::Logger::FDebug("Required extension not supported: %s", extension);
+                Picasso::Engine::Logger::Logger::Debug("Required extension not supported: %s", extension);
                 return false;
             }
         }
@@ -96,7 +98,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         if (res != VK_SUCCESS)
         {
             const char *error = this->_parseReturnError(res);
-            Picasso::Logger::Logger::FDebug("vkCreateInstance return %s", error);
+            Picasso::Engine::Logger::Logger::Debug("vkCreateInstance return %s", error);
         }
 
         return res == VK_SUCCESS;

@@ -19,7 +19,7 @@ namespace Picasso::Engine::Platform::Linux
         xcb_key_press_event_t* keyEvent = (xcb_key_press_event_t*)event;
 
         if(keyEvent == nullptr){
-                        Picasso::Logger::Logger::Error("Error while casting event to keyEvent");
+                        Picasso::Engine::Logger::Logger::Error("Error while casting event to keyEvent");
                         return;
         }
 
@@ -31,14 +31,14 @@ namespace Picasso::Engine::Platform::Linux
 
         if(keyValue == 0)
         {
-            Picasso::Logger::Logger::Warn("Key event translated to P_KEY_UNKNOWN. Skipping event...");
+            Picasso::Engine::Logger::Logger::Warn("Key event translated to P_KEY_UNKNOWN. Skipping event...");
             return;
         }
 
         m_keyboardListener->ProcessKey(keyValue, keyPressed, inputState);
 
-        Picasso::Logger::Logger::Debug("Event XCB_KEY_PRESS|XCB_KEY_RELEASE received...");
-        Picasso::Logger::Logger::FDebug("Key %d pressed: %d", keyValue, keyPressed);
+        Picasso::Engine::Logger::Logger::Debug("Event XCB_KEY_PRESS|XCB_KEY_RELEASE received...");
+        Picasso::Engine::Logger::Logger::Debug("Key %d pressed: %d", keyValue, keyPressed);
     }
 
     void PlatformInputManager::ProcessXCBMouseEvent(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state, pInputState& inputState)
@@ -47,7 +47,7 @@ namespace Picasso::Engine::Platform::Linux
         bool buttonPressed = event->response_type == XCB_BUTTON_PRESS;
 
         if(buttonEvent == nullptr){
-            Picasso::Logger::Logger::Error("Error while casting event to buttonEvent");
+            Picasso::Engine::Logger::Logger::Error("Error while casting event to buttonEvent");
             return;
         }
  
@@ -55,14 +55,14 @@ namespace Picasso::Engine::Platform::Linux
 
         if(buttonValue == -1)
         {
-            Picasso::Logger::Logger::Error("Button event translated to P_MOUSE_BUTTON_UNKW. Skipping event...");
+            Picasso::Engine::Logger::Logger::Error("Button event translated to P_MOUSE_BUTTON_UNKW. Skipping event...");
             return;
         }
 
         m_mouseListener->ProcessButton(buttonValue, buttonPressed, inputState);
 
-        Picasso::Logger::Logger::Debug("Event XCB_BUTTON_PRESS|XCB_BUTTON_RELEASE received...");
-        Picasso::Logger::Logger::FDebug("Button %d pressed: %d", buttonValue, buttonPressed);
+        Picasso::Engine::Logger::Logger::Debug("Event XCB_BUTTON_PRESS|XCB_BUTTON_RELEASE received...");
+        Picasso::Engine::Logger::Logger::Debug("Button %d pressed: %d", buttonValue, buttonPressed);
     }
 
     void PlatformInputManager::ProcessXCBMouseMovement(xcb_generic_event_t* event, pInputState& inputState)
@@ -70,14 +70,14 @@ namespace Picasso::Engine::Platform::Linux
         xcb_motion_notify_event_t* movementEvent = (xcb_motion_notify_event_t*)event;
 
          if(movementEvent == nullptr){
-            Picasso::Logger::Logger::Error("Error while casting event to buttonEvent");
+            Picasso::Engine::Logger::Logger::Error("Error while casting event to buttonEvent");
             return;
         }
 
         m_mouseListener->ProcessMouseMove(movementEvent->event_x, movementEvent->event_y, inputState);
 
-        Picasso::Logger::Logger::Debug("Event XCB_MOTION_NOTIFY received...");
-        Picasso::Logger::Logger::FDebug("x %d y: %d", movementEvent->event_x, movementEvent->event_y);
+        Picasso::Engine::Logger::Logger::Debug("Event XCB_MOTION_NOTIFY received...");
+        Picasso::Engine::Logger::Logger::Debug("x %d y: %d", movementEvent->event_x, movementEvent->event_y);
     }
 
     bool PlatformInputManager::ProcessXCBClientMessage(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state)
@@ -85,11 +85,11 @@ namespace Picasso::Engine::Platform::Linux
         xcb_client_message_event_t* messageEvent = (xcb_client_message_event_t*)event;
 
          if(messageEvent == nullptr){
-            Picasso::Logger::Logger::Error("Error while casting event to messageEvent");
+            Picasso::Engine::Logger::Logger::Error("Error while casting event to messageEvent");
             return false;
         }
 
-        Picasso::Logger::Logger::Debug("Event XCB_CLIENT_MESSAGE received...");
+        Picasso::Engine::Logger::Logger::Debug("Event XCB_CLIENT_MESSAGE received...");
 
         return messageEvent->data.data32[0] == state->wmDestroyWindow;
     }

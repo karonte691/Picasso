@@ -12,7 +12,7 @@
 #include <PEngine/EventSystem/Events/BaseEvent.h>
 #include <PEngine/EventSystem/Events/EventTypes.h>
 #include <PEngine/EventSystem/EventFactory.h>
-#include <PEngine/Logger.h>
+#include <PEngine/Logger/Logger.h>
 
 namespace Picasso::Engine::EventSystem
 {

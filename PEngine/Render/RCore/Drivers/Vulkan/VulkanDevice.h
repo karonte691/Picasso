@@ -4,7 +4,7 @@
 #define VULKAN_DEVICE_H
 
 #include <vector>
-#include <PEngine/Logger.h>
+#include <PEngine/Logger/Logger.h>
 #include <PEngine/PBuild.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriverData.h>
 
@@ -56,7 +56,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         bool _createLogicalDevice(DriverContext *context);
 
 #if PICASSO_DEBUG_ENABLE
-        void _printPhysicalDeviceInfo(const VkPhysicalDeviceProperties *props);
         void _printGpuInformation(const VkPhysicalDeviceProperties *pdProps);
 #endif
     };

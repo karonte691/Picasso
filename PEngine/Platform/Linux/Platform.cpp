@@ -37,36 +37,36 @@ namespace Picasso::Engine::Platform
 
         if (m_pstate->display == nullptr)
         {
-            Picasso::Logger::Logger::Fatal("Display Connection NOT granted");
+            Picasso::Engine::Logger::Logger::Fatal("Display Connection NOT granted");
             return false;
         }
 
-        Picasso::Logger::Logger::Debug("Display Connection granted");
+        Picasso::Engine::Logger::Logger::Debug("Display Connection granted");
 
         // This disable GLOBALLY(OS Speaking) the input auto repeat...
         // REMEMBER TO TURN IT ON AGAIN IN THE SHUTDOWN METHOD OTHERWISE...
         XAutoRepeatOff(m_pstate->display);
         m_pstate->screenCount = XScreenCount(m_pstate->display);
 
-        Picasso::Logger::Logger::FDebug("Screen detected %d", m_pstate->screenCount);
+        Picasso::Engine::Logger::Logger::Debug("Screen detected %d", m_pstate->screenCount);
 
         // init XCB
         m_pstate->connection = XGetXCBConnection(m_pstate->display);
 
         if (m_pstate->connection == nullptr || xcb_connection_has_error(m_pstate->connection))
         {
-            Picasso::Logger::Logger::Fatal("Unable to init xcb connection");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to init xcb connection");
             return false;
         }
 
-        Picasso::Logger::Logger::Debug("XCB Connection granted");
+        Picasso::Engine::Logger::Logger::Debug("XCB Connection granted");
 
         const xcb_setup_t *setup = xcb_get_setup(m_pstate->connection);
 
         m_pstate->screen = xcb_setup_roots_iterator(setup).data;
 
-        Picasso::Logger::Logger::FDebug("Screen width detected: %d", m_pstate->screen->width_in_pixels);
-        Picasso::Logger::Logger::FDebug("Screen height detected: %d", m_pstate->screen->height_in_pixels);
+        Picasso::Engine::Logger::Logger::Debug("Screen width detected: %d", m_pstate->screen->width_in_pixels);
+        Picasso::Engine::Logger::Logger::Debug("Screen height detected: %d", m_pstate->screen->height_in_pixels);
 
         m_pstate->window = xcb_generate_id(m_pstate->connection);
 
@@ -91,11 +91,11 @@ namespace Picasso::Engine::Platform
 
         if (cookie.sequence == 0)
         {
-            Picasso::Logger::Logger::Fatal("Unable to create XCB window");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to create XCB window");
             return false;
         }
 
-        Picasso::Logger::Logger::Debug("XCB window created succesfully");
+        Picasso::Engine::Logger::Logger::Debug("XCB window created succesfully");
 
         // change window title
         xcb_change_property(
@@ -115,7 +115,7 @@ namespace Picasso::Engine::Platform
 
         if (mappingCookie.sequence == 0)
         {
-            Picasso::Logger::Logger::Fatal("Unable to map XCB window");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to map XCB window");
             return false;
         }
 
@@ -124,11 +124,11 @@ namespace Picasso::Engine::Platform
 
         if (flushResult <= 0)
         {
-            Picasso::Logger::Logger::Fatal("Error while flushing xcb stream");
+            Picasso::Engine::Logger::Logger::Fatal("Error while flushing xcb stream");
             return false;
         }
 
-        Picasso::Logger::Logger::Debug("Platform setting up and flushing is completed.");
+        Picasso::Engine::Logger::Logger::Debug("Platform setting up and flushing is completed.");
 
         // at this point, we init the input manager
         m_inputManager = std::make_unique<Picasso::Engine::Platform::Linux::PlatformInputManager>();
@@ -157,7 +157,7 @@ namespace Picasso::Engine::Platform
         while ((event = xcb_poll_for_event(m_pstate->connection)))
         {
 
-            Picasso::Logger::Logger::Debug("Processing XCB event...");
+            Picasso::Engine::Logger::Logger::Debug("Processing XCB event...");
 
             switch (event->response_type & ~0x80)
             {

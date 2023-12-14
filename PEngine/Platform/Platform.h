@@ -7,7 +7,7 @@
 #include <memory>
 
 #include <PEngine/PBuild.h>
-#include <PEngine/Logger.h>
+#include <PEngine/Logger/Logger.h>
 #include <PEngine/EventSystem/PERegistry.h>
 
 #ifdef PICASSO_LINUX_BUILD

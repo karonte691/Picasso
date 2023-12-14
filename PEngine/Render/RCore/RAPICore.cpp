@@ -15,13 +15,13 @@ namespace Picasso::Engine::Render::Core
 
         if (m_renderDriver == nullptr)
         {
-            Picasso::Logger::Logger::Fatal("Render driver not supported");
+            Picasso::Engine::Logger::Logger::Fatal("Render driver not supported");
             return false;
         }
 
         if (!m_renderDriver->InitDriver(rcData, appName, pState, eState))
         {
-            Picasso::Logger::Logger::Fatal("Unable to initialize the driver");
+            Picasso::Engine::Logger::Logger::Fatal("Unable to initialize the driver");
             m_renderDriver->Shutdown();
             return false;
         }

@@ -14,7 +14,7 @@
 #include <cstdio>
 #include <memory>
 
-#include <PEngine/Logger.h>
+#include <PEngine/Logger/Logger.h>
 #include <PEngine/EventSystem/PERegistry.h>
 #include <PEngine/Input/Listener/KeyboardListener.h>
 #include <PEngine/Input/Listener/MouseListener.h>
