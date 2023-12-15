@@ -11,15 +11,21 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
     bool VulkanDevice::Create(DriverContext *context)
     {
+        Picasso::Engine::Logger::Logger::Info("Selecting physical device...");
         if (!this->_selectPhysicalDevice(context))
         {
             return false;
         }
 
+        Picasso::Engine::Logger::Logger::Info("Creating logical device...");
         if (!this->_createLogicalDevice(context))
         {
             return false;
         }
+
+        // set up device queue
+        Picasso::Engine::Logger::Logger::Info("Retrieving driver's queue");
+        this->_setUpDeviceQueue(context);
 
         return true;
     }
@@ -28,6 +34,10 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
         context->devices.physicalDevice = 0;
         context->devices.logicalDevice = 0;
+
+        context->devices.graphicsQueueIndex = 0;
+        context->devices.presentQueueIndex = 0;
+        context->devices.transferQueueIndex = 0;
 
         if (context->devices.swapChainSupport.formatCount > 0)
         {
@@ -44,6 +54,13 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         context->devices.graphicsQueueIndex = -1;
         context->devices.presentQueueIndex = -1;
         context->devices.transferQueueIndex = -1;
+    }
+
+    void VulkanDevice::_setUpDeviceQueue(DriverContext *context)
+    {
+        vkGetDeviceQueue(context->devices.logicalDevice, context->devices.graphicsQueueIndex, 0, &context->devices.graphicsQueue);
+        vkGetDeviceQueue(context->devices.logicalDevice, context->devices.presentQueueIndex, 0, &context->devices.presentQueue);
+        vkGetDeviceQueue(context->devices.logicalDevice, context->devices.transferQueueIndex, 0, &context->devices.transferQueue);
     }
 
     bool VulkanDevice::_createLogicalDevice(DriverContext *context)

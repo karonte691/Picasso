@@ -39,6 +39,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     private:
         PhysicalDeviceQueueFamilyInfo m_queueFamilyInfo;
 
+        void _setUpDeviceQueue(DriverContext *context);
         bool _selectPhysicalDevice(DriverContext *context);
         bool _isPhysicalDeviceSupported(VkPhysicalDevice device,
                                         VkSurfaceKHR surface,

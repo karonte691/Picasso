@@ -32,9 +32,22 @@ namespace Picasso::Engine::Render::Core::Drivers
         u_int32_t graphicsQueueIndex;
         u_int32_t presentQueueIndex;
         u_int32_t transferQueueIndex;
+        VkQueue graphicsQueue;
+        VkQueue presentQueue;
+        VkQueue transferQueue;
         VkPhysicalDeviceProperties properties;
         VkPhysicalDeviceFeatures features;
         VkPhysicalDeviceMemoryProperties memoryProperties;
+    };
+
+    struct VulkanSwapChain
+    {
+        VkSurfaceFormatKHR imageFormat;
+        u_int8_t maxRenderFrames;
+        VkSwapchainKHR scHandler;
+        u_int32_t imageCount;
+        std::unique_ptr<VkImage[]> images;
+        std::unique_ptr<VkImageView[]> imageViews;
     };
 
     struct DriverContext
