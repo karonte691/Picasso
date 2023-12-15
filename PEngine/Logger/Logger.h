@@ -87,17 +87,18 @@ namespace Picasso::Engine::Logger
             auto now = std::chrono::system_clock::now();
             auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
+            auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
             std::stringstream stringStream;
             stringStream << std::put_time(std::localtime(&in_time_t), "%Y-%m-%dT%H:%M:%S");
+            stringStream << '.' << std::setfill('0') << std::setw(3) << milliseconds.count();
+
             std::string dateNow = stringStream.str();
 
-            int size = snprintf(nullptr, 0, "[%s][%s] %s", dateNow.c_str(), levelName, str.c_str());
-            char *sBuffer = (char *)malloc(size + 1);
-            sprintf(sBuffer, "[%s][%s] %s", dateNow.c_str(), levelName, str.c_str());
+            std::ostringstream oss;
+            oss << "[" << dateNow << "][" << levelName << "] " << str;
 
-            std::cout << sBuffer << std::endl;
-
-            free(sBuffer);
+            std::cout << oss.str() << "\n";
         }
     };
 

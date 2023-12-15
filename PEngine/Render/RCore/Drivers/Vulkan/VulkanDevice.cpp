@@ -397,7 +397,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         u_int32_t availableExtCount;
         VkExtensionProperties *availableExtensions;
 
-        VkResult deviceExtensionCountResult = vkEnumerateDeviceExtensionProperties(device, 0, &availableExtCount, 0);
+        VkResult deviceExtensionCountResult = vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtCount, nullptr);
 
         if (deviceExtensionCountResult != VK_SUCCESS)
         {
@@ -407,13 +407,15 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         Picasso::Engine::Logger::Logger::Debug("Found %d available extensions", availableExtCount);
 
-        if (availableExtCount != 0)
+        if (availableExtCount > 0)
         {
-            VkResult deviceExtensionResult = vkEnumerateDeviceExtensionProperties(device, 0, &availableExtCount, availableExtensions);
+            availableExtensions = new VkExtensionProperties[availableExtCount];
+            VkResult deviceExtensionResult = vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtCount, availableExtensions);
 
             if (deviceExtensionResult != VK_SUCCESS)
             {
                 Picasso::Engine::Logger::Logger::Warn("Unable to fetch available extensions on this device");
+                delete[] availableExtensions;
                 return false;
             }
 
@@ -423,7 +425,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             for (u_int32_t i = 0; i < requiredExtCount; ++i)
             {
                 isExtFound = false;
-                for (u_int32_t j = 0; i < availableExtCount; ++i)
+                for (u_int32_t j = 0; j < availableExtCount; ++j)
                 {
                     if (requirements->deviceExtensionNames[i] != nullptr && availableExtensions[j].extensionName != nullptr)
                     {
@@ -439,12 +441,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                 if (!isExtFound)
                 {
                     Picasso::Engine::Logger::Logger::Debug("Required extension %s not found...", requirements->deviceExtensionNames[i]);
-                    free(availableExtensions);
+                    delete[] availableExtensions;
                     return false;
                 }
             }
 
-            free(availableExtensions);
+            delete[] availableExtensions;
         }
 
         return true;

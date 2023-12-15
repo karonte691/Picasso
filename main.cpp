@@ -5,50 +5,53 @@
 
 int main(int argc, char **argv)
 {
-  void* handle = dlopen("PEngine/libPEngine.so", RTLD_LAZY);
+  void *handle = dlopen("PEngine/libPEngine.so", RTLD_LAZY);
 
-  if (!handle) {
-    std::cout << "[PRUNNER] Unable to open the dynamic library: " << dlerror() << std::endl;
-    return 1; // Ritorno con un codice di errore
+  if (!handle)
+  {
+    std::cout << "[PRUNNER] Unable to open the dynamic library: " << dlerror() << "\n";
+    return 1;
   }
 
-  Picasso::PEngine* (*create)() = nullptr;
-  void (*destroy)(Picasso::PEngine*) = nullptr;
+  Picasso::PEngine *(*create)() = nullptr;
+  void (*destroy)(Picasso::PEngine *) = nullptr;
 
-  create = (Picasso::PEngine* (*)())dlsym(handle, "create_object");
+  create = (Picasso::PEngine * (*)()) dlsym(handle, "create_object");
 
-  if (!create) {
-    std::cout << "[PRUNNER] Unable to find the 'create_object' symbol in the dynamic library." << std::endl;
+  if (!create)
+  {
+    std::cout << "[PRUNNER] Unable to find the 'create_object' symbol in the dynamic library.\n";
     dlclose(handle);
-    return 1; // Ritorno con un codice di errore
+    return 1;
   }
 
-  destroy = (void (*)(Picasso::PEngine*))dlsym(handle, "destroy_object");
+  destroy = (void (*)(Picasso::PEngine *))dlsym(handle, "destroy_object");
 
-  if (!destroy) {
-    std::cout << "[PRUNNER] Unable to find the 'destroy_object' symbol in the dynamic library." << std::endl;
+  if (!destroy)
+  {
+    std::cout << "[PRUNNER] Unable to find the 'destroy_object' symbol in the dynamic library.\n";
     dlclose(handle);
-    return 1; // Ritorno con un codice di errore
+    return 1;
   }
 
-  Picasso::PEngine* picassoEngine = create();
+  Picasso::PEngine *picassoEngine = create();
 
-  if (!picassoEngine) {
-    std::cout << "[PRUNNER] Failed to create a Picasso::PEngine object." << std::endl;
+  if (!picassoEngine)
+  {
+    std::cout << "[PRUNNER] Failed to create a Picasso::PEngine object.\n";
     dlclose(handle);
-    return 1; // Ritorno con un codice di errore
+    return 1;
   }
 
-  //engine config
+  // engine config
   Picasso::Config::AppConfig config = {
-    1,
-    1,
-    800,
-    600,
-    "Picasso Engine v 0.1"
-  };
+      1,
+      1,
+      800,
+      600,
+      "Picasso Engine v 0.1"};
 
-  //main loop
+  // main loop
   picassoEngine->Run(&config);
 
   destroy(picassoEngine);
