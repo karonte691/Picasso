@@ -24,7 +24,7 @@ namespace Picasso::Engine::Render::Core::Drivers
             return false;
         }
 
-        m_device = new VulkanDevice();
+        m_device = std::make_shared<VulkanDevice>();
 
         if (!m_device->Create(m_context))
         {
@@ -54,7 +54,6 @@ namespace Picasso::Engine::Render::Core::Drivers
             }
         }
 
-        delete m_device;
         m_device = nullptr;
 
         delete m_vulkanPlatform;

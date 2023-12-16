@@ -55,6 +55,8 @@ namespace Picasso::Engine::Render::Core::Drivers
         VkInstance vulkanInstance = VK_NULL_HANDLE;
         VkSurfaceKHR surface = VK_NULL_HANDLE;
         Devices devices;
+        u_int32_t frameBufferWidth = 0;
+        u_int32_t frameBufferHeight = 0;
     };
 }
 #endif

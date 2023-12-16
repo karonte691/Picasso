@@ -56,6 +56,107 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         context->devices.transferQueueIndex = -1;
     }
 
+    void VulkanDevice::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface, SwapChainSupportInfo *swSupportInfo)
+    {
+        VkResult gCapabilitiesResult = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &swSupportInfo->capabilities);
+
+        if (gCapabilitiesResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Warn("Unable to get surface capabilities for the physical device");
+        }
+
+        VkResult gFormatCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, 0);
+        VkResult gPresentModeCountResult = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &swSupportInfo->presentModeCount, 0);
+
+        if (gFormatCountResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Warn("Unable to get count surface format for the physical device");
+        }
+
+        if (gPresentModeCountResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Warn("Unable to get count surface presents mode for the physical device");
+        }
+
+        std::vector<VkSurfaceFormatKHR> availableFormats;
+        VkResult gAvailableFormatsCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, availableFormats.data());
+
+        if (gAvailableFormatsCountResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Warn("Unable to get surface format for the physical device");
+        }
+
+        std::vector<VkPresentModeKHR> availablePresentModes;
+        VkResult gPresentModeResult = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &swSupportInfo->presentModeCount, availablePresentModes.data());
+
+        if (gPresentModeResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Warn("Unable to get surface presents mode for the physical device");
+        }
+
+        this->_initializeSwapChainSupportInfo(*swSupportInfo, availableFormats, availablePresentModes);
+    }
+
+    bool VulkanDevice::_checkDeviceExtension(VkPhysicalDevice device, const PhysicalDeviceRequirement *requirements, SwapChainSupportInfo *swSupportInfo)
+    {
+        u_int32_t availableExtCount;
+        VkExtensionProperties *availableExtensions;
+
+        VkResult deviceExtensionCountResult = vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtCount, nullptr);
+
+        if (deviceExtensionCountResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Warn("Unable to count available extensions on this device");
+            return false;
+        }
+
+        Picasso::Engine::Logger::Logger::Debug("Found %d available extensions", availableExtCount);
+
+        if (availableExtCount > 0)
+        {
+            availableExtensions = new VkExtensionProperties[availableExtCount];
+            VkResult deviceExtensionResult = vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtCount, availableExtensions);
+
+            if (deviceExtensionResult != VK_SUCCESS)
+            {
+                Picasso::Engine::Logger::Logger::Warn("Unable to fetch available extensions on this device");
+                delete[] availableExtensions;
+                return false;
+            }
+
+            u_int32_t requiredExtCount = requirements->deviceExtensionNames.size();
+            bool isExtFound = false;
+
+            for (u_int32_t i = 0; i < requiredExtCount; ++i)
+            {
+                isExtFound = false;
+                for (u_int32_t j = 0; j < availableExtCount; ++j)
+                {
+                    if (requirements->deviceExtensionNames[i] != nullptr && availableExtensions[j].extensionName != nullptr)
+                    {
+                        Picasso::Engine::Logger::Logger::Debug("Checking required extension %s", requirements->deviceExtensionNames[i]);
+                        if (strcmp(requirements->deviceExtensionNames[i], availableExtensions[j].extensionName) == 0)
+                        {
+                            isExtFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isExtFound)
+                {
+                    Picasso::Engine::Logger::Logger::Debug("Required extension %s not found...", requirements->deviceExtensionNames[i]);
+                    delete[] availableExtensions;
+                    return false;
+                }
+            }
+
+            delete[] availableExtensions;
+        }
+
+        return true;
+    }
+
     void VulkanDevice::_setUpDeviceQueue(DriverContext *context)
     {
         vkGetDeviceQueue(context->devices.logicalDevice, context->devices.graphicsQueueIndex, 0, &context->devices.graphicsQueue);
@@ -277,7 +378,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         {
             Picasso::Engine::Logger::Logger::Debug("Device %s meets the requirement", pdProps->deviceName);
 
-            this->_querySwapChainSupport(device, surface, swSupportInfo);
+            this->QuerySwapChainSupport(device, surface, swSupportInfo);
 
             if (swSupportInfo->formatCount < 1 || swSupportInfo->presentModeCount < 1)
             {
@@ -368,108 +469,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         m_queueFamilyInfo.transferFamilyIndex = -1;
     }
 
-    void VulkanDevice::_querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface, SwapChainSupportInfo *swSupportInfo)
-    {
-        VkResult gCapabilitiesResult = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &swSupportInfo->capabilities);
-
-        if (gCapabilitiesResult != VK_SUCCESS)
-        {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get surface capabilities for the physical device");
-        }
-
-        VkResult gFormatCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, 0);
-        VkResult gPresentModeCountResult = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &swSupportInfo->presentModeCount, 0);
-
-        if (gFormatCountResult != VK_SUCCESS)
-        {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get count surface format for the physical device");
-        }
-
-        if (gPresentModeCountResult != VK_SUCCESS)
-        {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get count surface presents mode for the physical device");
-        }
-
-        std::vector<VkSurfaceFormatKHR> availableFormats;
-        VkResult gAvailableFormatsCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, availableFormats.data());
-
-        if (gAvailableFormatsCountResult != VK_SUCCESS)
-        {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get surface format for the physical device");
-        }
-
-        std::vector<VkPresentModeKHR> availablePresentModes;
-        VkResult gPresentModeResult = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &swSupportInfo->presentModeCount, availablePresentModes.data());
-
-        if (gPresentModeResult != VK_SUCCESS)
-        {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get surface presents mode for the physical device");
-        }
-
-        this->_initializeSwapChainSupportInfo(*swSupportInfo, availableFormats, availablePresentModes);
-    }
-
-    bool VulkanDevice::_checkDeviceExtension(VkPhysicalDevice device, const PhysicalDeviceRequirement *requirements, SwapChainSupportInfo *swSupportInfo)
-    {
-        u_int32_t availableExtCount;
-        VkExtensionProperties *availableExtensions;
-
-        VkResult deviceExtensionCountResult = vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtCount, nullptr);
-
-        if (deviceExtensionCountResult != VK_SUCCESS)
-        {
-            Picasso::Engine::Logger::Logger::Warn("Unable to count available extensions on this device");
-            return false;
-        }
-
-        Picasso::Engine::Logger::Logger::Debug("Found %d available extensions", availableExtCount);
-
-        if (availableExtCount > 0)
-        {
-            availableExtensions = new VkExtensionProperties[availableExtCount];
-            VkResult deviceExtensionResult = vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtCount, availableExtensions);
-
-            if (deviceExtensionResult != VK_SUCCESS)
-            {
-                Picasso::Engine::Logger::Logger::Warn("Unable to fetch available extensions on this device");
-                delete[] availableExtensions;
-                return false;
-            }
-
-            u_int32_t requiredExtCount = requirements->deviceExtensionNames.size();
-            bool isExtFound = false;
-
-            for (u_int32_t i = 0; i < requiredExtCount; ++i)
-            {
-                isExtFound = false;
-                for (u_int32_t j = 0; j < availableExtCount; ++j)
-                {
-                    if (requirements->deviceExtensionNames[i] != nullptr && availableExtensions[j].extensionName != nullptr)
-                    {
-                        Picasso::Engine::Logger::Logger::Debug("Checking required extension %s", requirements->deviceExtensionNames[i]);
-                        if (strcmp(requirements->deviceExtensionNames[i], availableExtensions[j].extensionName) == 0)
-                        {
-                            isExtFound = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!isExtFound)
-                {
-                    Picasso::Engine::Logger::Logger::Debug("Required extension %s not found...", requirements->deviceExtensionNames[i]);
-                    delete[] availableExtensions;
-                    return false;
-                }
-            }
-
-            delete[] availableExtensions;
-        }
-
-        return true;
-    }
-
-    void VulkanDevice::_initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
+        void VulkanDevice::_initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
                                                        const std::vector<VkSurfaceFormatKHR> &availableFormats,
                                                        const std::vector<VkPresentModeKHR> &availablePresentModes)
     {

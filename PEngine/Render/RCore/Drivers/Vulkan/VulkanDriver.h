@@ -35,7 +35,7 @@ namespace Picasso::Engine::Render::Core::Drivers
     private:
         DriverContext *m_context;
         VkInstance m_driverInstance;
-        VulkanDevice *m_device;
+        std::shared_ptr<VulkanDevice> m_device;
         VulkanPlatform *m_vulkanPlatform;
 
         bool _initVulkan(const char *app_name, unsigned app_version, const std::vector<const char *> &instance_extensions);

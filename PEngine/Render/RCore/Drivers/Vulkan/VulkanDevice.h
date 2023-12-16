@@ -35,6 +35,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     public:
         bool Create(DriverContext *context);
         void Destroy(DriverContext *context);
+        void QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface, SwapChainSupportInfo *swSupportInfo);
 
     private:
         PhysicalDeviceQueueFamilyInfo m_queueFamilyInfo;
@@ -49,7 +50,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                                         SwapChainSupportInfo *swSupportInfo);
         void _getPhysicalDeviceQueueInfo(VkPhysicalDevice device, const VkPhysicalDeviceProperties *pdProps, VkSurfaceKHR surface);
         void _resetQueueFamilyInfo();
-        void _querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface, SwapChainSupportInfo *swSupportInfo);
         bool _checkDeviceExtension(VkPhysicalDevice device, const PhysicalDeviceRequirement *requirements, SwapChainSupportInfo *swSupportInfo);
         void _initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
                                              const std::vector<VkSurfaceFormatKHR> &availableFormats,
