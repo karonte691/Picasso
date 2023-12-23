@@ -38,6 +38,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         VkPhysicalDeviceProperties properties;
         VkPhysicalDeviceFeatures features;
         VkPhysicalDeviceMemoryProperties memoryProperties;
+        VkFormat depthFormat = VK_FORMAT_UNDEFINED;
     };
 
     struct VulkanSwapChain
@@ -50,6 +51,15 @@ namespace Picasso::Engine::Render::Core::Drivers
         std::unique_ptr<VkImageView[]> imageViews;
     };
 
+    struct VulkanImage
+    {
+        VkImage imageHandler;
+        VkDeviceMemory deviceMemory;
+        VkImageView imageView;
+        u_int32_t width;
+        u_int32_t height;
+    };
+
     struct DriverContext
     {
         VkInstance vulkanInstance = VK_NULL_HANDLE;
@@ -57,6 +67,24 @@ namespace Picasso::Engine::Render::Core::Drivers
         Devices devices;
         u_int32_t frameBufferWidth = 0;
         u_int32_t frameBufferHeight = 0;
+        VulkanSwapChain swapChain;
+        u_int32_t imageIndex = 0;
+        u_int32_t currentFrame = 0;
+        bool recreateSwapChain = false;
+        u_int32_t memoryIndex = -1;
+    };
+
+    struct VulkanImageCreateInfo
+    {
+        VkImageType imageType;
+        u_int32_t width;
+        u_int32_t height;
+        VkFormat imageFormat;
+        VkImageTiling imageTiling;
+        VkImageUsageFlags imageUsageflags;
+        VkMemoryPropertyFlags memoryFlags;
+        bool createView;
+        VkImageAspectFlags imageAspectFlags;
     };
 }
 #endif

@@ -22,6 +22,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         std::shared_ptr<VulkanDevice> m_device;
 
         void _createSwapChain(DriverContext *contex, u_int32_t width, u_int32_t height);
+        bool _createSwapChainImages(DriverContext *context);
         void _reCreateSwapChain(DriverContext *contex, u_int32_t width, u_int32_t height);
         bool _fetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences);
         void _swapChainPresent(DriverContext *context, VkQueue graphicsQueue, VkQueue presentQueue, VkSemaphore renderComplete);

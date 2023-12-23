@@ -97,6 +97,33 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         this->_initializeSwapChainSupportInfo(*swSupportInfo, availableFormats, availablePresentModes);
     }
 
+    bool VulkanDevice::DetectDepthFormat(DriverContext *context)
+    {
+        const u_int64_t formatCandidatesCount = 3;
+        VkFormat formatCandidates[formatCandidatesCount] = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
+        u_int32_t flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+        for (u_int64_t i = 0; i < formatCandidatesCount; ++i)
+        {
+            VkFormatProperties formatProps;
+            vkGetPhysicalDeviceFormatProperties(context->devices.physicalDevice, formatCandidates[i], &formatProps);
+
+            if ((formatProps.linearTilingFeatures & flags) == flags)
+            {
+                context->devices.depthFormat = formatCandidates[i];
+                return true;
+            }
+
+            if ((formatProps.optimalTilingFeatures & flags) == flags)
+            {
+                context->devices.depthFormat = formatCandidates[i];
+                return true;
+            }
+        }
+
+        return false; // not supported
+    }
+
     bool VulkanDevice::_checkDeviceExtension(VkPhysicalDevice device, const PhysicalDeviceRequirement *requirements, SwapChainSupportInfo *swSupportInfo)
     {
         u_int32_t availableExtCount;
@@ -469,7 +496,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         m_queueFamilyInfo.transferFamilyIndex = -1;
     }
 
-        void VulkanDevice::_initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
+    void VulkanDevice::_initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
                                                        const std::vector<VkSurfaceFormatKHR> &availableFormats,
                                                        const std::vector<VkPresentModeKHR> &availablePresentModes)
     {

@@ -60,6 +60,87 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                                                                                 presentMode);
 
         VkResult swcCreateOpResult = vkCreateSwapchainKHR(context->devices.logicalDevice, swcCreateInfo, 0, &m_swapChain->scHandler);
+
+        if (swcCreateOpResult != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Unable to create the swap chain");
+            return;
+        }
+
+        // get the image count and create it
+        if (!this->_createSwapChainImages(context))
+        {
+            return;
+        }
+
+        // detect depth format
+        if (!m_device->DetectDepthFormat(context))
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Unable to find a supported format");
+            return;
+        }
+    }
+
+    bool VulkanSwapChainManager::_createSwapChainImages(DriverContext *context)
+    {
+        // reset just to be sure
+        context->imageIndex = 0;
+        context->currentFrame = 0;
+
+        VkResult swGetImagesCount = vkGetSwapchainImagesKHR(context->devices.logicalDevice, m_swapChain->scHandler, &m_swapChain->imageCount, 0);
+
+        if (swGetImagesCount != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Unable to get the swap chain images..");
+            return false;
+        }
+
+        if (m_swapChain->images == nullptr)
+        {
+            m_swapChain->images = std::make_unique<VkImage[]>(m_swapChain->imageCount);
+        }
+
+        if (m_swapChain->imageViews == nullptr)
+        {
+            m_swapChain->imageViews = std::make_unique<VkImageView[]>(m_swapChain->imageCount);
+        }
+
+        VkResult swGetImages = vkGetSwapchainImagesKHR(context->devices.logicalDevice, m_swapChain->scHandler, &m_swapChain->imageCount, m_swapChain->images.get());
+
+        if (swGetImages != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Unable to get the swap chain images..");
+            return false;
+        }
+
+        VkImageViewCreateInfo vInfo = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        VkResult createImageViewRes = {VK_NOT_READY};
+
+        for (u_int32_t i = 0; i < m_swapChain->imageCount; ++i)
+        {
+            vInfo.image = m_swapChain->images[i];
+            vInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            vInfo.format = m_swapChain->imageFormat.format;
+            vInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            vInfo.subresourceRange.baseMipLevel = 0;
+            vInfo.subresourceRange.levelCount = 1;
+            vInfo.subresourceRange.baseArrayLayer = 0;
+            vInfo.subresourceRange.layerCount = 1;
+
+            createImageViewRes = vkCreateImageView(context->devices.logicalDevice, &vInfo, 0, &m_swapChain->imageViews[i]);
+
+            if (createImageViewRes != VK_SUCCESS)
+            {
+                Picasso::Engine::Logger::Logger::Error("Unable to create swapchain image..");
+                return false;
+            }
+
+            // reset
+            vInfo = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+            createImageViewRes = {VK_NOT_READY};
+        }
+
+        return true;
     }
 
     bool VulkanSwapChainManager::_fetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences)
