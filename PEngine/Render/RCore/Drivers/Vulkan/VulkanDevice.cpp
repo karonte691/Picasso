@@ -124,6 +124,24 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return false; // not supported
     }
 
+    int32_t VulkanDevice::FindMemoryIndex(DriverContext *context, u_int32_t typeFilter, u_int32_t propertyFlags)
+    {
+        VkPhysicalDeviceMemoryProperties memoryProps;
+        vkGetPhysicalDeviceMemoryProperties(context->devices.physicalDevice, &memoryProps);
+
+        for (u_int32_t i = 0; i < memoryProps.memoryTypeCount; i++)
+        {
+            if (typeFilter & (1 << i) &&
+                (memoryProps.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags)
+            {
+                return i;
+            }
+        }
+
+        Picasso::Engine::Logger::Logger::Error("Could not find device memory index");
+        return -1;
+    }
+
     bool VulkanDevice::_checkDeviceExtension(VkPhysicalDevice device, const PhysicalDeviceRequirement *requirements, SwapChainSupportInfo *swSupportInfo)
     {
         u_int32_t availableExtCount;

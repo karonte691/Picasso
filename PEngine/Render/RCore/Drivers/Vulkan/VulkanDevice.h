@@ -37,6 +37,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         void Destroy(DriverContext *context);
         void QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface, SwapChainSupportInfo *swSupportInfo);
         bool DetectDepthFormat(DriverContext *context);
+        int32_t FindMemoryIndex(DriverContext *context, u_int32_t typeFilter, u_int32_t propertyFlags);
 
     private:
         PhysicalDeviceQueueFamilyInfo m_queueFamilyInfo;

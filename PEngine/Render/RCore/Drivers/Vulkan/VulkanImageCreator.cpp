@@ -2,15 +2,14 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
-    VulkanImageCreator::VulkanImageCreator()
+    VulkanImageCreator::VulkanImageCreator(std::shared_ptr<VulkanDevice> device)
     {
-        m_driverMemory = new VulkanMemory();
-    }
+        if (device == nullptr)
+        {
+            Picasso::Engine::Logger::Logger::Error("VulkanImageCreator: device is null");
+        }
 
-    VulkanImageCreator::~VulkanImageCreator()
-    {
-        delete m_driverMemory;
-        m_driverMemory = nullptr;
+        m_device = device;
     }
 
     std::shared_ptr<VulkanImage> VulkanImageCreator::Create(DriverContext *context, VulkanImageCreateInfo imageCreateInfo)
@@ -31,7 +30,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         VkMemoryRequirements memoryRequirements;
-        context->memoryIndex = m_driverMemory->FindMemoryIndex(context, memoryRequirements.memoryTypeBits, imageCreateInfo.memoryFlags);
+        context->memoryIndex = m_device->FindMemoryIndex(context, memoryRequirements.memoryTypeBits, imageCreateInfo.memoryFlags);
 
         if (context->memoryIndex == -1)
         {
