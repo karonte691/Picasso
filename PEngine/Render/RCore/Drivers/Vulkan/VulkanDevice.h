@@ -53,7 +53,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         void _getPhysicalDeviceQueueInfo(VkPhysicalDevice device, const VkPhysicalDeviceProperties *pdProps, VkSurfaceKHR surface);
         void _resetQueueFamilyInfo();
         bool _checkDeviceExtension(VkPhysicalDevice device, const PhysicalDeviceRequirement *requirements, SwapChainSupportInfo *swSupportInfo);
-        void _initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
+        void _initializeSwapChainSupportInfo(SwapChainSupportInfo *info,
                                              const std::vector<VkSurfaceFormatKHR> &availableFormats,
                                              const std::vector<VkPresentModeKHR> &availablePresentModes);
         bool _createLogicalDevice(DriverContext *context);

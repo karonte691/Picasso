@@ -19,9 +19,9 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
         VkSurfaceCapabilitiesKHR capabilities;
         uint32_t formatCount;
-        std::unique_ptr<VkSurfaceFormatKHR[]> formats;
+        std::shared_ptr<VkSurfaceFormatKHR[]> formats;
         uint32_t presentModeCount;
-        std::unique_ptr<VkPresentModeKHR[]> presentMode;
+        std::shared_ptr<VkPresentModeKHR[]> presentMode;
     };
 
     struct Devices
@@ -41,6 +41,14 @@ namespace Picasso::Engine::Render::Core::Drivers
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
     };
 
+    struct VulkanImage
+    {
+        VkImage imageHandler;
+        VkDeviceMemory deviceMemory;
+        VkImageView imageView;
+        u_int32_t width;
+        u_int32_t height;
+    };
     struct VulkanSwapChain
     {
         VkSurfaceFormatKHR imageFormat;
@@ -49,15 +57,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         u_int32_t imageCount;
         std::unique_ptr<VkImage[]> images;
         std::unique_ptr<VkImageView[]> imageViews;
-    };
-
-    struct VulkanImage
-    {
-        VkImage imageHandler;
-        VkDeviceMemory deviceMemory;
-        VkImageView imageView;
-        u_int32_t width;
-        u_int32_t height;
+        std::shared_ptr<VulkanImage> vImage;
     };
 
     struct DriverContext
@@ -67,14 +67,14 @@ namespace Picasso::Engine::Render::Core::Drivers
         Devices devices;
         u_int32_t frameBufferWidth = 0;
         u_int32_t frameBufferHeight = 0;
-        VulkanSwapChain swapChain;
+        std::shared_ptr<VulkanSwapChain> swapChain;
         u_int32_t imageIndex = 0;
         u_int32_t currentFrame = 0;
         bool recreateSwapChain = false;
         u_int32_t memoryIndex = -1;
     };
 
-    struct VulkanImageCreateInfo
+    struct VulkanImageCreateOptions
     {
         VkImageType imageType;
         u_int32_t width;
@@ -85,6 +85,19 @@ namespace Picasso::Engine::Render::Core::Drivers
         VkMemoryPropertyFlags memoryFlags;
         bool createView;
         VkImageAspectFlags imageAspectFlags;
+
+        VulkanImageCreateOptions()
+            : imageType(VK_IMAGE_TYPE_2D), // un valore di default ragionevole
+              width(0),
+              height(0),
+              imageFormat(VK_FORMAT_UNDEFINED),     // equivalente a "null" per VkFormat
+              imageTiling(VK_IMAGE_TILING_OPTIMAL), // un valore di default ragionevole
+              imageUsageflags(0),                   // nessun flag di utilizzo
+              memoryFlags(0),                       // nessun flag di memoria
+              createView(false),
+              imageAspectFlags(0) // nessun flag di aspetto
+        {
+        }
     };
 }
 #endif

@@ -78,23 +78,23 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             Picasso::Engine::Logger::Logger::Warn("Unable to get count surface presents mode for the physical device");
         }
 
-        std::vector<VkSurfaceFormatKHR> availableFormats;
+        std::vector<VkSurfaceFormatKHR> availableFormats(swSupportInfo->formatCount);
         VkResult gAvailableFormatsCountResult = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &swSupportInfo->formatCount, availableFormats.data());
 
         if (gAvailableFormatsCountResult != VK_SUCCESS)
         {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get surface format for the physical device");
+            Picasso::Engine::Logger::Logger::Error("Unable to get surface format for the physical device");
         }
 
-        std::vector<VkPresentModeKHR> availablePresentModes;
+        std::vector<VkPresentModeKHR> availablePresentModes(swSupportInfo->presentModeCount);
         VkResult gPresentModeResult = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &swSupportInfo->presentModeCount, availablePresentModes.data());
 
         if (gPresentModeResult != VK_SUCCESS)
         {
-            Picasso::Engine::Logger::Logger::Warn("Unable to get surface presents mode for the physical device");
+            Picasso::Engine::Logger::Logger::Error("Unable to get surface presents mode for the physical device");
         }
 
-        this->_initializeSwapChainSupportInfo(*swSupportInfo, availableFormats, availablePresentModes);
+        this->_initializeSwapChainSupportInfo(swSupportInfo, availableFormats, availablePresentModes);
     }
 
     bool VulkanDevice::DetectDepthFormat(DriverContext *context)
@@ -514,26 +514,34 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         m_queueFamilyInfo.transferFamilyIndex = -1;
     }
 
-    void VulkanDevice::_initializeSwapChainSupportInfo(SwapChainSupportInfo &info,
+    void VulkanDevice::_initializeSwapChainSupportInfo(SwapChainSupportInfo *info,
                                                        const std::vector<VkSurfaceFormatKHR> &availableFormats,
                                                        const std::vector<VkPresentModeKHR> &availablePresentModes)
     {
-        if (info.formatCount > 0 && availableFormats.size() >= info.formatCount)
+        if (info->formatCount > 0 && availableFormats.size() >= info->formatCount)
         {
-            info.formats = std::make_unique<VkSurfaceFormatKHR[]>(info.formatCount);
-            for (size_t i = 0; i < info.formatCount; ++i)
+            VkSurfaceFormatKHR *formatsArray = new VkSurfaceFormatKHR[info->formatCount];
+
+            for (size_t i = 0; i < info->formatCount; ++i)
             {
-                info.formats[i] = availableFormats[i];
+                formatsArray[i] = availableFormats[i];
             }
+
+            info->formats = std::shared_ptr<VkSurfaceFormatKHR[]>(formatsArray, [](VkSurfaceFormatKHR *p)
+                                                                  { delete[] p; });
         }
 
-        if (info.presentModeCount > 0 && availablePresentModes.size() >= info.presentModeCount)
+        if (info->presentModeCount > 0 && availablePresentModes.size() >= info->presentModeCount)
         {
-            info.presentMode = std::make_unique<VkPresentModeKHR[]>(info.presentModeCount);
-            for (size_t i = 0; i < info.presentModeCount; ++i)
+            VkPresentModeKHR *presentModesArray = new VkPresentModeKHR[info->presentModeCount];
+
+            for (size_t i = 0; i < info->presentModeCount; ++i)
             {
-                info.presentMode[i] = availablePresentModes[i];
+                presentModesArray[i] = availablePresentModes[i];
             }
+
+            info->presentMode = std::shared_ptr<VkPresentModeKHR[]>(presentModesArray, [](VkPresentModeKHR *p)
+                                                                    { delete[] p; });
         }
     }
 

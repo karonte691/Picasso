@@ -1,8 +1,8 @@
-#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanImageCreator.h>
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanImageManager.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
-    VulkanImageCreator::VulkanImageCreator(std::shared_ptr<VulkanDevice> device)
+    VulkanImageManager::VulkanImageManager(std::shared_ptr<VulkanDevice> device)
     {
         if (device == nullptr)
         {
@@ -12,12 +12,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         m_device = device;
     }
 
-    std::shared_ptr<VulkanImage> VulkanImageCreator::Create(DriverContext *context, VulkanImageCreateInfo imageCreateInfo)
+    std::shared_ptr<VulkanImage> VulkanImageManager::Create(DriverContext *context, VulkanImageCreateOptions *imageCreateInfo)
     {
         std::shared_ptr<VulkanImage> vImage = std::make_shared<VulkanImage>();
 
-        vImage->width = imageCreateInfo.width;
-        vImage->height = imageCreateInfo.height;
+        vImage->width = imageCreateInfo->width;
+        vImage->height = imageCreateInfo->height;
 
         VkImageCreateInfo vImageInfo = this->_createImageInfo(imageCreateInfo);
 
@@ -30,7 +30,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         VkMemoryRequirements memoryRequirements;
-        context->memoryIndex = m_device->FindMemoryIndex(context, memoryRequirements.memoryTypeBits, imageCreateInfo.memoryFlags);
+        context->memoryIndex = m_device->FindMemoryIndex(context, memoryRequirements.memoryTypeBits, imageCreateInfo->memoryFlags);
 
         if (context->memoryIndex == -1)
         {
@@ -58,10 +58,10 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return nullptr;
         }
 
-        if (imageCreateInfo.createView)
+        if (imageCreateInfo->createView)
         {
             vImage->imageView = 0;
-            if (this->_createImageView(context, imageCreateInfo.imageFormat, vImage, imageCreateInfo.imageAspectFlags))
+            if (this->_createImageView(context, imageCreateInfo->imageFormat, vImage, imageCreateInfo->imageAspectFlags))
             {
                 return nullptr;
             }
@@ -70,7 +70,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return vImage;
     }
 
-    void VulkanImageCreator::Destroy(DriverContext *context, std::shared_ptr<VulkanImage> vImage)
+    void VulkanImageManager::Destroy(DriverContext *context, std::shared_ptr<VulkanImage> vImage)
     {
         if (vImage->imageView)
         {
@@ -90,7 +90,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         vImage = nullptr;
     }
 
-    bool VulkanImageCreator::_createImageView(DriverContext *context, VkFormat format, std::shared_ptr<VulkanImage> vImage, VkImageAspectFlags imageFlag)
+    bool VulkanImageManager::_createImageView(DriverContext *context, VkFormat format, std::shared_ptr<VulkanImage> vImage, VkImageAspectFlags imageFlag)
     {
         VkImageViewCreateInfo vImageViewCreateInfo = this->_createImageViewInfo(format, vImage, imageFlag);
 
@@ -105,27 +105,27 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return true;
     }
 
-    VkImageCreateInfo VulkanImageCreator::_createImageInfo(VulkanImageCreateInfo imageCreateInfo)
+    VkImageCreateInfo VulkanImageManager::_createImageInfo(VulkanImageCreateOptions *imageCreateInfo)
     {
         VkImageCreateInfo vImageInfo = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
 
         vImageInfo.imageType = VK_IMAGE_TYPE_2D;
-        vImageInfo.extent.width = imageCreateInfo.width;
-        vImageInfo.extent.height = imageCreateInfo.height;
+        vImageInfo.extent.width = imageCreateInfo->width;
+        vImageInfo.extent.height = imageCreateInfo->height;
         vImageInfo.extent.depth = 1;
         vImageInfo.mipLevels = 4;
         vImageInfo.arrayLayers = 1;
-        vImageInfo.format = imageCreateInfo.imageFormat;
-        vImageInfo.tiling = imageCreateInfo.imageTiling;
+        vImageInfo.format = imageCreateInfo->imageFormat;
+        vImageInfo.tiling = imageCreateInfo->imageTiling;
         vImageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        vImageInfo.usage = imageCreateInfo.imageUsageflags;
+        vImageInfo.usage = imageCreateInfo->imageUsageflags;
         vImageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
         vImageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
         return vImageInfo;
     }
 
-    VkMemoryAllocateInfo VulkanImageCreator::_getMemoryAllocateInfo(VkMemoryRequirements memoryRequirements, u_int32_t memoryType)
+    VkMemoryAllocateInfo VulkanImageManager::_getMemoryAllocateInfo(VkMemoryRequirements memoryRequirements, u_int32_t memoryType)
     {
         VkMemoryAllocateInfo memoryAllocateInfo = {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
 
@@ -135,7 +135,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return memoryAllocateInfo;
     }
 
-    VkImageViewCreateInfo VulkanImageCreator::_createImageViewInfo(VkFormat format, std::shared_ptr<VulkanImage> vImage, VkImageAspectFlags imageFlag)
+    VkImageViewCreateInfo VulkanImageManager::_createImageViewInfo(VkFormat format, std::shared_ptr<VulkanImage> vImage, VkImageAspectFlags imageFlag)
     {
         VkImageViewCreateInfo imageViewCreateInfo = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
 

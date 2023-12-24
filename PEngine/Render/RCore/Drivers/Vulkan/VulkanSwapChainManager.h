@@ -6,6 +6,7 @@
 #include <PEngine/Logger/Logger.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriverData.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDevice.h>
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanImageManager.h>
 #include <memory>
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
@@ -13,17 +14,19 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     class VulkanSwapChainManager
     {
     public:
-        void Create(DriverContext *contex, u_int32_t width, u_int32_t height, std::shared_ptr<VulkanDevice> m_device);
+        bool Create(DriverContext *contex, u_int32_t width, u_int32_t height, std::shared_ptr<VulkanDevice> m_device);
         void Destroy(DriverContext *contex);
 
     private:
         std::shared_ptr<VulkanSwapChain> m_swapChain;
         std::shared_ptr<u_int32_t> m_imageIndex;
         std::shared_ptr<VulkanDevice> m_device;
+        std::unique_ptr<VulkanImageManager> m_imageManager;
+        VulkanImageCreateOptions *m_imageCreateOptions;
 
-        void _createSwapChain(DriverContext *contex, u_int32_t width, u_int32_t height);
+        bool _createSwapChain(DriverContext *context, u_int32_t width, u_int32_t height);
         bool _createSwapChainImages(DriverContext *context);
-        void _reCreateSwapChain(DriverContext *contex, u_int32_t width, u_int32_t height);
+        void _reCreateSwapChain(DriverContext *context, u_int32_t width, u_int32_t height);
         bool _fetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences);
         void _swapChainPresent(DriverContext *context, VkQueue graphicsQueue, VkQueue presentQueue, VkSemaphore renderComplete);
         void _calculateExtentDimension(DriverContext *context, VkExtent2D &extent);

@@ -2,21 +2,58 @@
 #include <bits/stdc++.h>
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
-    void VulkanSwapChainManager::Create(DriverContext *context, u_int32_t width, u_int32_t height, std::shared_ptr<VulkanDevice> m_device)
+    bool VulkanSwapChainManager::Create(DriverContext *context, u_int32_t width, u_int32_t height, std::shared_ptr<VulkanDevice> m_device)
     {
+        if (m_imageManager == nullptr)
+        {
+            m_imageManager = std::make_unique<VulkanImageManager>(m_device);
+        }
+
+        if (m_imageCreateOptions == nullptr)
+        {
+            m_imageCreateOptions = new VulkanImageCreateOptions();
+        }
+
+        return this->_createSwapChain(context, width, height);
     }
 
     void VulkanSwapChainManager::Destroy(DriverContext *context)
     {
+        if (context->swapChain->vImage != nullptr)
+        {
+            m_imageManager->Destroy(context, context->swapChain->vImage);
+
+            // destroying image views
+            for (u_int32_t i = 0; i < m_swapChain->imageCount; ++i)
+            {
+                vkDestroyImageView(context->devices.logicalDevice, m_swapChain->imageViews[i], 0);
+            }
+
+            context->swapChain->vImage = nullptr;
+        }
+
+        vkDestroySwapchainKHR(context->devices.logicalDevice, m_swapChain->scHandler, 0);
+
+        delete m_imageCreateOptions;
+        m_imageCreateOptions = nullptr;
+
+        m_swapChain = nullptr;
+        context->swapChain = nullptr;
     }
 
-    void VulkanSwapChainManager::_createSwapChain(DriverContext *context, u_int32_t width, u_int32_t height)
+    bool VulkanSwapChainManager::_createSwapChain(DriverContext *context, u_int32_t width, u_int32_t height)
     {
         VkExtent2D scExtent = {width, height};
+        m_swapChain = std::make_shared<VulkanSwapChain>();
+
         m_swapChain->maxRenderFrames = 2;
+
+        m_device->QuerySwapChainSupport(context->devices.physicalDevice, context->surface, &context->devices.swapChainSupport);
 
         // get image format
         bool gotImageFormat = false;
+
+        Picasso::Engine::Logger::Logger::Info("Formats found: %d", context->devices.swapChainSupport.formatCount);
 
         for (u_int32_t i = 0; i < context->devices.swapChainSupport.formatCount; ++i)
         {
@@ -37,6 +74,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+
+        Picasso::Engine::Logger::Logger::Info("Present modes found: %d", context->devices.swapChainSupport.presentModeCount);
 
         for (u_int32_t i = 0; i < context->devices.swapChainSupport.presentModeCount; ++i)
         {
@@ -64,21 +103,39 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         if (swcCreateOpResult != VK_SUCCESS)
         {
             Picasso::Engine::Logger::Logger::Error("Unable to create the swap chain");
-            return;
+            return false;
         }
 
         // get the image count and create it
         if (!this->_createSwapChainImages(context))
         {
-            return;
+            return false;
         }
 
         // detect depth format
         if (!m_device->DetectDepthFormat(context))
         {
             Picasso::Engine::Logger::Logger::Fatal("Unable to find a supported format");
-            return;
+            return false;
         }
+
+        m_imageCreateOptions->imageType = VK_IMAGE_TYPE_2D;
+        m_imageCreateOptions->width = scExtent.width;
+        m_imageCreateOptions->height = scExtent.height;
+        m_imageCreateOptions->imageFormat = context->devices.depthFormat;
+        m_imageCreateOptions->imageTiling = VK_IMAGE_TILING_OPTIMAL;
+        m_imageCreateOptions->imageUsageflags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        m_imageCreateOptions->memoryFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+        m_imageCreateOptions->createView = true;
+        m_imageCreateOptions->imageAspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+        m_swapChain->vImage = m_imageManager->Create(context, m_imageCreateOptions);
+
+        context->swapChain = m_swapChain;
+
+        Picasso::Engine::Logger::Logger::Info("Swap chain created succesfully");
+
+        return true;
     }
 
     bool VulkanSwapChainManager::_createSwapChainImages(DriverContext *context)
@@ -141,6 +198,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         return true;
+    }
+
+    void VulkanSwapChainManager::_reCreateSwapChain(DriverContext *context, u_int32_t width, u_int32_t height)
+    {
+        this->Destroy(context);
+        this->_createSwapChain(context, width, height);
     }
 
     bool VulkanSwapChainManager::_fetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences)

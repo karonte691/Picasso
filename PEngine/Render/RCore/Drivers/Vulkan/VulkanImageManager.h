@@ -10,17 +10,18 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
-    class VulkanImageCreator
+    class VulkanImageManager
     {
     public:
-        VulkanImageCreator(std::shared_ptr<VulkanDevice> device);
+        VulkanImageManager(std::shared_ptr<VulkanDevice> device);
 
-        std::shared_ptr<VulkanImage> Create(DriverContext *context, VulkanImageCreateInfo imageCreateInfo);
+        std::shared_ptr<VulkanImage> Create(DriverContext *context, VulkanImageCreateOptions *imageCreateInfo);
         void Destroy(DriverContext *context, std::shared_ptr<VulkanImage> vImage);
 
     private:
         std::shared_ptr<VulkanDevice> m_device;
-        VkImageCreateInfo _createImageInfo(VulkanImageCreateInfo imageCreateInfo);
+
+        VkImageCreateInfo _createImageInfo(VulkanImageCreateOptions *imageCreateInfo);
         VkMemoryAllocateInfo _getMemoryAllocateInfo(VkMemoryRequirements memoryRequirements, u_int32_t memoryType);
         VkImageViewCreateInfo _createImageViewInfo(VkFormat format, std::shared_ptr<VulkanImage> vImage, VkImageAspectFlags imageFlag);
 

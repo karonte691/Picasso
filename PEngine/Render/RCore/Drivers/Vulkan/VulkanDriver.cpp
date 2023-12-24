@@ -32,6 +32,14 @@ namespace Picasso::Engine::Render::Core::Drivers
             return false;
         }
 
+        m_swapChainManager = new VulkanSwapChainManager();
+
+        if (!m_swapChainManager->Create(m_context, eState->width, eState->height, m_device))
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Cannot initialize Vulkan swap chain...");
+            return false;
+        }
+
         return true;
     }
 
