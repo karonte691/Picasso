@@ -30,6 +30,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         VkMemoryRequirements memoryRequirements;
+        vkGetImageMemoryRequirements(context->devices.logicalDevice, vImage->imageHandler, &memoryRequirements);
+
         context->memoryIndex = m_device->FindMemoryIndex(context, memoryRequirements.memoryTypeBits, imageCreateInfo->memoryFlags);
 
         if (context->memoryIndex == -1)
@@ -37,8 +39,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             Picasso::Engine::Logger::Logger::Error("VulkanImageCreator: required memory requirement not found. Image not valid");
             return nullptr;
         }
-
-        vkGetImageMemoryRequirements(context->devices.logicalDevice, vImage->imageHandler, &memoryRequirements);
 
         VkMemoryAllocateInfo vMemoryAllocateInfo = this->_getMemoryAllocateInfo(memoryRequirements, context->memoryIndex);
 

@@ -129,6 +129,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         VkPhysicalDeviceMemoryProperties memoryProps;
         vkGetPhysicalDeviceMemoryProperties(context->devices.physicalDevice, &memoryProps);
 
+        Picasso::Engine::Logger::Logger::Info("Device memory properties found: %d", memoryProps.memoryTypeCount);
+
         for (u_int32_t i = 0; i < memoryProps.memoryTypeCount; i++)
         {
             if (typeFilter & (1 << i) &&
