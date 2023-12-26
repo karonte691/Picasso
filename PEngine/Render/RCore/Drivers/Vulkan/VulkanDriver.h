@@ -12,6 +12,7 @@
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDevice.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanPlatform.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanSwapChainManager.h>
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanRender.h>
 #include <memory>
 
 #include <Vulkan/vulkan.h>
@@ -26,6 +27,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 {
     using Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanDevice;
     using Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanPlatform;
+    using Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanRender;
     using Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanSwapChainManager;
 
     class VulkanDriver : public DriverImplementation
@@ -40,6 +42,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         std::shared_ptr<VulkanDevice> m_device;
         VulkanPlatform *m_vulkanPlatform;
         VulkanSwapChainManager *m_swapChainManager;
+        VulkanRender *m_Render;
 
         bool _initVulkan(const char *app_name, unsigned app_version, const std::vector<const char *> &instance_extensions);
         const char *_parseReturnError(VkResult result);

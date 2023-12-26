@@ -181,7 +181,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                 {
                     if (requirements->deviceExtensionNames[i] != nullptr && availableExtensions[j].extensionName != nullptr)
                     {
-                        Picasso::Engine::Logger::Logger::Debug("Checking required extension %s", requirements->deviceExtensionNames[i]);
+                        // Picasso::Engine::Logger::Logger::Debug("Checking required extension %s", requirements->deviceExtensionNames[i]);
                         if (strcmp(requirements->deviceExtensionNames[i], availableExtensions[j].extensionName) == 0)
                         {
                             isExtFound = true;

@@ -40,6 +40,13 @@ namespace Picasso::Engine::Render::Core::Drivers
             return false;
         }
 
+        m_Render = new VulkanRender();
+
+        if (!m_Render->DecorateContext(m_context))
+        {
+            return false;
+        }
+
         return true;
     }
 

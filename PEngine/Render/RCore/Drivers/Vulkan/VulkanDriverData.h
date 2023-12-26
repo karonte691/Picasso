@@ -13,8 +13,12 @@
 #include <Vulkan/vulkan_xcb.h>
 #endif
 
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanRenderPass.h>
+
 namespace Picasso::Engine::Render::Core::Drivers
 {
+    using Vulkan::VulkanRenderPass;
+
     struct SwapChainSupportInfo
     {
         VkSurfaceCapabilitiesKHR capabilities;
@@ -49,6 +53,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         u_int32_t width;
         u_int32_t height;
     };
+
     struct VulkanSwapChain
     {
         VkSurfaceFormatKHR imageFormat;
@@ -68,6 +73,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         u_int32_t frameBufferWidth = 0;
         u_int32_t frameBufferHeight = 0;
         std::shared_ptr<VulkanSwapChain> swapChain;
+        VulkanRenderPass renderPass;
         u_int32_t imageIndex = 0;
         u_int32_t currentFrame = 0;
         bool recreateSwapChain = false;
