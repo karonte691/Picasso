@@ -26,8 +26,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                                           _Float32 depth,
                                           u_int32_t stencil);
         void RenderPassDestroy(DriverContext *context, VulkanRenderPass *vRenderPassData);
-        void RenderPassBegin(VulkanCommandBuffer *vCmBuffer, VulkanRenderPass *vRenderPassData, VkFramebuffer frameBuffer);
-        void RenderPassEnd(VulkanCommandBuffer *vCmBuffer, VulkanRenderPass *vRenderPassData);
+        void RenderPassBegin(VulkanCommandBufferDto *vCmBuffer, VulkanRenderPass *vRenderPassData, VkFramebuffer frameBuffer);
+        void RenderPassEnd(VulkanCommandBufferDto *vCmBuffer, VulkanRenderPass *vRenderPassData);
 
     private:
         std::vector<VkAttachmentDescription> _getAttachmentDescription(const DriverContext *context);

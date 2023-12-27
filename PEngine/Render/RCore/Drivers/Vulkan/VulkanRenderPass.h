@@ -24,6 +24,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
         COMMAND_BUFFER_STATE_READY,
         COMMAND_BUFFER_STATE_RECORDING,
+        COMMAND_BUFFER_STATE_END_RECORDING,
         COMMAND_BUFFER_STATE_IN_RENDER_PASS,
         COMMAND_BUFFER_STATE_SUBMITTED,
         COMMAND_BUFFER_STATE_NOT_ALLOCATED,
@@ -51,13 +52,13 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             : r(r), g(g), b(b), a(a) {}
     };
 
-    struct VulkanCommandBuffer
+    struct VulkanCommandBufferDto
     {
         std::shared_ptr<VkCommandBuffer> commandBufferHandler;
 
         VulkanCommandBufferState state;
 
-        VulkanCommandBuffer(VulkanCommandBufferState initialState)
+        VulkanCommandBufferDto(VulkanCommandBufferState initialState)
             : commandBufferHandler(std::make_shared<VkCommandBuffer>()), state(initialState) {}
     };
 

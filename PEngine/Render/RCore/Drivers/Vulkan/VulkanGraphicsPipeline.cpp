@@ -60,7 +60,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         vRenderPassData->renderHandler = VK_NULL_HANDLE;
     }
 
-    void VulkanGraphicsPipeline::RenderPassBegin(VulkanCommandBuffer *vCmBuffer, VulkanRenderPass *vRenderPassData, VkFramebuffer frameBuffer)
+    void VulkanGraphicsPipeline::RenderPassBegin(VulkanCommandBufferDto *vCmBuffer, VulkanRenderPass *vRenderPassData, VkFramebuffer frameBuffer)
     {
         VkClearValue clearValues[2];
         VkRenderPassBeginInfo rpBeginInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
@@ -88,7 +88,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         vCmBuffer->state = COMMAND_BUFFER_STATE_IN_RENDER_PASS;
     }
 
-    void VulkanGraphicsPipeline::RenderPassEnd(VulkanCommandBuffer *vCmBuffer, VulkanRenderPass *vRenderPassData)
+    void VulkanGraphicsPipeline::RenderPassEnd(VulkanCommandBufferDto *vCmBuffer, VulkanRenderPass *vRenderPassData)
     {
         vkCmdEndRenderPass(*vCmBuffer->commandBufferHandler.get());
         vCmBuffer->state = COMMAND_BUFFER_STATE_RECORDING;
