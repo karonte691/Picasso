@@ -7,12 +7,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         m_GraphicsPipeline = new VulkanGraphicsPipeline();
     }
 
-    VulkanRender::~VulkanRender()
-    {
-        delete m_GraphicsPipeline;
-        m_GraphicsPipeline = nullptr;
-    }
-
     bool VulkanRender::DecorateContext(DriverContext *context)
     {
         _Float32 fbWidth = static_cast<_Float32>(context->frameBufferWidth);
@@ -23,7 +17,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         VulkanRenderPass rpData = m_GraphicsPipeline->RenderPassCreate(context, area, color, 1.0f, 0);
 
-        if (!rpData.isValid)
+        if (!rpData.isValid())
         {
             // render pass data is corrupted, exiting..
             Picasso::Engine::Logger::Logger::Fatal("render pass data is corrupted,");
@@ -38,5 +32,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     void VulkanRender::ClearContext(DriverContext *context)
     {
         m_GraphicsPipeline->RenderPassDestroy(context, &context->renderPass);
+
+        delete m_GraphicsPipeline;
+        m_GraphicsPipeline = nullptr;
     }
 }

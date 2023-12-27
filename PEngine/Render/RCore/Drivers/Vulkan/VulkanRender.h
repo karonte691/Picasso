@@ -13,7 +13,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
     public:
         VulkanRender();
-        ~VulkanRender();
 
         bool DecorateContext(DriverContext *context);
         void ClearContext(DriverContext *context);

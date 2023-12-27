@@ -17,7 +17,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         VulkanRenderPass rpData;
-        rpData.isValid = false;
 
         std::vector<VkAttachmentDescription> attachDescription = this->_getAttachmentDescription(context);
         AttachmentReferences attachmentRefs = this->_getAttachmentReferences();
@@ -40,11 +39,10 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         if (createRenderPassRes != VK_SUCCESS)
         {
             Picasso::Engine::Logger::Logger::Error("Impossibile creare il render pass");
-            return rpData;
+            return {};
         }
 
         rpData.renderHandler = std::make_shared<VkRenderPass>(renderPass);
-        rpData.isValid = true;
 
         Picasso::Engine::Logger::Logger::Info("Render pass creato con successo");
         return rpData;
@@ -52,14 +50,14 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     void VulkanGraphicsPipeline::RenderPassDestroy(DriverContext *context, VulkanRenderPass *vRenderPassData)
     {
-        if (vRenderPassData == nullptr || vRenderPassData->renderHandler == nullptr)
+        if (vRenderPassData == nullptr || vRenderPassData->renderHandler == VK_NULL_HANDLE)
         {
             return;
         }
 
         vkDestroyRenderPass(context->devices.logicalDevice, *vRenderPassData->renderHandler, 0);
 
-        vRenderPassData->renderHandler = nullptr;
+        vRenderPassData->renderHandler = VK_NULL_HANDLE;
     }
 
     void VulkanGraphicsPipeline::RenderPassBegin(VulkanCommandBuffer *vCmBuffer, VulkanRenderPass *vRenderPassData, VkFramebuffer frameBuffer)
@@ -124,24 +122,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         refs.depthAttachmentReference = depthAttachmentReference;
 
         return refs;
-    }
-
-    VkRenderPassCreateInfo VulkanGraphicsPipeline::_getRenderPassCreateInfo(std::vector<VkAttachmentDescription> attachmentDescription,
-                                                                            VkSubpassDescription subpass,
-                                                                            VkSubpassDependency dependency)
-    {
-        VkRenderPassCreateInfo rpCreateInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
-
-        rpCreateInfo.attachmentCount = attachmentDescription.size();
-        rpCreateInfo.pAttachments = attachmentDescription.data();
-        rpCreateInfo.subpassCount = 1;
-        rpCreateInfo.pSubpasses = &subpass;
-        rpCreateInfo.dependencyCount = 1;
-        rpCreateInfo.pDependencies = &dependency;
-        rpCreateInfo.pNext = 0;
-        rpCreateInfo.flags = 0;
-
-        return rpCreateInfo;
     }
 
     VkAttachmentDescription VulkanGraphicsPipeline::_getColorAttachmentDescription(const DriverContext *context)

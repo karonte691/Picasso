@@ -69,7 +69,11 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         _Float32 depth;
         u_int32_t stencil;
         VulkanRenderState state;
-        bool isValid;
+
+        bool isValid() const
+        {
+            return renderHandler != nullptr && renderHandler != VK_NULL_HANDLE;
+        }
     };
 };
 

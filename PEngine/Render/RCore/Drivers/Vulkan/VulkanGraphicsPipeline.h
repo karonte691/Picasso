@@ -32,9 +32,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     private:
         std::vector<VkAttachmentDescription> _getAttachmentDescription(const DriverContext *context);
         AttachmentReferences _getAttachmentReferences();
-        VkRenderPassCreateInfo _getRenderPassCreateInfo(std::vector<VkAttachmentDescription> attachmentDescription,
-                                                        VkSubpassDescription subpass,
-                                                        VkSubpassDependency dependency);
         VkAttachmentDescription _getColorAttachmentDescription(const DriverContext *context);
         VkAttachmentDescription _getDepthAttachmentDescription(const DriverContext *context);
         VkSubpassDependency _getDependency();

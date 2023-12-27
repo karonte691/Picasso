@@ -54,13 +54,23 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
         if (m_context != nullptr)
         {
-            Picasso::Engine::Logger::Logger::Info("Shutting down Vulkan device data...");
+            Picasso::Engine::Logger::Logger::Debug("Shutting down Vulkan device data...");
 
             m_device->Destroy(m_context);
 
+            if (m_Render != nullptr)
+            {
+                Picasso::Engine::Logger::Logger::Debug("Shutting down Vulkan Render...");
+
+                m_Render->ClearContext(m_context);
+
+                delete m_Render;
+                m_Render = nullptr;
+            }
+
             if (m_context->vulkanInstance != nullptr)
             {
-                Picasso::Engine::Logger::Logger::Info("Shutting down Vulkan driver...");
+                Picasso::Engine::Logger::Logger::Debug("Shutting down Vulkan driver...");
 
                 vkDestroyInstance(m_context->vulkanInstance, 0);
 
