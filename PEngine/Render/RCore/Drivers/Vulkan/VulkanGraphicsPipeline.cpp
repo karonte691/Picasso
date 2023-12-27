@@ -10,6 +10,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                                                               _Float32 depth,
                                                               u_int32_t stencil)
     {
+        if (!context || !context->devices.logicalDevice)
+        {
+            Picasso::Engine::Logger::Logger::Error("Context o Logical Device not valid");
+            return {};
+        }
+
         VulkanRenderPass rpData;
         rpData.isValid = false;
 
@@ -17,22 +23,30 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         AttachmentReferences attachmentRefs = this->_getAttachmentReferences();
 
         VkSubpassDescription subPassDescrion = this->_getSubpassDescription(attachmentRefs.colorAttachmentReference, attachmentRefs.depthAttachmentReference);
-
         VkSubpassDependency dependency = this->_getDependency();
 
-        VkRenderPassCreateInfo renderPassCreateInfo = this->_getRenderPassCreateInfo(attachDescription, subPassDescrion, dependency);
+        VkRenderPassCreateInfo renderPassCreateInfo = {};
+        renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(attachDescription.size());
+        renderPassCreateInfo.pAttachments = attachDescription.data();
+        renderPassCreateInfo.subpassCount = 1;
+        renderPassCreateInfo.pSubpasses = &subPassDescrion;
+        renderPassCreateInfo.dependencyCount = 1;
+        renderPassCreateInfo.pDependencies = &dependency;
 
-        VkResult createRenderPassRes = vkCreateRenderPass(context->devices.logicalDevice, &renderPassCreateInfo, 0, rpData.renderHandler);
+        VkRenderPass renderPass;
+        VkResult createRenderPassRes = vkCreateRenderPass(context->devices.logicalDevice, &renderPassCreateInfo, nullptr, &renderPass);
 
         if (createRenderPassRes != VK_SUCCESS)
         {
-            Picasso::Engine::Logger::Logger::Error("VGP: Unable to create the render pass");
+            Picasso::Engine::Logger::Logger::Error("Impossibile creare il render pass");
             return rpData;
         }
 
-        // flag the render pass to legt
+        rpData.renderHandler = std::make_shared<VkRenderPass>(renderPass);
         rpData.isValid = true;
 
+        Picasso::Engine::Logger::Logger::Info("Render pass creato con successo");
         return rpData;
     }
 
@@ -45,7 +59,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         vkDestroyRenderPass(context->devices.logicalDevice, *vRenderPassData->renderHandler, 0);
 
-        delete vRenderPassData->renderHandler;
         vRenderPassData->renderHandler = nullptr;
     }
 

@@ -243,6 +243,21 @@ namespace Picasso::Engine::Platform
             wmProtocolsCookie,
             nullptr);
 
+        if (!wmDeleteReply || !wmProtocolsReply)
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot register windowDestroyEvent");
+
+            if (wmDeleteReply)
+            {
+                free(wmDeleteReply);
+            }
+            if (wmProtocolsReply)
+            {
+                free(wmProtocolsReply);
+            }
+
+            return;
+        }
         m_pstate->wmDestroyWindow = wmDeleteReply->atom;
         m_pstate->wmDeleteProtocols = wmProtocolsReply->atom;
 
@@ -255,5 +270,14 @@ namespace Picasso::Engine::Platform
             32,
             1,
             &wmDeleteReply->atom);
+
+        if (wmDeleteReply)
+        {
+            free(wmDeleteReply);
+        }
+        if (wmProtocolsReply)
+        {
+            free(wmProtocolsReply);
+        }
     }
 }

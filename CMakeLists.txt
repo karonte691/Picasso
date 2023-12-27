@@ -5,9 +5,13 @@ set(ENV{VULKAN_SDK} "Lib/Linux/Vulkan")
 
 set(CMAKE_BUILD_TYPE Debug)
 
+
+
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
   message("Debug build.")
-  ELSE()
+  add_compile_options(-fsanitize=address)
+  add_link_options(-fsanitize=address)
+ELSE()
   message("Release build")
 ENDIF()
 

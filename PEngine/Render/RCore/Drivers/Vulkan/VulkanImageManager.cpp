@@ -61,8 +61,9 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         if (imageCreateInfo->createView)
         {
             vImage->imageView = 0;
-            if (this->_createImageView(context, imageCreateInfo->imageFormat, vImage, imageCreateInfo->imageAspectFlags))
+            if (!this->_createImageView(context, imageCreateInfo->imageFormat, vImage, imageCreateInfo->imageAspectFlags))
             {
+                this->Destroy(context, vImage);
                 return nullptr;
             }
         }

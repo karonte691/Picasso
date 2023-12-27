@@ -100,6 +100,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         VkResult swcCreateOpResult = vkCreateSwapchainKHR(context->devices.logicalDevice, swcCreateInfo, 0, &m_swapChain->scHandler);
 
+        delete swcCreateInfo;
+
         if (swcCreateOpResult != VK_SUCCESS)
         {
             Picasso::Engine::Logger::Logger::Error("Unable to create the swap chain");

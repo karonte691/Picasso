@@ -63,7 +63,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     struct VulkanRenderPass
     {
-        VkRenderPass *renderHandler;
+        std::shared_ptr<VkRenderPass> renderHandler;
         VulkanRenderPassArea area;
         VulkanRenderPassColor color;
         _Float32 depth;
