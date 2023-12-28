@@ -42,8 +42,9 @@ namespace Picasso::Engine::Render::Core::Drivers
 
         m_Render = new VulkanRender();
 
-        if (!m_Render->DecorateContext(m_context))
+        if (!m_Render->SetUp(m_context, m_context->swapChain->imageCount))
         {
+            Picasso::Engine::Logger::Logger::Fatal("Cannot initialize Vulkan render...");
             return false;
         }
 
@@ -62,7 +63,7 @@ namespace Picasso::Engine::Render::Core::Drivers
             {
                 Picasso::Engine::Logger::Logger::Debug("Shutting down Vulkan Render...");
 
-                m_Render->ClearContext(m_context);
+                m_Render->Clear(m_context);
 
                 delete m_Render;
                 m_Render = nullptr;

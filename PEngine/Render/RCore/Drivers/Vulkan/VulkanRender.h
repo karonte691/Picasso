@@ -6,6 +6,7 @@
 #include <PEngine/Logger/Logger.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriverData.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanGraphicsPipeline.h>
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanCommandBuffer.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
@@ -14,11 +15,15 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     public:
         VulkanRender();
 
-        bool DecorateContext(DriverContext *context);
-        void ClearContext(DriverContext *context);
+        bool SetUp(DriverContext *context, u_int32_t swapChainImageCount);
+        void Clear(DriverContext *context);
 
     private:
-        VulkanGraphicsPipeline *m_GraphicsPipeline;
+        VulkanGraphicsPipeline *p_GraphicsPipeline;
+        VulkanCommandBuffer *p_commandBufferManager;
+
+        bool _decorateContext(DriverContext *context);
+        void _clearContext(DriverContext *context);
     };
 }
 #endif

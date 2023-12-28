@@ -4,10 +4,30 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
     VulkanRender::VulkanRender()
     {
-        m_GraphicsPipeline = new VulkanGraphicsPipeline();
+        p_GraphicsPipeline = new VulkanGraphicsPipeline();
+        p_commandBufferManager = new VulkanCommandBuffer();
     }
 
-    bool VulkanRender::DecorateContext(DriverContext *context)
+    bool VulkanRender::SetUp(DriverContext *context, u_int32_t swapChainImageCount)
+    {
+        if (!p_commandBufferManager->DecorateContext(context, swapChainImageCount))
+        {
+            return false;
+        }
+
+        Picasso::Engine::Logger::Logger::Debug("Command pool created succesfully");
+
+        return this->_decorateContext(context);
+    }
+
+    void VulkanRender::Clear(DriverContext *context)
+    {
+        p_commandBufferManager->Clear(context);
+
+        this->_clearContext(context);
+    }
+
+    bool VulkanRender::_decorateContext(DriverContext *context)
     {
         _Float32 fbWidth = static_cast<_Float32>(context->frameBufferWidth);
         _Float32 fbHeight = static_cast<_Float32>(context->frameBufferHeight);
@@ -15,7 +35,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         VulkanRenderPassArea area = {0, 0, fbWidth, fbHeight};
         VulkanRenderPassColor color = {0.0f, 0.0f, 0.2f, 1.0f};
 
-        VulkanRenderPass rpData = m_GraphicsPipeline->RenderPassCreate(context, area, color, 1.0f, 0);
+        VulkanRenderPass rpData = p_GraphicsPipeline->RenderPassCreate(context, area, color, 1.0f, 0);
 
         if (!rpData.isValid())
         {
@@ -29,11 +49,18 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return true;
     }
 
-    void VulkanRender::ClearContext(DriverContext *context)
+    void VulkanRender::_clearContext(DriverContext *context)
     {
-        m_GraphicsPipeline->RenderPassDestroy(context, &context->renderPass);
+        context->cmBuffers->clear();
+        delete context->cmBuffers;
+        context->cmBuffers = nullptr;
 
-        delete m_GraphicsPipeline;
-        m_GraphicsPipeline = nullptr;
+        delete p_commandBufferManager;
+        p_commandBufferManager = nullptr;
+
+        p_GraphicsPipeline->RenderPassDestroy(context, &context->renderPass);
+
+        delete p_GraphicsPipeline;
+        p_GraphicsPipeline = nullptr;
     }
 }

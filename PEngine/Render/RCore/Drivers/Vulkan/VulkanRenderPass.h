@@ -54,12 +54,9 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     struct VulkanCommandBufferDto
     {
-        std::shared_ptr<VkCommandBuffer> commandBufferHandler;
+        std::shared_ptr<VkCommandBuffer> commandBufferHandler = nullptr;
 
         VulkanCommandBufferState state;
-
-        VulkanCommandBufferDto(VulkanCommandBufferState initialState)
-            : commandBufferHandler(std::make_shared<VkCommandBuffer>()), state(initialState) {}
     };
 
     struct VulkanRenderPass

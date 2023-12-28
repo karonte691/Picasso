@@ -22,6 +22,7 @@ if(UNIX AND NOT APPLE)
                 Render/RCore/Drivers/Vulkan/VulkanImageManager.cpp
                 Render/RCore/Drivers/Vulkan/VulkanSwapChainManager.cpp
                 Render/RCore/Drivers/Vulkan/VulkanGraphicsPipeline.cpp
+                Render/RCore/Drivers/Vulkan/VulkanCommandBuffer.cpp
                 Render/RCore/Drivers/Vulkan/VulkanRender.cpp
                 Render/RCore/Drivers/Vulkan/VulkanDriver.cpp
                 Render/RCore/DriverManager.cpp

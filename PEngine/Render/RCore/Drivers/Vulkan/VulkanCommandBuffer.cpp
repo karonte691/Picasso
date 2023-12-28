@@ -2,6 +2,44 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
+    bool VulkanCommandBuffer::DecorateContext(DriverContext *context, u_int32_t swapChainImageCount)
+    {
+        if (swapChainImageCount == 0)
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Command buffer: image count is zero");
+            return false;
+        }
+
+        this->_createCommandPool(context);
+
+        context->cmBuffers = new std::vector<std::shared_ptr<VulkanCommandBufferDto>>(swapChainImageCount);
+
+        for (u_int32_t i = 0; i < swapChainImageCount; ++i)
+        {
+            std::shared_ptr<VulkanCommandBufferDto> &buffer = (*context->cmBuffers)[i];
+
+            if (buffer && buffer->commandBufferHandler)
+            {
+                this->Free(context, context->pool, buffer);
+            }
+
+            buffer = this->Allocate(context, context->pool, true);
+
+            (*context->cmBuffers)[i] = buffer;
+        }
+        return true;
+    }
+
+    void VulkanCommandBuffer::Clear(DriverContext *context)
+    {
+        if (context->pool)
+        {
+            Picasso::Engine::Logger::Logger::Debug("Destroying command pool...");
+
+            vkDestroyCommandPool(context->devices.logicalDevice, context->pool, 0);
+        }
+    }
+
     std::shared_ptr<VulkanCommandBufferDto> VulkanCommandBuffer::Allocate(const DriverContext *context, const VkCommandPool pool, const bool isPrimary)
     {
         std::shared_ptr<VulkanCommandBufferDto> cmBuffer = std::make_shared<VulkanCommandBufferDto>();
@@ -152,6 +190,24 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         this->Free(context, pool, cmBuffer);
+
+        return true;
+    }
+
+    bool VulkanCommandBuffer::_createCommandPool(DriverContext *context)
+    {
+        VkCommandPoolCreateInfo cmPoolCreateInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+
+        cmPoolCreateInfo.queueFamilyIndex = context->devices.graphicsQueueIndex;
+        cmPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+        VkResult createPoolRes = vkCreateCommandPool(context->devices.logicalDevice, &cmPoolCreateInfo, 0, &context->pool);
+
+        if (createPoolRes != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot create the command pool");
+            return false;
+        }
 
         return true;
     }
