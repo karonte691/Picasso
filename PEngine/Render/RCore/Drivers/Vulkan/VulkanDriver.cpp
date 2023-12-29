@@ -42,7 +42,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 
         m_Render = new VulkanRender();
 
-        if (!m_Render->SetUp(m_context, m_context->swapChain->imageCount))
+        if (!m_Render->SetUp(m_context, m_context->swapChain->imageCount, pState))
         {
             Picasso::Engine::Logger::Logger::Fatal("Cannot initialize Vulkan render...");
             return false;

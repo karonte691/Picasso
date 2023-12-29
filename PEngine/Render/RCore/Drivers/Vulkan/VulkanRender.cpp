@@ -6,10 +6,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
         p_GraphicsPipeline = new VulkanGraphicsPipeline();
         p_commandBufferManager = new VulkanCommandBuffer();
+        p_FrameBufferManager = new VulkanFrameBuffer();
     }
 
-    bool VulkanRender::SetUp(DriverContext *context, u_int32_t swapChainImageCount)
+    bool VulkanRender::SetUp(DriverContext *context, u_int32_t swapChainImageCount, std::shared_ptr<PPlatformState> pState)
     {
+
         if (!p_commandBufferManager->DecorateContext(context, swapChainImageCount))
         {
             return false;
@@ -17,7 +19,21 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         Picasso::Engine::Logger::Logger::Debug("Command pool created succesfully");
 
-        return this->_decorateContext(context);
+        if (!this->_decorateContext(context))
+        {
+            return false;
+        }
+
+        Picasso::Engine::Logger::Logger::Debug("Render pass created succesfully");
+
+        if (!this->_regenerateFrameBuffer(context, pState))
+        {
+            return false;
+        }
+
+        Picasso::Engine::Logger::Logger::Debug("Frame buffer created succesfully");
+
+        return true;
     }
 
     void VulkanRender::Clear(DriverContext *context)
@@ -25,6 +41,15 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         p_commandBufferManager->Clear(context);
 
         this->_clearContext(context);
+
+        delete p_commandBufferManager;
+        p_commandBufferManager = nullptr;
+
+        delete p_GraphicsPipeline;
+        p_GraphicsPipeline = nullptr;
+
+        delete p_FrameBufferManager;
+        p_FrameBufferManager = nullptr;
     }
 
     bool VulkanRender::_decorateContext(DriverContext *context)
@@ -44,7 +69,38 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return false;
         }
 
-        context->renderPass = rpData;
+        context->renderPass = std::make_shared<VulkanRenderPass>(rpData);
+
+        return true;
+    }
+
+    bool VulkanRender::_regenerateFrameBuffer(DriverContext *context, std::shared_ptr<PPlatformState> pState)
+    {
+        context->swapChain->frameBuffers.resize(context->swapChain->imageCount);
+
+        u_int32_t attachmentCount = 2;
+
+        for (u_int32_t i = 0; i < context->swapChain->imageCount; ++i)
+        {
+            VkImageView attachments[attachmentCount] = {
+                context->swapChain->imageViews[i],
+                context->swapChain->vImage->imageView};
+
+            std::shared_ptr<VulkanFrameBufferDto> frameBufferDto = p_FrameBufferManager->DecorateContext(context,
+                                                                                                         context->renderPass,
+                                                                                                         context->frameBufferWidth,
+                                                                                                         context->frameBufferHeight,
+                                                                                                         attachmentCount,
+                                                                                                         attachments);
+
+            if (frameBufferDto == nullptr)
+            {
+                Picasso::Engine::Logger::Logger::Fatal("Unable to create the frame buffer for image index %d", i);
+                return false;
+            }
+
+            context->swapChain->frameBuffers[i] = frameBufferDto;
+        }
 
         return true;
     }
@@ -55,12 +111,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         delete context->cmBuffers;
         context->cmBuffers = nullptr;
 
-        delete p_commandBufferManager;
-        p_commandBufferManager = nullptr;
-
-        p_GraphicsPipeline->RenderPassDestroy(context, &context->renderPass);
-
-        delete p_GraphicsPipeline;
-        p_GraphicsPipeline = nullptr;
+        p_GraphicsPipeline->RenderPassDestroy(context, context->renderPass.get());
     }
 }

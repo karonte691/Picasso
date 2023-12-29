@@ -18,6 +18,7 @@
 namespace Picasso::Engine::Render::Core::Drivers
 {
     using Vulkan::VulkanCommandBufferDto;
+    using Vulkan::VulkanFrameBufferDto;
     using Vulkan::VulkanRenderPass;
 
     struct SwapChainSupportInfo
@@ -64,6 +65,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         std::unique_ptr<VkImage[]> images;
         std::unique_ptr<VkImageView[]> imageViews;
         std::shared_ptr<VulkanImage> vImage;
+        std::vector<std::shared_ptr<VulkanFrameBufferDto>> frameBuffers;
     };
 
     struct DriverContext
@@ -76,7 +78,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         std::shared_ptr<VulkanSwapChain> swapChain;
         std::vector<std::shared_ptr<VulkanCommandBufferDto>> *cmBuffers;
         VkCommandPool pool;
-        VulkanRenderPass renderPass;
+        std::shared_ptr<VulkanRenderPass> renderPass;
         u_int32_t imageIndex = 0;
         u_int32_t currentFrame = 0;
         bool recreateSwapChain = false;

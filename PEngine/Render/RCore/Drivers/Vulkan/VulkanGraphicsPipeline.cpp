@@ -44,7 +44,6 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         rpData.renderHandler = std::make_shared<VkRenderPass>(renderPass);
 
-        Picasso::Engine::Logger::Logger::Info("Render pass created succesfully");
         return rpData;
     }
 

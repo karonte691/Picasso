@@ -7,7 +7,6 @@
 #include <vector>
 #include <PEngine/PState.h>
 #include <PEngine/Logger/Logger.h>
-#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriverData.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
@@ -72,6 +71,14 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         {
             return renderHandler != nullptr && renderHandler != VK_NULL_HANDLE;
         }
+    };
+
+    struct VulkanFrameBufferDto
+    {
+        VkFramebuffer handler;
+        u_int32_t attachmentCount;
+        std::vector<VkImageView> attachments;
+        std::shared_ptr<VulkanRenderPass> renderPass;
     };
 };
 
