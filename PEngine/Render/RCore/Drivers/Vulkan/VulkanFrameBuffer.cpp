@@ -40,16 +40,19 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return frameBuffer;
     }
 
-    void VulkanFrameBuffer::Clear(DriverContext *context, std::shared_ptr<VulkanFrameBufferDto> frameBuffer)
+    void VulkanFrameBuffer::Clear(DriverContext *context, std::vector<std::shared_ptr<VulkanFrameBufferDto>> frameBuffers)
     {
-        if (context != nullptr && frameBuffer->handler)
+        if (frameBuffers.size() > 0)
         {
-            vkDestroyFramebuffer(context->devices.logicalDevice, frameBuffer->handler, 0);
-            frameBuffer->attachments.clear();
-        }
+            for (u_int32_t i = 0; i < frameBuffers.size(); ++i)
+            {
+                vkDestroyFramebuffer(context->devices.logicalDevice, frameBuffers[i]->handler, 0);
 
-        frameBuffer->handler = nullptr;
-        frameBuffer->attachmentCount = 0;
-        frameBuffer->renderPass = nullptr;
+                frameBuffers[i]->attachments.clear();
+                frameBuffers[i]->handler = nullptr;
+                frameBuffers[i]->attachmentCount = 0;
+                frameBuffers[i]->renderPass = nullptr;
+            }
+        }
     }
 }

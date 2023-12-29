@@ -16,7 +16,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
                                                               u_int32_t height,
                                                               u_int32_t attachmentCount,
                                                               VkImageView attachments[]);
-        void Clear(DriverContext *context, std::shared_ptr<VulkanFrameBufferDto> frameBuffer);
+        void Clear(DriverContext *context, std::vector<std::shared_ptr<VulkanFrameBufferDto>> frameBuffers);
     };
 }
 

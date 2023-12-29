@@ -40,6 +40,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
         p_commandBufferManager->Clear(context);
 
+        p_FrameBufferManager->Clear(context, context->swapChain->frameBuffers);
+
         this->_clearContext(context);
 
         delete p_commandBufferManager;
