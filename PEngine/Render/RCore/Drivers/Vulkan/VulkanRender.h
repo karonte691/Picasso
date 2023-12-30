@@ -8,6 +8,7 @@
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanGraphicsPipeline.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanCommandBuffer.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanFrameBuffer.h>
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanFenceManager.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
@@ -23,10 +24,11 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         VulkanGraphicsPipeline *p_GraphicsPipeline;
         VulkanCommandBuffer *p_commandBufferManager;
         VulkanFrameBuffer *p_FrameBufferManager;
+        VulkanFenceManager *p_FenceManager;
 
         bool _decorateContext(DriverContext *context);
         bool _regenerateFrameBuffer(DriverContext *context, std::shared_ptr<PPlatformState> pState);
-        void _clearContext(DriverContext *context);
+        bool _initFences(DriverContext *context);
     };
 }
 #endif

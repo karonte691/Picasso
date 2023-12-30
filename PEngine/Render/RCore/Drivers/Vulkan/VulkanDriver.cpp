@@ -10,6 +10,9 @@ namespace Picasso::Engine::Render::Core::Drivers
         m_context = new DriverContext{};
         m_vulkanPlatform = new VulkanPlatform();
 
+        m_context->frameBufferWidth = eState->width > 0 ? eState->width : PICASSO_DEFAULT_WIDTH;
+        m_context->frameBufferHeight = eState->height > 0 ? eState->height : PICASSO_DEFAULT_HEIGHT;
+
         std::vector<const char *> extensionList = m_vulkanPlatform->GetPlatformExtensions();
 
         if (!this->_initVulkan(appName, PICASSO_MAJOR_VERSION, extensionList) || m_context->vulkanInstance == nullptr)

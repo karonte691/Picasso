@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef VULKAN_RENDER_PASS_H
-#define VULKAN_RENDER_PASS_H
+#ifndef VULKAN_RENDER_DATA_H
+#define VULKAN_RENDER_DATA_H
 
 #include <memory>
 #include <vector>
@@ -56,6 +56,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         std::shared_ptr<VkCommandBuffer> commandBufferHandler = nullptr;
 
         VulkanCommandBufferState state;
+    };
+
+    struct VulkanFence
+    {
+        VkFence handler;
+        bool isSignaled;
     };
 
     struct VulkanRenderPass

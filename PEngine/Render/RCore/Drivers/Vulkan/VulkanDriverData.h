@@ -13,11 +13,12 @@
 #include <Vulkan/vulkan_xcb.h>
 #endif
 
-#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanRenderPass.h>
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanRenderData.h>
 
 namespace Picasso::Engine::Render::Core::Drivers
 {
     using Vulkan::VulkanCommandBufferDto;
+    using Vulkan::VulkanFence;
     using Vulkan::VulkanFrameBufferDto;
     using Vulkan::VulkanRenderPass;
 
@@ -70,19 +71,24 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     struct DriverContext
     {
+        u_int32_t frameBufferWidth = 0;
+        u_int32_t frameBufferHeight = 0;
+        u_int32_t imageIndex = 0;
+        u_int32_t currentFrame = 0;
+        u_int32_t fencesCount = 0;
+        u_int32_t memoryIndex = -1;
+        bool recreateSwapChain = false;
         VkInstance vulkanInstance = VK_NULL_HANDLE;
         VkSurfaceKHR surface = VK_NULL_HANDLE;
         Devices devices;
-        u_int32_t frameBufferWidth = 0;
-        u_int32_t frameBufferHeight = 0;
-        std::shared_ptr<VulkanSwapChain> swapChain;
-        std::vector<std::shared_ptr<VulkanCommandBufferDto>> *cmBuffers;
         VkCommandPool pool;
+        std::shared_ptr<VulkanSwapChain> swapChain;
         std::shared_ptr<VulkanRenderPass> renderPass;
-        u_int32_t imageIndex = 0;
-        u_int32_t currentFrame = 0;
-        bool recreateSwapChain = false;
-        u_int32_t memoryIndex = -1;
+        std::vector<VulkanFence **> imgInFlight;
+        std::vector<std::shared_ptr<VulkanCommandBufferDto>> *cmBuffers;
+        std::vector<std::shared_ptr<VkSemaphore>> imageAvailableSemaphores;
+        std::vector<std::shared_ptr<VkSemaphore>> queueCompleteSemaphores;
+        std::vector<std::shared_ptr<VulkanFence>> fences;
     };
 
     struct VulkanImageCreateOptions

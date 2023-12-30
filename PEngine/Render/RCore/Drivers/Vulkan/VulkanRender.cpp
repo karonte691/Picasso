@@ -7,6 +7,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         p_GraphicsPipeline = new VulkanGraphicsPipeline();
         p_commandBufferManager = new VulkanCommandBuffer();
         p_FrameBufferManager = new VulkanFrameBuffer();
+        p_FenceManager = new VulkanFenceManager();
     }
 
     bool VulkanRender::SetUp(DriverContext *context, u_int32_t swapChainImageCount, std::shared_ptr<PPlatformState> pState)
@@ -18,6 +19,13 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         Picasso::Engine::Logger::Logger::Debug("Command pool created succesfully");
+
+        if (!this->_initFences(context))
+        {
+            return false;
+        }
+
+        Picasso::Engine::Logger::Logger::Debug("Fences created succesfully");
 
         if (!this->_decorateContext(context))
         {
@@ -38,11 +46,38 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     void VulkanRender::Clear(DriverContext *context)
     {
+        // wait until no ops running
+        vkDeviceWaitIdle(context->devices.logicalDevice);
+
+        for (u_int32_t i = 0; i < context->swapChain->maxRenderFrames; ++i)
+        {
+            if (context->imageAvailableSemaphores[i])
+            {
+                vkDestroySemaphore(context->devices.logicalDevice, *context->imageAvailableSemaphores[i], 0);
+                context->imageAvailableSemaphores[i] = nullptr;
+            }
+
+            if (context->queueCompleteSemaphores[i])
+            {
+                vkDestroySemaphore(context->devices.logicalDevice, *context->queueCompleteSemaphores[i], 0);
+                context->queueCompleteSemaphores[i] = nullptr;
+            }
+
+            p_FenceManager->Destroy(context, context->fences[i]);
+        }
+
+        context->imageAvailableSemaphores.clear();
+        context->queueCompleteSemaphores.clear();
+        context->fences.clear();
+        context->imgInFlight.clear();
+
         p_commandBufferManager->Clear(context);
-
         p_FrameBufferManager->Clear(context, context->swapChain->frameBuffers);
+        context->cmBuffers->clear();
+        p_GraphicsPipeline->RenderPassDestroy(context, context->renderPass.get());
 
-        this->_clearContext(context);
+        delete context->cmBuffers;
+        context->cmBuffers = nullptr;
 
         delete p_commandBufferManager;
         p_commandBufferManager = nullptr;
@@ -52,6 +87,9 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         delete p_FrameBufferManager;
         p_FrameBufferManager = nullptr;
+
+        delete p_FenceManager;
+        p_FenceManager = nullptr;
     }
 
     bool VulkanRender::_decorateContext(DriverContext *context)
@@ -107,12 +145,54 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         return true;
     }
 
-    void VulkanRender::_clearContext(DriverContext *context)
+    bool VulkanRender::_initFences(DriverContext *context)
     {
-        context->cmBuffers->clear();
-        delete context->cmBuffers;
-        context->cmBuffers = nullptr;
+        context->imageAvailableSemaphores.resize(context->swapChain->maxRenderFrames);
+        context->queueCompleteSemaphores.resize(context->swapChain->maxRenderFrames);
+        context->fences.resize(context->swapChain->maxRenderFrames);
+        context->imgInFlight.resize(context->swapChain->maxRenderFrames);
 
-        p_GraphicsPipeline->RenderPassDestroy(context, context->renderPass.get());
+        VkSemaphoreCreateInfo sCreateInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+
+        for (u_int32_t i = 0; i < context->swapChain->maxRenderFrames; ++i)
+        {
+            context->imageAvailableSemaphores[i] = std::make_shared<VkSemaphore>();
+
+            VkResult createSemaphoreRes = vkCreateSemaphore(context->devices.logicalDevice,
+                                                            &sCreateInfo,
+                                                            0,
+                                                            context->imageAvailableSemaphores[i].get());
+
+            if (createSemaphoreRes != VK_SUCCESS)
+            {
+                Picasso::Engine::Logger::Logger::Error("Unable to create the Vulkan Semaphore for frame %d", i);
+                return false;
+            }
+
+            context->queueCompleteSemaphores[i] = std::make_shared<VkSemaphore>();
+
+            VkResult createCompSemaphoreRes = vkCreateSemaphore(context->devices.logicalDevice,
+                                                                &sCreateInfo,
+                                                                0,
+                                                                context->queueCompleteSemaphores[i].get());
+
+            if (createCompSemaphoreRes != VK_SUCCESS)
+            {
+                Picasso::Engine::Logger::Logger::Error("Unable to create the Vulkan Semaphore for frame %d", i);
+                return false;
+            }
+
+            std::shared_ptr<VulkanFence> vFence = p_FenceManager->Create(context, true);
+
+            if (vFence == nullptr)
+            {
+                return false;
+            }
+
+            context->imgInFlight[i] = 0;
+            context->fences[i] = vFence;
+        }
+
+        return true;
     }
 }
