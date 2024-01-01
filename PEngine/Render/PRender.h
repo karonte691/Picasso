@@ -18,7 +18,7 @@ namespace Picasso::Engine::Render
     {
     public:
         bool Init(const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *engineState);
-        bool RenderFrame(RenderData *rData);
+        bool RenderFrame(RenderData *rData, std::shared_ptr<PPlatformState> pState);
         void OnResize(uint16_t width, uint16_t height);
         void Shutdown();
 

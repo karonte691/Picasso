@@ -33,7 +33,7 @@ namespace Picasso::Engine::Render
         m_internalRender = nullptr;
     }
 
-    bool PRender::RenderFrame(RenderData *rData)
+    bool PRender::RenderFrame(RenderData *rData, std::shared_ptr<PPlatformState> pState)
     {
         if (m_renderData == nullptr)
         {
@@ -41,18 +41,16 @@ namespace Picasso::Engine::Render
             return true;
         }
 
-        // start rendering the frame...
-        if (!m_internalRender->BeginFrame(m_renderData, rData->deltaTime))
+        // rendering the frame...
+        if (m_internalRender->BeginFrame(m_renderData, rData->deltaTime, pState))
         {
-            Picasso::Engine::Logger::Logger::Error("Unable to start rendering the frame...");
-            return false;
-        }
+            if (!m_internalRender->EndFrame(m_renderData, rData->deltaTime))
+            {
+                Picasso::Engine::Logger::Logger::Error("Unable to rendering the frame...");
+                return false;
+            }
 
-        //...and end it
-        if (!m_internalRender->EndFrame(m_renderData, rData->deltaTime))
-        {
-            Picasso::Engine::Logger::Logger::Error("Unable to finish rendering the frame...");
-            return false;
+            m_renderData->frameNumber++;
         }
 
         return true;

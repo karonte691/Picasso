@@ -1,4 +1,9 @@
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanFenceManager.h>
+#include <PEngine/PBuild.h>
+
+#if PICASSO_DEBUG_ENABLE
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDebug.h>
+#endif
 
 namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 {
@@ -59,8 +64,13 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         vFence->isSignaled = false;
     }
 
-    bool VulkanFenceManager::Wait(DriverContext *context, std::shared_ptr<VulkanFence> vFence, u_int timeout)
+    bool VulkanFenceManager::Wait(DriverContext *context, std::shared_ptr<VulkanFence> vFence, u_int64_t timeout)
     {
+        if (vFence == nullptr)
+        {
+            // no fences to wait
+            return true;
+        }
         if (vFence->isSignaled)
         {
             return true;
@@ -70,34 +80,14 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (waitForFencesRes != VK_SUCCESS)
         {
-            this->_printFenceResultError(waitForFencesRes);
+#if PICASSO_DEBUG_ENABLE
+            Picasso::Engine::Render::Core::Drivers::VulkanDebug::PrintDeviceWaitError(waitForFencesRes);
+#endif
             return false;
         }
 
         vFence->isSignaled = true;
 
         return true;
-    }
-
-    void VulkanFenceManager::_printFenceResultError(VkResult error)
-    {
-        switch (error)
-        {
-        case VK_TIMEOUT:
-            Picasso::Engine::Logger::Logger::Warn("vkWaitForFences() - Timed out");
-            break;
-        case VK_ERROR_DEVICE_LOST:
-            Picasso::Engine::Logger::Logger::Warn("vkWaitForFences() - VK_ERROR_DEVICE_LOST.");
-            break;
-        case VK_ERROR_OUT_OF_HOST_MEMORY:
-            Picasso::Engine::Logger::Logger::Warn("vkWaitForFences() - VK_ERROR_OUT_OF_HOST_MEMORY.");
-            break;
-        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-            Picasso::Engine::Logger::Logger::Warn("vkWaitForFences() - VK_ERROR_OUT_OF_DEVICE_MEMORY.");
-            break;
-        default:
-            Picasso::Engine::Logger::Logger::Warn("vkWaitForFences() - An unknown error has occurred.");
-            break;
-        }
     }
 }

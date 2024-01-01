@@ -1,6 +1,8 @@
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriver.h>
 #include <PEngine/PBuild.h>
-
+#if PICASSO_DEBUG_ENABLE
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDebug.h>
+#endif
 #include <cstring>
 
 namespace Picasso::Engine::Render::Core::Drivers
@@ -50,6 +52,132 @@ namespace Picasso::Engine::Render::Core::Drivers
             Picasso::Engine::Logger::Logger::Fatal("Cannot initialize Vulkan render...");
             return false;
         }
+
+        return true;
+    }
+
+    void VulkanDriver::OnResize(u_int16_t width, u_int16_t height)
+    {
+        if (m_context == nullptr)
+        {
+            return;
+        }
+
+        m_context->frameBufferWidth = width;
+        m_context->frameBufferHeight = height;
+        m_context->frameBufferSizeGeneration++;
+
+        Picasso::Engine::Logger::Logger::Debug("Resize action invoke: %d/%d generation: %d", width, height, m_context->frameBufferSizeGeneration);
+    }
+
+    bool VulkanDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    {
+        if (m_context == nullptr)
+        {
+            return false;
+        }
+
+        m_context->currentFrame = apiData->frameNumber;
+
+        if (m_context->recreateSwapChain)
+        {
+            VkResult deviceWaitRes = vkDeviceWaitIdle(m_context->devices.logicalDevice);
+
+            if (deviceWaitRes != VK_SUCCESS)
+            {
+#if PICASSO_DEBUG_ENABLE
+                Picasso::Engine::Render::Core::Drivers::VulkanDebug::PrintDeviceWaitError(deviceWaitRes);
+#endif
+                return false;
+            }
+
+            Picasso::Engine::Logger::Logger::Debug("Recreating swapchain. Booting...");
+            return false;
+        }
+
+        if (m_context->frameBufferSizeGeneration != m_context->frameBufferSizeLastGeneration)
+        {
+            // sync framebuffer
+            VkResult deviceWaitRes = vkDeviceWaitIdle(m_context->devices.logicalDevice);
+
+            if (deviceWaitRes != VK_SUCCESS)
+            {
+#if PICASSO_DEBUG_ENABLE
+                Picasso::Engine::Render::Core::Drivers::VulkanDebug::PrintDeviceWaitError(deviceWaitRes);
+#endif
+                return false;
+            }
+
+            Picasso::Engine::Logger::Logger::Debug("resizing applied. Booting...");
+
+            if (!m_swapChainManager->Recreate(m_context, m_device))
+            {
+                return false;
+            }
+
+            m_context->renderPass->area.w = m_context->frameBufferWidth;
+            m_context->renderPass->area.h = m_context->frameBufferHeight;
+            m_context->frameBufferSizeLastGeneration = m_context->frameBufferSizeGeneration;
+
+            m_Render->CleanUpBuffers(m_context);
+
+            m_context->renderPass->area.x = 0;
+            m_context->renderPass->area.y = 0;
+
+            if (!m_Render->RegenerateFrameBuffer(m_context, pState))
+            {
+                return false;
+            }
+
+            if (!m_Render->RegenerateCommandBuffer(m_context))
+            {
+                return false;
+            }
+
+            m_context->recreateSwapChain = false;
+
+            return false;
+        }
+
+        if (!m_Render->Wait(m_context))
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot wait for fences");
+            return false;
+        }
+
+        if (!m_swapChainManager->FetchNextImageIndex(m_context,
+                                                     UINT64_MAX,
+                                                     *m_context->imageAvailableSemaphores[m_context->currentFrame],
+                                                     0))
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot acquire next image");
+            return false;
+        }
+
+        if (!m_Render->BeginRenderFrame(m_context))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool VulkanDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
+    {
+        if (m_context == nullptr)
+        {
+            return false;
+        }
+
+        if (!m_Render->EndRenderFrame(m_context))
+        {
+            return false;
+        }
+
+        m_swapChainManager->Present(m_context,
+                                    m_context->devices.graphicsQueue,
+                                    m_context->devices.presentQueue,
+                                    *m_context->queueCompleteSemaphores[m_context->currentFrame]);
 
         return true;
     }

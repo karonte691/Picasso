@@ -12,11 +12,11 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         this->_createCommandPool(context);
 
-        context->cmBuffers = new std::vector<std::shared_ptr<VulkanCommandBufferDto>>(swapChainImageCount);
+        context->cmBuffers.resize(swapChainImageCount);
 
         for (u_int32_t i = 0; i < swapChainImageCount; ++i)
         {
-            std::shared_ptr<VulkanCommandBufferDto> &buffer = (*context->cmBuffers)[i];
+            std::shared_ptr<VulkanCommandBufferDto> &buffer = context->cmBuffers[i];
 
             if (buffer && buffer->commandBufferHandler)
             {
@@ -25,7 +25,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
             buffer = this->Allocate(context, context->pool, true);
 
-            (*context->cmBuffers)[i] = buffer;
+            context->cmBuffers[i] = buffer;
         }
         return true;
     }
@@ -80,6 +80,16 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         cmBuffer->state = COMMAND_BUFFER_STATE_NOT_ALLOCATED;
     }
 
+    void VulkanCommandBuffer::ConfigureViewPort(std::shared_ptr<VulkanCommandBufferDto> cmBuffer, VkViewport *vPort)
+    {
+        vkCmdSetViewport(*cmBuffer->commandBufferHandler, 0, 1, vPort);
+    }
+
+    void VulkanCommandBuffer::ConfigureScissor(std::shared_ptr<VulkanCommandBufferDto> cmBuffer, VkRect2D *scissor)
+    {
+        vkCmdSetScissor(*cmBuffer->commandBufferHandler, 0, 1, scissor);
+    }
+
     bool VulkanCommandBuffer::BeginRecording(std::shared_ptr<VulkanCommandBufferDto> cmBuffer, bool isSingleUse, bool isRenderPassContinue, bool isSimultaneos)
     {
         VkCommandBufferBeginInfo aBeginInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
@@ -130,6 +140,33 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         cmBuffer->state = COMMAND_BUFFER_STATE_END_RECORDING;
+
+        return true;
+    }
+
+    bool VulkanCommandBuffer::ExecuteCommand(DriverContext *context, std::shared_ptr<VulkanCommandBufferDto> cmBuffer)
+    {
+        VkSubmitInfo submitInfo = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+        VkPipelineStageFlags sFlags[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = cmBuffer->commandBufferHandler.get();
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = context->queueCompleteSemaphores[context->currentFrame].get();
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = context->imageAvailableSemaphores[context->currentFrame].get();
+        submitInfo.pWaitDstStageMask = sFlags;
+
+        VkResult executeCommandRes = vkQueueSubmit(context->devices.graphicsQueue, 1, &submitInfo, context->fences[context->currentFrame]->handler);
+
+        if (executeCommandRes != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Unable to execute the command buffer");
+            return false;
+        }
+
+        // set in state submitted
+        this->Submitted(cmBuffer);
 
         return true;
     }

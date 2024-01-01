@@ -15,8 +15,11 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         std::shared_ptr<VulkanCommandBufferDto> Allocate(const DriverContext *context, const VkCommandPool pool, const bool isPrimary);
         void Free(const DriverContext *context, VkCommandPool pool, std::shared_ptr<VulkanCommandBufferDto> cmBuffer);
+        void ConfigureViewPort(std::shared_ptr<VulkanCommandBufferDto> cmBuffer, VkViewport *vPort);
+        void ConfigureScissor(std::shared_ptr<VulkanCommandBufferDto> cmBuffer, VkRect2D *scissor);
         bool BeginRecording(std::shared_ptr<VulkanCommandBufferDto> cmBuffer, bool isSingleUse, bool isRenderPassContinue, bool isSimultaneos);
         bool EndRecording(std::shared_ptr<VulkanCommandBufferDto> cmBuffer);
+        bool ExecuteCommand(DriverContext *context, std::shared_ptr<VulkanCommandBufferDto> cmBuffer);
         void Submitted(std::shared_ptr<VulkanCommandBufferDto> cmBuffer);
         void Reset(std::shared_ptr<VulkanCommandBufferDto> cmBuffer);
 

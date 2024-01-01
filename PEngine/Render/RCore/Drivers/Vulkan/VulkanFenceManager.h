@@ -13,10 +13,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         std::shared_ptr<VulkanFence> Create(DriverContext *context, bool isSignaled);
         bool Reset(DriverContext *context, std::shared_ptr<VulkanFence> vFence);
         void Destroy(DriverContext *context, std::shared_ptr<VulkanFence> vFence);
-        bool Wait(DriverContext *context, std::shared_ptr<VulkanFence> vFence, u_int timeout);
-
-    private:
-        void _printFenceResultError(VkResult error);
+        bool Wait(DriverContext *context, std::shared_ptr<VulkanFence> vFence, u_int64_t timeout);
     };
 }
 

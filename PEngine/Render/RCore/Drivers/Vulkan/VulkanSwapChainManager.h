@@ -15,7 +15,10 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     {
     public:
         bool Create(DriverContext *contex, u_int32_t width, u_int32_t height, std::shared_ptr<VulkanDevice> m_device);
+        bool Recreate(DriverContext *context, std::shared_ptr<VulkanDevice> m_device);
         void Destroy(DriverContext *contex);
+        bool FetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences);
+        void Present(DriverContext *context, VkQueue graphicsQueue, VkQueue presentQueue, VkSemaphore renderComplete);
 
     private:
         std::shared_ptr<VulkanSwapChain> m_swapChain;
@@ -26,9 +29,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         bool _createSwapChain(DriverContext *context, u_int32_t width, u_int32_t height);
         bool _createSwapChainImages(DriverContext *context);
+        // for internal use WARNING: Different impl compared to public Recreate()
         void _reCreateSwapChain(DriverContext *context, u_int32_t width, u_int32_t height);
-        bool _fetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences);
-        void _swapChainPresent(DriverContext *context, VkQueue graphicsQueue, VkQueue presentQueue, VkSemaphore renderComplete);
         void _calculateExtentDimension(DriverContext *context, VkExtent2D &extent);
         u_int32_t _getImageCount(DriverContext *context);
         VkSwapchainCreateInfoKHR *_getSwapChainCreateInfo(DriverContext *context, u_int32_t imageCount, VkExtent2D extent, VkPresentModeKHR presentMode);

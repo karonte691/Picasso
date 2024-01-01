@@ -38,11 +38,24 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
         if (createRenderPassRes != VK_SUCCESS)
         {
-            Picasso::Engine::Logger::Logger::Error("Impossibile creare il render pass");
+            Picasso::Engine::Logger::Logger::Error("unable to create the render pass");
             return {};
         }
 
         rpData.renderHandler = std::make_shared<VkRenderPass>(renderPass);
+
+        rpData.area.x = area.x;
+        rpData.area.y = area.y;
+        rpData.area.w = area.w;
+        rpData.area.h = area.h;
+
+        rpData.color.a = color.a;
+        rpData.color.b = color.b;
+        rpData.color.g = color.g;
+        rpData.color.r = color.r;
+
+        rpData.depth = depth;
+        rpData.stencil = stencil;
 
         return rpData;
     }
@@ -82,14 +95,14 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         rpBeginInfo.clearValueCount = 2;
         rpBeginInfo.pClearValues = clearValues;
 
-        vkCmdBeginRenderPass(*vCmBuffer->commandBufferHandler.get(), &rpBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(*vCmBuffer->commandBufferHandler, &rpBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         vCmBuffer->state = COMMAND_BUFFER_STATE_IN_RENDER_PASS;
     }
 
     void VulkanGraphicsPipeline::RenderPassEnd(VulkanCommandBufferDto *vCmBuffer, VulkanRenderPass *vRenderPassData)
     {
-        vkCmdEndRenderPass(*vCmBuffer->commandBufferHandler.get());
+        vkCmdEndRenderPass(*vCmBuffer->commandBufferHandler);
         vCmBuffer->state = COMMAND_BUFFER_STATE_RECORDING;
     }
 

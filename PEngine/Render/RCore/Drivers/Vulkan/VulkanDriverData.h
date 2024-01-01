@@ -77,6 +77,8 @@ namespace Picasso::Engine::Render::Core::Drivers
         u_int32_t currentFrame = 0;
         u_int32_t fencesCount = 0;
         u_int32_t memoryIndex = -1;
+        u_int64_t frameBufferSizeGeneration = 0;
+        u_int64_t frameBufferSizeLastGeneration = 0;
         bool recreateSwapChain = false;
         VkInstance vulkanInstance = VK_NULL_HANDLE;
         VkSurfaceKHR surface = VK_NULL_HANDLE;
@@ -84,8 +86,8 @@ namespace Picasso::Engine::Render::Core::Drivers
         VkCommandPool pool;
         std::shared_ptr<VulkanSwapChain> swapChain;
         std::shared_ptr<VulkanRenderPass> renderPass;
-        std::vector<VulkanFence **> imgInFlight;
-        std::vector<std::shared_ptr<VulkanCommandBufferDto>> *cmBuffers;
+        std::vector<std::shared_ptr<VulkanFence>> imgInFlight;
+        std::vector<std::shared_ptr<VulkanCommandBufferDto>> cmBuffers;
         std::vector<std::shared_ptr<VkSemaphore>> imageAvailableSemaphores;
         std::vector<std::shared_ptr<VkSemaphore>> queueCompleteSemaphores;
         std::vector<std::shared_ptr<VulkanFence>> fences;

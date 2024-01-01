@@ -155,7 +155,7 @@ namespace Picasso::Engine
         m_frameData->deltaTime = m_time->GetDeltaTime();
         Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
-        if (!m_render->RenderFrame(m_frameData))
+        if (!m_render->RenderFrame(m_frameData, m_platform->GetState()))
         {
             // not a critical error ONE corrupted frame..but..
             engineState->running = false;

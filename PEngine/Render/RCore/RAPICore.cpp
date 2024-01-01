@@ -36,11 +36,12 @@ namespace Picasso::Engine::Render::Core
 
     void RAPICore::Resize(std::shared_ptr<RAPIData> apiData, uint16_t width, u_int16_t height)
     {
+        m_renderDriver->OnResize(width, height);
     }
 
-    bool RAPICore::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
+    bool RAPICore::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
-        return true;
+        return m_renderDriver->BeginFrame(apiData, deltaTime, pState);
     }
 
     bool RAPICore::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
