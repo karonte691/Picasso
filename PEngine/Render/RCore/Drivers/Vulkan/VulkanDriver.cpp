@@ -77,8 +77,6 @@ namespace Picasso::Engine::Render::Core::Drivers
             return false;
         }
 
-        m_context->currentFrame = apiData->frameNumber;
-
         if (m_context->recreateSwapChain)
         {
             VkResult deviceWaitRes = vkDeviceWaitIdle(m_context->devices.logicalDevice);
@@ -142,6 +140,18 @@ namespace Picasso::Engine::Render::Core::Drivers
         if (!m_Render->Wait(m_context))
         {
             Picasso::Engine::Logger::Logger::Error("Cannot wait for fences");
+            return false;
+        }
+
+        if (m_context->currentFrame >= m_context->imageAvailableSemaphores.size())
+        {
+            Picasso::Engine::Logger::Logger::Error("currentFrame index out of bounds");
+            return false;
+        }
+
+        if (!m_context->imageAvailableSemaphores[m_context->currentFrame])
+        {
+            Picasso::Engine::Logger::Logger::Error("Semaphore pointer is null");
             return false;
         }
 

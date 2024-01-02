@@ -51,6 +51,7 @@ namespace Picasso::Engine::Render
             }
 
             m_renderData->frameNumber++;
+            Picasso::Engine::Logger::Logger::Debug("Render completed succesfully");
         }
 
         return true;

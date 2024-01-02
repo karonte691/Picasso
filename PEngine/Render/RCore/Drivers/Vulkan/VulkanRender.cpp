@@ -145,6 +145,12 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     bool VulkanRender::Wait(DriverContext *context)
     {
+        if (context->currentFrame >= context->fences.size())
+        {
+            Picasso::Engine::Logger::Logger::Warn("currentFrame index greater than fences array: %d -> %d", context->cmBuffers, context->fences.size());
+            return true;
+        }
+
         if (context->fences[context->currentFrame] == nullptr)
         {
             return true;

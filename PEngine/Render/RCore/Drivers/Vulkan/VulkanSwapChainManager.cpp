@@ -78,6 +78,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     bool VulkanSwapChainManager::FetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences)
     {
+        Picasso::Engine::Logger::Logger::Debug("Images present in queue: %d", m_swapChain->imageCount);
+
         VkResult acqImageResult = vkAcquireNextImageKHR(context->devices.logicalDevice,
                                                         m_swapChain->scHandler,
                                                         timeout,
@@ -99,6 +101,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return false;
         }
 
+        Picasso::Engine::Logger::Logger::Info("Image %d acquired succesfully", *m_imageIndex.get());
+
         return true;
     }
 
@@ -111,7 +115,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = &m_swapChain->scHandler;
         presentInfo.pImageIndices = m_imageIndex.get();
-        presentInfo.pResults = 0;
+        presentInfo.pResults = nullptr; // Modificato da 0 a nullptr per chiarezza
 
         VkResult queuePresentResult = vkQueuePresentKHR(presentQueue, &presentInfo);
 
@@ -119,16 +123,16 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         {
             Picasso::Engine::Logger::Logger::Debug("Presenting next image returned VK_ERROR_OUT_OF_DATE_KHR or VK_SUBOPTIMAL_KHR. Recreating the swapchain..");
             this->_reCreateSwapChain(context, context->frameBufferWidth, context->frameBufferHeight);
-
             return;
         }
 
-        if (queuePresentResult == VK_SUCCESS)
+        if (queuePresentResult != VK_SUCCESS)
         {
+            Picasso::Engine::Logger::Logger::Fatal("Failed to present the next image in the swap chain, Error code: %d", queuePresentResult);
             return;
         }
 
-        Picasso::Engine::Logger::Logger::Fatal("Failed to present the next image in the swap chain");
+        context->currentFrame = (context->currentFrame + 1) % context->swapChain->maxRenderFrames;
     }
 
     bool VulkanSwapChainManager::_createSwapChain(DriverContext *context, u_int32_t width, u_int32_t height)

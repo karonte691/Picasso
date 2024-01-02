@@ -71,6 +71,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             // no fences to wait
             return true;
         }
+
         if (vFence->isSignaled)
         {
             return true;
