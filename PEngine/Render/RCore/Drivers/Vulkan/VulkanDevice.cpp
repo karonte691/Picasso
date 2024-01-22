@@ -192,7 +192,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
                 if (!isExtFound)
                 {
-                    Picasso::Engine::Logger::Logger::Debug("Required extension %s not found...", requirements->deviceExtensionNames[i]);
+                    Picasso::Engine::Logger::Logger::Error("Required extension %s not found...", requirements->deviceExtensionNames[i]);
                     delete[] availableExtensions;
                     return false;
                 }

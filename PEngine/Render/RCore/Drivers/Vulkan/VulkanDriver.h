@@ -13,6 +13,9 @@
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanPlatform.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanSwapChainManager.h>
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanRender.h>
+#if PICASSO_DEBUG_ENABLE
+#include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDebug.h>
+#endif
 #include <memory>
 
 #include <Vulkan/vulkan.h>
@@ -50,6 +53,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         bool _initVulkan(const char *app_name, unsigned app_version, const std::vector<const char *> &instance_extensions);
         const char *_parseReturnError(VkResult result);
         bool _IsExtensionSupported(const char *extensionName);
+        bool _IsValidationLayerSupported(const char *layerName);
     };
 }
 

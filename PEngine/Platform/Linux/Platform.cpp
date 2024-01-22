@@ -16,6 +16,9 @@
 
 namespace Picasso::Engine::Platform
 {
+    using Picasso::Engine::EventSystem::PicassoRegistry;
+    using Picasso::Engine::EventSystem::Events::PEvent;
+
     using Picasso::Engine::Input::BUTTONS;
     using Picasso::Engine::Input::KEYS;
     using Picasso::Engine::Input::pInputState;
@@ -184,6 +187,7 @@ namespace Picasso::Engine::Platform
             case XCB_CONFIGURE_NOTIFY:
                 break;
             case XCB_EXPOSE:
+                PicassoRegistry::Dispatch(PEvent::PLATFORM_EXPOSE);
                 break;
             case XCB_CLIENT_MESSAGE:
             {

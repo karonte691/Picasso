@@ -82,7 +82,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         if (waitForFencesRes != VK_SUCCESS)
         {
 #if PICASSO_DEBUG_ENABLE
-            Picasso::Engine::Render::Core::Drivers::VulkanDebug::PrintDeviceWaitError(waitForFencesRes);
+            Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanDebug::PrintDeviceWaitError(waitForFencesRes);
 #endif
             return false;
         }

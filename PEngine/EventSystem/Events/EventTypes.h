@@ -16,12 +16,14 @@ namespace Picasso::Engine::EventSystem::Events
         BUTTON_PRESSED,
         BUTTON_RELEASED,
         MOUSE_MOVED,
-        MOUSE_WHEEL
+        MOUSE_WHEEL,
+
+        PLATFORM_EXPOSE
     };
 
     struct PEventData
     {
-        union 
+        union
         {
             int64_t i64[2];
             u_int64_t u64[2];

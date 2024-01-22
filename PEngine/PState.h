@@ -41,8 +41,8 @@ namespace Picasso::Engine
     {
 #ifdef PICASSO_LINUX_BUILD
         std::shared_ptr<LinuxPlatformInternalState> state;
-    };
 #endif
+    };
 }
 
 #endif

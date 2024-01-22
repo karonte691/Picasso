@@ -101,7 +101,13 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return false;
         }
 
-        Picasso::Engine::Logger::Logger::Info("Image %d acquired succesfully", *m_imageIndex.get());
+        if (fences != 0)
+        {
+            vkWaitForFences(context->devices.logicalDevice, 1, &fences, VK_TRUE, UINT64_MAX);
+            Picasso::Engine::Logger::Logger::Debug("Finish waiting for fences %d", m_swapChain->imageCount);
+        }
+
+        Picasso::Engine::Logger::Logger::Debug("Image %d acquired succesfully", *m_imageIndex.get());
 
         return true;
     }
@@ -114,9 +120,10 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         presentInfo.pWaitSemaphores = &renderComplete;
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = &m_swapChain->scHandler;
-        presentInfo.pImageIndices = m_imageIndex.get();
+        presentInfo.pImageIndices = &context->imageIndex;
         presentInfo.pResults = nullptr; // Modificato da 0 a nullptr per chiarezza
 
+        vkQueueWaitIdle(presentQueue);
         VkResult queuePresentResult = vkQueuePresentKHR(presentQueue, &presentInfo);
 
         if (queuePresentResult == VK_ERROR_OUT_OF_DATE_KHR || queuePresentResult == VK_SUBOPTIMAL_KHR)
@@ -132,7 +139,14 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
             return;
         }
 
+        vkDeviceWaitIdle(context->devices.logicalDevice);
+
         context->currentFrame = (context->currentFrame + 1) % context->swapChain->maxRenderFrames;
+    }
+
+    std::shared_ptr<u_int32_t> VulkanSwapChainManager::GetImageIndex()
+    {
+        return m_imageIndex;
     }
 
     bool VulkanSwapChainManager::_createSwapChain(DriverContext *context, u_int32_t width, u_int32_t height)

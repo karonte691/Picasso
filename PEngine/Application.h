@@ -4,6 +4,7 @@
 #define APPLICATION_H
 
 #include <PEngine/PConfig.h>
+#include <PEngine/PBuild.h>
 #include <PEngine/PState.h>
 #include <PEngine/Logger/Logger.h>
 #include <PEngine/Core/Clock.h>

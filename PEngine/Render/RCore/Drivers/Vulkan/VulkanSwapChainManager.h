@@ -19,6 +19,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         void Destroy(DriverContext *contex);
         bool FetchNextImageIndex(DriverContext *context, u_int64_t timeout, VkSemaphore imageSemaphore, VkFence fences);
         void Present(DriverContext *context, VkQueue graphicsQueue, VkQueue presentQueue, VkSemaphore renderComplete);
+        std::shared_ptr<u_int32_t> GetImageIndex();
 
     private:
         std::shared_ptr<VulkanSwapChain> m_swapChain;

@@ -15,7 +15,7 @@ namespace Picasso::Engine::Render
         m_internalRender = std::make_unique<RAPICore>();
         m_renderData = std::make_shared<RAPIData>();
 
-        if (!m_internalRender->Create(appName, RDRIVERS::VULKAN, pState, engineState, m_renderData))
+        if (!m_internalRender->Create(appName, RDRIVERS::OPEN_GL, pState, engineState, m_renderData))
         {
             Picasso::Engine::Logger::Logger::Fatal("Error trying to setup the internal render...");
             return false;
@@ -51,7 +51,7 @@ namespace Picasso::Engine::Render
             }
 
             m_renderData->frameNumber++;
-            Picasso::Engine::Logger::Logger::Debug("Render completed succesfully");
+            Picasso::Engine::Logger::Logger::Debug("Render frame completed succesfully");
         }
 
         return true;

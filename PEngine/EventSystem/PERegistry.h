@@ -15,19 +15,23 @@ namespace Picasso::Engine::EventSystem
 
     class PicassoRegistry
     {
-        public:
-            static void Init()
-            {
-                Dispatcher::Instance = new Dispatcher();
-            }
-            static void Dispatch(PEvent event, PEventData eventData)
-            {
-                Dispatcher::Instance->Post(event, eventData);
-            }
-            static void Reset()
-            {
-                Dispatcher::Instance = nullptr;
-            }
+    public:
+        static void Init()
+        {
+            Dispatcher::Instance = new Dispatcher();
+        }
+        static void Dispatch(PEvent event)
+        {
+            Dispatcher::Instance->Post(event);
+        }
+        static void Dispatch(PEvent event, PEventData eventData)
+        {
+            Dispatcher::Instance->Post(event, eventData);
+        }
+        static void Reset()
+        {
+            Dispatcher::Instance = nullptr;
+        }
     };
 }
 #endif

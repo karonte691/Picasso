@@ -1,13 +1,13 @@
-#include "EventFactory.h"
-#include "Events/KeyPressedEvent.h"
-#include "Events/KeyReleasedEvent.h"
-#include "Events/ButtonReleasedEvent.h"
-#include "Events/ButtonPressedEvent.h"
-#include "Events/MouseMovedEvent.h"
-#include "Events/MouseWheelEvent.h"
+#include <PEngine/EventSystem/EventFactory.h>
+#include <PEngine/EventSystem/Events/KeyPressedEvent.h>
+#include <PEngine/EventSystem/Events/KeyReleasedEvent.h>
+#include <PEngine/EventSystem/Events/ButtonReleasedEvent.h>
+#include <PEngine/EventSystem/Events/ButtonPressedEvent.h>
+#include <PEngine/EventSystem/Events/MouseMovedEvent.h>
+#include <PEngine/EventSystem/Events/MouseWheelEvent.h>
+#include <PEngine/EventSystem/Events/PlatformExposeEvent.h>
 
 #include <unordered_map>
-
 
 namespace Picasso::Engine::EventSystem
 {
@@ -21,11 +21,14 @@ namespace Picasso::Engine::EventSystem
             {PEvent::BUTTON_RELEASED, std::make_shared<Events::ButtonReleasedEvent>()},
             {PEvent::BUTTON_PRESSED, std::make_shared<Events::ButtonPressedEvent>()},
             {PEvent::MOUSE_MOVED, std::make_shared<Events::MouseMovementEvent>()},
-            {PEvent::MOUSE_WHEEL, std::make_shared<Events::MouseWheelEvent>()}
+            {PEvent::MOUSE_WHEEL, std::make_shared<Events::MouseWheelEvent>()},
+            {PEvent::PLATFORM_EXPOSE, std::make_shared<Events::PlatformExposedEvent>()}
+
         };
 
-        const auto& it = eventMap.find(event);
-        if (it != eventMap.end()) {
+        const auto &it = eventMap.find(event);
+        if (it != eventMap.end())
+        {
             return it->second;
         }
 

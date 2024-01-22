@@ -16,7 +16,8 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
 
-                        
+                Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
+
                 Render/RCore/Drivers/Vulkan/Linux/VulkanPlatform.cpp
                 Render/RCore/Drivers/Vulkan/VulkanDevice.cpp
                 Render/RCore/Drivers/Vulkan/VulkanImageManager.cpp
@@ -26,7 +27,10 @@ if(UNIX AND NOT APPLE)
                 Render/RCore/Drivers/Vulkan/VulkanCommandBuffer.cpp
                 Render/RCore/Drivers/Vulkan/VulkanFrameBuffer.cpp
                 Render/RCore/Drivers/Vulkan/VulkanRender.cpp
+                Render/RCore/Drivers/Vulkan/VulkanDebug.cpp
                 Render/RCore/Drivers/Vulkan/VulkanDriver.cpp
+
+
                 Render/RCore/DriverManager.cpp
                 Render/RCore/RAPICore.cpp
                 Render/PRender.cpp
@@ -44,5 +48,6 @@ if(UNIX AND NOT APPLE)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libvulkan.so)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libglfw.so)
 endif()
 

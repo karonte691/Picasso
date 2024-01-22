@@ -17,6 +17,7 @@
 #include <PEngine/Input/Translator/MouseCodeTranslator.h>
 #include <PEngine/Input/Listener/KeyboardListener.h>
 #include <PEngine/Input/Listener/MouseListener.h>
+#include <PEngine/EventSystem/PERegistry.h>
 #include <PEngine/Input/InputState.h>
 #include <PEngine/PState.h>
 

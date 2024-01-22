@@ -84,7 +84,7 @@ namespace Picasso::Engine::Render::Core::Drivers
             if (deviceWaitRes != VK_SUCCESS)
             {
 #if PICASSO_DEBUG_ENABLE
-                Picasso::Engine::Render::Core::Drivers::VulkanDebug::PrintDeviceWaitError(deviceWaitRes);
+                Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanDebug::PrintDeviceWaitError(deviceWaitRes);
 #endif
                 return false;
             }
@@ -101,7 +101,7 @@ namespace Picasso::Engine::Render::Core::Drivers
             if (deviceWaitRes != VK_SUCCESS)
             {
 #if PICASSO_DEBUG_ENABLE
-                Picasso::Engine::Render::Core::Drivers::VulkanDebug::PrintDeviceWaitError(deviceWaitRes);
+                Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanDebug::PrintDeviceWaitError(deviceWaitRes);
 #endif
                 return false;
             }
@@ -164,6 +164,7 @@ namespace Picasso::Engine::Render::Core::Drivers
             return false;
         }
 
+        m_context->imageIndex = *m_swapChainManager->GetImageIndex();
         if (!m_Render->BeginRenderFrame(m_context))
         {
             return false;
@@ -246,25 +247,61 @@ namespace Picasso::Engine::Render::Core::Drivers
         instCreate.flags = 0;
         instCreate.enabledExtensionCount = static_cast<std::uint32_t>(instance_extensions.size());
         instCreate.ppEnabledExtensionNames = &instance_extensions[0];
-        instCreate.enabledLayerCount = 0;
-        instCreate.ppEnabledLayerNames = 0;
         instCreate.pApplicationInfo = &vk_app_info;
 
         for (const auto &extension : instance_extensions)
         {
             if (!this->_IsExtensionSupported(extension))
             {
-                Picasso::Engine::Logger::Logger::Debug("Required extension not supported: %s", extension);
+                Picasso::Engine::Logger::Logger::Error("Required extension not supported: %s", extension);
                 return false;
             }
         }
+
+#if PICASSO_DEBUG_ENABLE
+        std::vector<const char *> validationLayers = Picasso::Engine::Render::Core::Drivers::Vulkan::VulkanDebug::GetValidationLayerList();
+
+        if (validationLayers.size() == 0)
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot proceed in debug mode. Quitting...");
+            return false;
+        }
+
+        std::vector<const char *> availableLayers(validationLayers.size());
+        int i = 0;
+
+        for (const auto &layer : validationLayers)
+        {
+
+            if (layer != nullptr)
+            {
+                Picasso::Engine::Logger::Logger::Debug("Validating required layer %s", layer);
+
+                if (!this->_IsValidationLayerSupported(layer))
+                {
+                    Picasso::Engine::Logger::Logger::Error("Required layer not supported: %s", layer);
+                    return false;
+                }
+
+                Picasso::Engine::Logger::Logger::Debug("Required layer found: %s", layer);
+                availableLayers[i] = layer;
+                ++i;
+            }
+        }
+
+        instCreate.enabledLayerCount = static_cast<std::uint32_t>(availableLayers.size());
+        instCreate.ppEnabledLayerNames = &availableLayers[0];
+#else
+        instCreate.enabledLayerCount = 0;
+        instCreate.ppEnabledLayerNames = 0;
+#endif
 
         VkResult res = vkCreateInstance(&instCreate, 0, &m_context->vulkanInstance);
 
         if (res != VK_SUCCESS)
         {
             const char *error = this->_parseReturnError(res);
-            Picasso::Engine::Logger::Logger::Debug("vkCreateInstance return %s", error);
+            Picasso::Engine::Logger::Logger::Error("vkCreateInstance return %s", error);
         }
 
         return res == VK_SUCCESS;
@@ -281,6 +318,40 @@ namespace Picasso::Engine::Render::Core::Drivers
         for (const auto &ext : extensions)
         {
             if (strcmp(ext.extensionName, extensionName) == 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool VulkanDriver::_IsValidationLayerSupported(const char *layerName)
+    {
+        std::vector<VkLayerProperties> availableLayers;
+
+        u_int32_t availableLayersCount = 0;
+        VkResult countAvailableLayersRes = vkEnumerateInstanceLayerProperties(&availableLayersCount, 0);
+
+        if (countAvailableLayersRes != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot enumerate layer properties");
+            return false;
+        }
+
+        availableLayers.resize(availableLayersCount);
+
+        VkResult getAvailableLayersRes = vkEnumerateInstanceLayerProperties(&availableLayersCount, availableLayers.data());
+
+        if (getAvailableLayersRes != VK_SUCCESS)
+        {
+            Picasso::Engine::Logger::Logger::Error("Cannot fetch layer properties");
+            return false;
+        }
+
+        for (const auto &layer : availableLayers)
+        {
+            if (strcmp(layer.layerName, layerName) == 0)
             {
                 return true;
             }

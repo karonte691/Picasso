@@ -22,14 +22,16 @@ namespace Picasso::Engine::EventSystem
 
     class Dispatcher
     {
-    public: 
+    public:
         Dispatcher();
 
-        using SlotType = std::function<void(std::shared_ptr<BaseEvent<PEvent>>&)>;
-        static Dispatcher* Instance;
+        using SlotType = std::function<void(std::shared_ptr<BaseEvent<PEvent>> &)>;
+        static Dispatcher *Instance;
 
-        void Subscribe(const PEvent& eventName, SlotType&& slot);
+        void Subscribe(const PEvent &eventName, SlotType &&slot);
+        void Post(const PEvent eventType) const;
         void Post(const PEvent eventType, PEventData eventData) const;
+
     private:
         std::map<PEvent, std::vector<SlotType>, Events::BaseEventComparator> m_listeners;
         std::unique_ptr<EventFactory> m_eventFactory;

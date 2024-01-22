@@ -12,6 +12,7 @@ namespace Picasso::Engine::Render::Core
     enum RDRIVERS
     {
         VULKAN,
+        OPEN_GL
         // DIRECTX NOT SUPPORTED
     };
 
