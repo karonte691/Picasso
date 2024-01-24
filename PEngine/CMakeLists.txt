@@ -16,6 +16,8 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
 
+                Render/RCore/Drivers/OpenGL/OpenGLContext.cpp
+                Render/RCore/Drivers/OpenGL/OpenGLWindow.cpp
                 Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
 
                 Render/RCore/Drivers/Vulkan/Linux/VulkanPlatform.cpp

@@ -173,7 +173,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         return true;
     }
 
-    bool VulkanDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
+    bool VulkanDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
         if (m_context == nullptr)
         {

@@ -5,24 +5,12 @@
 
 namespace Picasso::Engine::Render::Core::Drivers
 {
-    static int visualAttribs[] =
-        {
-            GLX_X_RENDERABLE, True,
-            GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-            GLX_RENDER_TYPE, GLX_RGBA_BIT,
-            GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
-            GLX_RED_SIZE, 8,
-            GLX_GREEN_SIZE, 8,
-            GLX_BLUE_SIZE, 8,
-            GLX_ALPHA_SIZE, 8,
-            GLX_DEPTH_SIZE, 24,
-            GLX_STENCIL_SIZE, 8,
-            GLX_DOUBLEBUFFER, True,
-            None};
 
     bool OpenGLDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState)
     {
         p_Context = new Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext();
+        p_OpenGLContext = new OpenGLContext();
+        p_OpenGLWindow = new OpenGLWindow();
 
         p_Context->frameBufferWidth = eState->width > 0 ? eState->width : PICASSO_DEFAULT_WIDTH;
         p_Context->frameBufferHeight = eState->height > 0 ? eState->height : PICASSO_DEFAULT_HEIGHT;
@@ -55,6 +43,18 @@ namespace Picasso::Engine::Render::Core::Drivers
             delete p_Context;
             p_Context = nullptr;
         }
+
+        if (p_OpenGLContext != nullptr)
+        {
+            delete p_OpenGLContext;
+            p_OpenGLContext = nullptr;
+        }
+
+        if (p_OpenGLWindow != nullptr)
+        {
+            delete p_OpenGLWindow;
+            p_OpenGLWindow = nullptr;
+        }
     }
 
     void OpenGLDriver::OnResize(u_int16_t width, u_int16_t height)
@@ -63,75 +63,56 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     bool OpenGLDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
+        glClearColor(0.2, 0.4, 0.9, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
         return true;
     }
-    bool OpenGLDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
+
+    bool OpenGLDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
+        glXSwapBuffers(pState->state->display, p_Context->glxwindow);
         return true;
     }
 
     bool OpenGLDriver::_InitOpenGl()
     {
-        int numFbConfigs = 0;
-        int visualId = 0;
-        int defaultScreen = DefaultScreen(p_PlatformState->state->display);
+        GLXContext context = p_OpenGLContext->Get(p_PlatformState);
 
-        GLXFBConfig *fbConfigs = glXChooseFBConfig(p_PlatformState->state->display, defaultScreen, visualAttribs, &numFbConfigs);
-
-        if (!fbConfigs || numFbConfigs == 0)
-        {
-            Picasso::Engine::Logger::Logger::Error("Cannot getglXGetFBConfigs data");
-            XFree(fbConfigs);
-
-            return false;
-        }
-
-        GLXFBConfig fb_config = fbConfigs[0];
-
-        glXGetFBConfigAttrib(p_PlatformState->state->display, fb_config, GLX_VISUAL_ID, &visualId);
-
-        GLXContext context = glXCreateNewContext(p_PlatformState->state->display, fb_config, GLX_RGBA_TYPE, 0, True);
         if (!context)
         {
             Picasso::Engine::Logger::Logger::Error("glXCreateNewContext returned an error");
-            XFree(fbConfigs);
+
+            p_OpenGLContext->ClearFrameBufferConfig();
 
             return false;
         }
 
-        /* Create GLX Window */
-        GLXDrawable drawable = 0;
-
-        GLXWindow glxwindow = glXCreateWindow(p_PlatformState->state->display, *fbConfigs, p_PlatformState->state->window, 0);
+        GLXFBConfig *frameBufferConfigs = p_OpenGLContext->GetFrameBufferConfig();
 
         if (!p_PlatformState->state->window)
         {
-            glXDestroyContext(p_PlatformState->state->display, context);
+            p_OpenGLContext->DestroyContext(p_PlatformState, context);
 
             Picasso::Engine::Logger::Logger::Error("glXCreateWindow returned an error\n");
-            XFree(fbConfigs);
 
             return false;
         }
 
-        drawable = glxwindow;
+        GLXWindow glxWindow = p_OpenGLWindow->Get(p_PlatformState, frameBufferConfigs);
 
-        bool glxMakeCtxCurrentRes = glXMakeContextCurrent(p_PlatformState->state->display, drawable, drawable, context);
-
-        if (!glxMakeCtxCurrentRes)
+        if (!p_OpenGLContext->SetCurrentContext(p_PlatformState, context, glxWindow))
         {
-            glXDestroyContext(p_PlatformState->state->display, context);
+            p_OpenGLContext->DestroyContext(p_PlatformState, context);
 
             Picasso::Engine::Logger::Logger::Error("Cannot set glx current context\n");
-            XFree(fbConfigs);
 
             return false;
         }
 
         p_Context->glxContext = context;
-        p_Context->glxwindow = glxwindow;
+        p_Context->glxwindow = glxWindow;
 
-        XFree(fbConfigs);
+        p_OpenGLContext->ClearFrameBufferConfig();
 
         return true;
     }
