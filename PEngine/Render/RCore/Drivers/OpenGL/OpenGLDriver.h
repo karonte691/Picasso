@@ -10,8 +10,6 @@
 
 namespace Picasso::Engine::Render::Core::Drivers
 {
-    using Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext;
-
     class OpenGLDriver : public DriverImplementation
     {
     public:
@@ -22,7 +20,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         void Shutdown() override;
 
     private:
-        DriverContext *p_Context;
+        Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext *p_Context;
         std::shared_ptr<PPlatformState> p_PlatformState;
 
         bool _InitOpenGl();

@@ -100,17 +100,6 @@ namespace Picasso::Engine::Platform
 
         Picasso::Engine::Logger::Logger::Debug("XCB window created succesfully");
 
-        // change window title
-        xcb_change_property(
-            m_pstate->connection,
-            XCB_PROP_MODE_REPLACE,
-            m_pstate->window,
-            XCB_ATOM_WM_NAME,
-            XCB_ATOM_STRING,
-            0,
-            appName.length(),
-            appName.c_str());
-
         // register destroy events
         this->_registerWindowDestroyEvent();
 

@@ -48,6 +48,7 @@ if(UNIX AND NOT APPLE)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libvulkan.so)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGL.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libglfw.so)
 endif()
 

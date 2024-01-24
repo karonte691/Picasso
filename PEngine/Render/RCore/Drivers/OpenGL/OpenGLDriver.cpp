@@ -22,7 +22,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     bool OpenGLDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState)
     {
-        p_Context = new DriverContext();
+        p_Context = new Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext();
 
         p_Context->frameBufferWidth = eState->width > 0 ? eState->width : PICASSO_DEFAULT_WIDTH;
         p_Context->frameBufferHeight = eState->height > 0 ? eState->height : PICASSO_DEFAULT_HEIGHT;
@@ -57,6 +57,19 @@ namespace Picasso::Engine::Render::Core::Drivers
         }
     }
 
+    void OpenGLDriver::OnResize(u_int16_t width, u_int16_t height)
+    {
+    }
+
+    bool OpenGLDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    {
+        return true;
+    }
+    bool OpenGLDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
+    {
+        return true;
+    }
+
     bool OpenGLDriver::_InitOpenGl()
     {
         int numFbConfigs = 0;
@@ -68,6 +81,8 @@ namespace Picasso::Engine::Render::Core::Drivers
         if (!fbConfigs || numFbConfigs == 0)
         {
             Picasso::Engine::Logger::Logger::Error("Cannot getglXGetFBConfigs data");
+            XFree(fbConfigs);
+
             return false;
         }
 
@@ -79,6 +94,8 @@ namespace Picasso::Engine::Render::Core::Drivers
         if (!context)
         {
             Picasso::Engine::Logger::Logger::Error("glXCreateNewContext returned an error");
+            XFree(fbConfigs);
+
             return false;
         }
 
@@ -92,6 +109,8 @@ namespace Picasso::Engine::Render::Core::Drivers
             glXDestroyContext(p_PlatformState->state->display, context);
 
             Picasso::Engine::Logger::Logger::Error("glXCreateWindow returned an error\n");
+            XFree(fbConfigs);
+
             return false;
         }
 
@@ -104,13 +123,15 @@ namespace Picasso::Engine::Render::Core::Drivers
             glXDestroyContext(p_PlatformState->state->display, context);
 
             Picasso::Engine::Logger::Logger::Error("Cannot set glx current context\n");
+            XFree(fbConfigs);
+
             return false;
         }
 
         p_Context->glxContext = context;
         p_Context->glxwindow = glxwindow;
 
-        delete fbConfigs;
+        XFree(fbConfigs);
 
         return true;
     }
