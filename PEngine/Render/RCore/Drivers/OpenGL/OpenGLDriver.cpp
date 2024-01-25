@@ -63,8 +63,8 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     bool OpenGLDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
-        glClearColor(0.2, 0.4, 0.9, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
+
         return true;
     }
 

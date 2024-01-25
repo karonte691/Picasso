@@ -16,6 +16,8 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
 
+                Render/RCore/Drivers/OpenGL/Shaders/OpenGLShader.cpp
+                Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.cpp
                 Render/RCore/Drivers/OpenGL/OpenGLContext.cpp
                 Render/RCore/Drivers/OpenGL/OpenGLWindow.cpp
                 Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
@@ -52,5 +54,6 @@ if(UNIX AND NOT APPLE)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libvulkan.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGL.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libglfw.so)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGLEW.so)
 endif()
 
