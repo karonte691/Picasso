@@ -123,6 +123,17 @@ namespace Picasso::Engine::Render::Core::Drivers
             return false;
         }
 
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        Picasso::Engine::Logger::Logger::Debug("Driver OpenGL  set up succesfully");
+
         return true;
     }
 
