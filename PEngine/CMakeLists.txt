@@ -2,7 +2,7 @@
 include_directories(vendor)
 
 if(UNIX AND NOT APPLE)
-        add_library(PEngine SHARED          
+        set(PICASSO_ENGINE_SRC      
                 
                 Core/Clock.cpp
                 Core/PTime.cpp
@@ -15,27 +15,42 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/KeyboardListener.cpp
                 Input/Listener/MouseListener.cpp
                 Input/PInput.cpp
+        )
 
-                Render/RCore/Drivers/OpenGL/Shaders/OpenGLShader.cpp
-                Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.cpp
-                Render/RCore/Drivers/OpenGL/OpenGLContext.cpp
-                Render/RCore/Drivers/OpenGL/OpenGLWindow.cpp
-                Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
+                if(${DRIVER} STREQUAL "OpenGl")
+                        set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}  
 
-                Render/RCore/Drivers/Vulkan/Linux/VulkanPlatform.cpp
-                Render/RCore/Drivers/Vulkan/VulkanDevice.cpp
-                Render/RCore/Drivers/Vulkan/VulkanImageManager.cpp
-                Render/RCore/Drivers/Vulkan/VulkanFenceManager.cpp
-                Render/RCore/Drivers/Vulkan/VulkanSwapChainManager.cpp
-                Render/RCore/Drivers/Vulkan/VulkanGraphicsPipeline.cpp
-                Render/RCore/Drivers/Vulkan/VulkanCommandBuffer.cpp
-                Render/RCore/Drivers/Vulkan/VulkanFrameBuffer.cpp
-                Render/RCore/Drivers/Vulkan/VulkanRender.cpp
-                Render/RCore/Drivers/Vulkan/VulkanDebug.cpp
-                Render/RCore/Drivers/Vulkan/VulkanDriver.cpp
+                                Render/RCore/Drivers/OpenGL/Shaders/OpenGLShader.cpp
+                                Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLContext.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLWindow.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.cpp
+                        )
+                endif()
 
+                if(${DRIVER} STREQUAL "Vulkan")
+                        set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}  
+
+                                Render/RCore/Drivers/Vulkan/Linux/VulkanPlatform.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanDevice.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanImageManager.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanFenceManager.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanSwapChainManager.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanGraphicsPipeline.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanCommandBuffer.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanFrameBuffer.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanRender.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanDebug.cpp
+                                Render/RCore/Drivers/Vulkan/VulkanDriver.cpp
+                        )
+
+                endif()
+                
+        set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}   
 
                 Render/RCore/DriverManager.cpp
+                Render/RCore/GraphicsPipelineFactory.cpp
                 Render/RCore/RAPICore.cpp
                 Render/PRender.cpp
 
@@ -45,6 +60,8 @@ if(UNIX AND NOT APPLE)
                 Application.cpp
                 PicassoEngine.cpp
         )
+
+        add_library(PEngine SHARED ${PICASSO_ENGINE_SRC})
 
         target_include_directories(PEngine PUBLIC ${CMAKE_SOURCE_DIR})
 

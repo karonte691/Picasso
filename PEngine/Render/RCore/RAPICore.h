@@ -8,6 +8,7 @@
 #include <PEngine/PState.h>
 #include <PEngine/Render/RData.h>
 #include <PEngine/Render/RCore/DriverManager.h>
+#include <PEngine/Render/RCore/GraphicsPipelineFactory.h>
 #include <PEngine/Render/RCore/Drivers/DriverImplementation.h>
 
 namespace Picasso::Engine::Render::Core
@@ -25,11 +26,12 @@ namespace Picasso::Engine::Render::Core
         void Destroy();
         void Resize(std::shared_ptr<RAPIData> apiData, uint16_t width, u_int16_t height);
         bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState);
-        bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime);
+        bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState);
 
     private:
         std::shared_ptr<DriverImplementation> m_renderDriver;
         std::unique_ptr<DriverManager> m_driverManager;
+        std::shared_ptr<RGraphicsPipeline> p_GraphicsPipeline;
     };
 }
 

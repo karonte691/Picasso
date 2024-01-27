@@ -228,6 +228,11 @@ namespace Picasso::Engine::Render::Core::Drivers
         m_vulkanPlatform = nullptr;
     }
 
+    RDRIVERS VulkanDriver::GetType()
+    {
+        return RDRIVERS::VULKAN;
+    }
+
     bool VulkanDriver::_initVulkan(const char *app_name,
                                    unsigned app_version,
                                    const std::vector<const char *> &instance_extensions)

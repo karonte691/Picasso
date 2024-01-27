@@ -1,27 +1,34 @@
 #include <PEngine/Render/RCore/DriverManager.h>
 
-#include <unordered_map>
+#if PICASSO_VULKAN_BUILD
 #include <PEngine/Render/RCore/Drivers/Vulkan/VulkanDriver.h>
+#elif PICASSO_OPENGL_BUILD
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLDriver.h>
+#endif
+
+#include <PEngine/PBuild.h>
 
 namespace Picasso::Engine::Render::Core
 {
-    using DriverMap = std::unordered_map<RDRIVERS, std::shared_ptr<DriverImplementation>>;
-
-    using Picasso::Engine::Render::Core::Drivers::OpenGLDriver;
-    using Picasso::Engine::Render::Core::Drivers::VulkanDriver;
 
     std::shared_ptr<DriverImplementation> DriverManager::GetDriver(RDRIVERS driver)
     {
-        static const DriverMap dMap = {
-            {RDRIVERS::VULKAN, std::make_shared<VulkanDriver>()},
-            {RDRIVERS::OPEN_GL, std::make_shared<OpenGLDriver>()},
-        };
-
-        const auto &it = dMap.find(driver);
-        if (it != dMap.end())
+        switch (driver)
         {
-            return it->second;
+        case RDRIVERS::VULKAN:
+#if PICASSO_VULKAN_BUILD
+            return std::make_shared<Picasso::Engine::Render::Core::Drivers::VulkanDriver>();
+#else
+            return nullptr;
+#endif
+        case RDRIVERS::OPEN_GL:
+#if PICASSO_OPENGL_BUILD
+            return std::make_shared<Picasso::Engine::Render::Core::Drivers::OpenGLDriver>();
+#else
+            return nullptr;
+#endif
+        default:
+            return nullptr;
         }
 
         return nullptr;

@@ -15,6 +15,9 @@
 
 #if PICASSO_VULKAN_BUILD
 #include <vulkan/vulkan.h>
+#elif PICASSO_OPENGL_BUILD
+#include <Glew/glew.h>
+#include <GL/glx.h>
 #endif
 
 namespace Picasso::Engine::Platform
@@ -31,6 +34,8 @@ namespace Picasso::Engine::Platform
 
 #if PICASSO_VULKAN_BUILD
         VkSurfaceKHR surface;
+#elif PICASSO_OPENGL_BUILD
+        GLXWindow glxwindow = 0;
 #endif
     };
 }

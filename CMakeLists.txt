@@ -4,8 +4,11 @@ project(picasso LANGUAGES CXX)
 set(ENV{VULKAN_SDK} "Lib/Linux/Vulkan")
 
 set(CMAKE_BUILD_TYPE Debug)
+set(DRIVER "OpenGl")
 
+include_directories(PEngine/vendor)
 
+message("Build driver " ${DRIVER})
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
   message("Debug build.")

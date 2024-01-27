@@ -44,6 +44,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
             return nullptr;
         }
 
+        glDeleteShader(vertexModule.Id);
+        glDeleteShader(fragmentModule.Id);
+
         return std::make_shared<OpenGLShader>(shaderId);
     }
 

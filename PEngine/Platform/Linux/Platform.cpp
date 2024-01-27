@@ -12,6 +12,7 @@
 
 #include <PEngine/Input/Maps/Keyboard.h>
 #include <PEngine/Input/Maps/Mouse.h>
+#include <PEngine/PBuild.h>
 #include <unistd.h>
 
 namespace Picasso::Engine::Platform
@@ -25,6 +26,8 @@ namespace Picasso::Engine::Platform
 
     bool PPlatform::Init(std::string appName, int x, int y, int width, int height)
     {
+
+#if PICASSO_VULKAN_BUILD
         m_pstate = std::make_shared<LinuxPlatformInternalState>(LinuxPlatformInternalState{
             nullptr,
             nullptr,
@@ -34,6 +37,17 @@ namespace Picasso::Engine::Platform
             0,
             0,
             nullptr});
+#elif PICASSO_OPENGL_BUILD
+        m_pstate = std::make_shared<LinuxPlatformInternalState>(LinuxPlatformInternalState{
+            nullptr,
+            nullptr,
+            0,
+            nullptr,
+            0,
+            0,
+            0,
+            0});
+#endif
 
         // connect to X Server
         m_pstate->display = XOpenDisplay(0);

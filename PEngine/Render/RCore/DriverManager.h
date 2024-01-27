@@ -9,14 +9,9 @@
 
 namespace Picasso::Engine::Render::Core
 {
-    enum RDRIVERS
-    {
-        VULKAN,
-        OPEN_GL
-        // DIRECTX NOT SUPPORTED
-    };
 
     using Picasso::Engine::Render::Core::Drivers::DriverImplementation;
+    using Picasso::Engine::Render::Core::Drivers::RDRIVERS;
 
     class DriverManager
     {

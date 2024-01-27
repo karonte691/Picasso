@@ -26,6 +26,20 @@ namespace Picasso::Engine::Render::Core
             return false;
         }
 
+        GraphicsPipelineFactory *graphicsPipelineFactory = new GraphicsPipelineFactory();
+
+        p_GraphicsPipeline = graphicsPipelineFactory->Get(m_renderDriver);
+
+        delete graphicsPipelineFactory;
+
+        if (p_GraphicsPipeline == nullptr)
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Unable to fetch a suitable graphics pipeline");
+
+            m_renderDriver->Shutdown();
+            return false;
+        }
+
         return true;
     }
 
@@ -41,12 +55,12 @@ namespace Picasso::Engine::Render::Core
 
     bool RAPICore::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
-        return m_renderDriver->BeginFrame(apiData, deltaTime, pState);
+        return p_GraphicsPipeline->BeginFrame(apiData, deltaTime, pState);
     }
 
-    bool RAPICore::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime)
+    bool RAPICore::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
-        return true;
+        return p_GraphicsPipeline->EndFrame(apiData, deltaTime, pState);
     }
 
 }

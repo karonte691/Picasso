@@ -1,5 +1,6 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLDriver.h>
 
+#include <Glew/glew.h>
 #include <GL/glx.h>
 #include <GL/gl.h>
 
@@ -11,9 +12,6 @@ namespace Picasso::Engine::Render::Core::Drivers
         p_Context = new Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext();
         p_OpenGLContext = new OpenGLContext();
         p_OpenGLWindow = new OpenGLWindow();
-
-        p_Context->frameBufferWidth = eState->width > 0 ? eState->width : PICASSO_DEFAULT_WIDTH;
-        p_Context->frameBufferHeight = eState->height > 0 ? eState->height : PICASSO_DEFAULT_HEIGHT;
 
         p_PlatformState = pState;
 
@@ -30,9 +28,9 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
         if (p_Context != nullptr)
         {
-            if (p_Context->glxwindow != 0)
+            if (p_PlatformState->state->glxwindow != 0)
             {
-                glXDestroyWindow(p_PlatformState->state->display, p_Context->glxwindow);
+                glXDestroyWindow(p_PlatformState->state->display, p_PlatformState->state->glxwindow);
             }
 
             if (p_Context->glxContext != 0)
@@ -70,7 +68,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     bool OpenGLDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
     {
-        glXSwapBuffers(pState->state->display, p_Context->glxwindow);
+        glXSwapBuffers(pState->state->display, p_PlatformState->state->glxwindow);
         return true;
     }
 
@@ -110,10 +108,26 @@ namespace Picasso::Engine::Render::Core::Drivers
         }
 
         p_Context->glxContext = context;
-        p_Context->glxwindow = glxWindow;
+        p_PlatformState->state->glxwindow = glxWindow;
 
         p_OpenGLContext->ClearFrameBufferConfig();
 
+        glewExperimental = GL_TRUE;
+
+        if (glewInit() != GLEW_OK)
+        {
+            p_OpenGLContext->DestroyContext(p_PlatformState, context);
+
+            Picasso::Engine::Logger::Logger::Error("Cannot init glew!\n");
+
+            return false;
+        }
+
         return true;
+    }
+
+    RDRIVERS OpenGLDriver::GetType()
+    {
+        return RDRIVERS::OPEN_GL;
     }
 }

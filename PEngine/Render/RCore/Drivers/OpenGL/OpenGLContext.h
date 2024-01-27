@@ -4,6 +4,7 @@
 #define OPEN_GL_CONTEXT_H
 
 #include <memory>
+#include <Glew/glew.h>
 #include <GL/glx.h>
 #include <PEngine/Logger/Logger.h>
 #include <PEngine/PState.h>

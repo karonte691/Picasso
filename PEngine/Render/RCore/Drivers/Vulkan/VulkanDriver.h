@@ -41,6 +41,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) override;
         bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) override;
         void Shutdown() override;
+        RDRIVERS GetType() override;
 
     private:
         DriverContext *m_context;

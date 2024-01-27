@@ -9,6 +9,13 @@
 
 namespace Picasso::Engine::Render::Core::Drivers
 {
+    enum RDRIVERS
+    {
+        VULKAN,
+        OPEN_GL
+        // DIRECTX NOT SUPPORTED
+    };
+
     class DriverImplementation
     {
     public:
@@ -19,6 +26,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         virtual bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) = 0;
         virtual bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) = 0;
         virtual void Shutdown() = 0;
+        virtual RDRIVERS GetType() = 0;
     };
 }
 

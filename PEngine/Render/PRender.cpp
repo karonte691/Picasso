@@ -44,7 +44,7 @@ namespace Picasso::Engine::Render
         // rendering the frame...
         if (m_internalRender->BeginFrame(m_renderData, rData->deltaTime, pState))
         {
-            if (!m_internalRender->EndFrame(m_renderData, rData->deltaTime))
+            if (!m_internalRender->EndFrame(m_renderData, rData->deltaTime, pState))
             {
                 Picasso::Engine::Logger::Logger::Error("Unable to rendering the frame...");
                 return false;
