@@ -30,6 +30,7 @@ namespace Picasso::Engine::EventSystem
         }
         static void Reset()
         {
+            delete Dispatcher::Instance;
             Dispatcher::Instance = nullptr;
         }
     };

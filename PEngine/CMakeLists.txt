@@ -7,6 +7,8 @@ if(UNIX AND NOT APPLE)
                 Core/Clock.cpp
                 Core/PTime.cpp
                 
+                File/FileManager.cpp
+                
                 EventSystem/EventFactory.cpp
                 EventSystem/Dispatcher.cpp
 

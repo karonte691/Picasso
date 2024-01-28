@@ -6,6 +6,7 @@
 #include <PEngine/PConfig.h>
 #include <PEngine/PBuild.h>
 #include <PEngine/PState.h>
+#include <PEngine/File/FileManager.h>
 #include <PEngine/Logger/Logger.h>
 #include <PEngine/Core/Clock.h>
 #include <PEngine/Core/PTime.h>
@@ -23,6 +24,7 @@ namespace Picasso::Engine
     using Picasso::Engine::EventSystem::PicassoRegistry;
     using Picasso::Engine::EventSystem::Events::BaseEvent;
     using Picasso::Engine::EventSystem::Events::PEvent;
+    using Picasso::Engine::File::FileManager;
     using Picasso::Engine::Input::PInput;
     using Picasso::Engine::Platform::PPlatform;
     using Picasso::Engine::Render::PRender;

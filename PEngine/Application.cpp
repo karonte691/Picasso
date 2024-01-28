@@ -18,6 +18,9 @@ namespace Picasso::Engine
 
         // init event system
         PicassoRegistry::Init();
+
+        // init file manager
+        FileManager::Instance = new FileManager();
     }
 
     Application::~Application()
@@ -47,6 +50,9 @@ namespace Picasso::Engine
         m_time = nullptr;
 
         PicassoRegistry::Reset();
+
+        delete FileManager::Instance;
+        FileManager::Instance = nullptr;
     }
 
     bool Application::Create(Picasso::Config::AppConfig *config)
@@ -58,6 +64,13 @@ namespace Picasso::Engine
             return false;
         }
 
+        Picasso::Engine::Logger::Logger::Info("Picasso Engine version %d.%d", PICASSO_MAJOR_VERSION, PICASSO_MINOR_VERSION);
+        Picasso::Engine::Logger::Logger::Info("Patch version %d", PICASSO_PATCH_VERSION);
+
+        FileManager::Instance->Init();
+        std::string currentWorkingPath = FileManager::Instance->GetWorkingDirectory();
+
+        Picasso::Engine::Logger::Logger::Info("Current working directory %s", currentWorkingPath);
         Picasso::Engine::Logger::Logger::Info("Platform layer startup...");
 
         m_platform = new PPlatform();
