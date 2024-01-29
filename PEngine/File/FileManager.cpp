@@ -28,6 +28,8 @@ namespace Picasso::Engine::File
 
         PFile file = this->_buildPFile(filename, filePath.string(), false, buffer.str());
 
+        fileStream.close();
+
         return file;
     }
 
