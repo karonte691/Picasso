@@ -8,7 +8,8 @@ if(UNIX AND NOT APPLE)
                 Core/PTime.cpp
                 
                 File/FileManager.cpp
-                
+                File/PFLoader.cpp
+
                 EventSystem/EventFactory.cpp
                 EventSystem/Dispatcher.cpp
 

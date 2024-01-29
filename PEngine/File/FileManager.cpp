@@ -1,6 +1,7 @@
 #include <PEngine/File/FileManager.h>
 
 #include <filesystem>
+#include <fstream>
 
 namespace Picasso::Engine::File
 {
@@ -8,28 +9,59 @@ namespace Picasso::Engine::File
 
     void FileManager::Init()
     {
-        namespace fs = std::filesystem;
-
-        auto wPath = fs::current_path();
-        p_CurrentWorkingPath = wPath.c_str();
+        auto wPath = std::filesystem::current_path();
+        m_CurrentWorkingPath = wPath.string();
     }
 
-    bool FileManager::Write(const char *filename, std::string data)
+    PFile FileManager::Read(std::string filename)
     {
-        return true;
+        std::filesystem::path filePath = std::filesystem::path(m_CurrentWorkingPath) / filename;
+        std::ifstream fileStream(filePath, std::ios::in | std::ios::binary);
+
+        if (!fileStream)
+        {
+            return {"", "", 0, ""};
+        }
+
+        std::stringstream buffer;
+        buffer << fileStream.rdbuf();
+
+        PFile file = this->_buildPFile(filename, filePath.string(), false, buffer.str());
+
+        return file;
     }
 
-    const char *FileManager::GetWorkingDirectory()
+    bool FileManager::Write(PFile file)
     {
-        return p_CurrentWorkingPath;
+        std::filesystem::path filePath = std::filesystem::path(file.absolutePath);
+        std::ofstream fileStream(filePath, std::ios::out | std::ios::binary);
+
+        if (!fileStream)
+        {
+            return false;
+        }
+
+        fileStream.write(file.content.c_str(), file.content.size());
+
+        bool writeOpsRes = fileStream.good();
+
+        fileStream.close();
+
+        return writeOpsRes;
     }
 
-    PFile FileManager::_buildPFile(std::string filename, std::string absolutePath, bool isDirectory)
+    std::string FileManager::GetWorkingDirectory()
+    {
+        return m_CurrentWorkingPath;
+    }
+
+    PFile FileManager::_buildPFile(std::string filename, std::string absolutePath, bool isDirectory, std::string content)
     {
         PFile file = {
             filename,
             absolutePath,
-            isDirectory};
+            isDirectory,
+            content};
 
         return file;
     }

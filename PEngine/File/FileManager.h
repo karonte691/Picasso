@@ -12,6 +12,7 @@ namespace Picasso::Engine::File
         std::string fileName;
         std::string absolutePath;
         bool isDirectory;
+        std::string content;
     };
 
     class FileManager
@@ -19,14 +20,15 @@ namespace Picasso::Engine::File
     public:
         static FileManager *Instance;
 
-        const char *GetWorkingDirectory();
+        std::string GetWorkingDirectory();
         void Init();
-        bool Write(const char *filename, std::string data);
+        PFile Read(std::string file);
+        bool Write(PFile file);
 
     private:
-        const char *p_CurrentWorkingPath;
+        std::string m_CurrentWorkingPath;
 
-        PFile _buildPFile(std::string filename, std::string absolutePath, bool isDirectory);
+        PFile _buildPFile(std::string filename, std::string absolutePath, bool isDirectory, std::string content);
     };
 }
 

@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <thread>
-
+#include <iostream>
 namespace Picasso::Engine
 {
     Picasso::Engine::EngineState *Picasso::Engine::Application::engineState;
@@ -68,11 +68,8 @@ namespace Picasso::Engine
         Picasso::Engine::Logger::Logger::Info("Patch version %d", PICASSO_PATCH_VERSION);
 
         FileManager::Instance->Init();
-        std::string currentWorkingPath = FileManager::Instance->GetWorkingDirectory();
 
-        Picasso::Engine::Logger::Logger::Info("Current working directory %s", currentWorkingPath);
         Picasso::Engine::Logger::Logger::Info("Platform layer startup...");
-
         m_platform = new PPlatform();
 
         bool platformInitResult = m_platform->Init(
