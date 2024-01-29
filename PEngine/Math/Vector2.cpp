@@ -52,6 +52,20 @@ namespace Picasso::Engine::Math
         return true;
     }
 
+    _Float32 Vector2::Distance(std::shared_ptr<Vector2> otherVector)
+    {
+        _Float32 newVectorX = x - otherVector->x;
+        _Float32 newVectorY = y - otherVector->y;
+
+        Vector2 *vDist = new Vector2(newVectorX, newVectorY);
+
+        _Float32 sqrDistance = vDist->SqrMagnitude();
+
+        delete vDist;
+
+        return sqrDistance;
+    }
+
     /**
      *  STATIC FUNCTIONS
      */

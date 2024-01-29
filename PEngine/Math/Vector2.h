@@ -21,6 +21,7 @@ namespace Picasso::Engine::Math
         std::shared_ptr<Vector2> Sub(std::shared_ptr<Vector2> otherVector);
         _Float32 Magnitude();
         _Float32 SqrMagnitude();
+        _Float32 Distance(std::shared_ptr<Vector2> otherVector);
         void Normalize();
         bool Equals(std::shared_ptr<Vector2> otherVector, float tollerance);
 

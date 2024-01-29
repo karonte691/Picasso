@@ -7,6 +7,8 @@ if(UNIX AND NOT APPLE)
                 Core/Clock.cpp
                 Core/PTime.cpp
                 
+                Math/Vector2.cpp
+                
                 File/FileManager.cpp
                 File/PFLoader.cpp
 
