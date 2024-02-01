@@ -4,6 +4,7 @@
 #define OPEN_GL_SHADER_H
 
 #include <PEngine/Logger/Logger.h>
+#include <PEngine/Render/RCore/RShader.h>
 
 #include <Glew/glew.h>
 #include <GL/gl.h>
@@ -11,12 +12,13 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
 {
-    class OpenGLShader
+    class OpenGLShader : public RShader
     {
     public:
         OpenGLShader(GLuint id);
-        void Use();
-        void Destroy();
+
+        void Use() override;
+        void Destroy() override;
 
     private:
         GLuint m_Id;

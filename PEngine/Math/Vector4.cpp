@@ -10,7 +10,7 @@ namespace Picasso::Engine::Math
         _Float32 newVectorZ = z + otherVector->z;
         _Float32 newVectorW = z + otherVector->w;
 
-        return std::make_unique<Vector4>(newVectorX, newVectorY, newVectorZ, newVectorW);
+        return std::move(std::make_unique<Vector4>(newVectorX, newVectorY, newVectorZ, newVectorW));
     }
 
     std::unique_ptr<Vector4> Vector4::Sub(Vector4 *otherVector)
@@ -20,21 +20,21 @@ namespace Picasso::Engine::Math
         _Float32 newVectorZ = z - otherVector->z;
         _Float32 newVectorW = z - otherVector->w;
 
-        return std::make_unique<Vector4>(newVectorX, newVectorY, newVectorZ, newVectorW);
+        return std::move(std::make_unique<Vector4>(newVectorX, newVectorY, newVectorZ, newVectorW));
     }
 
     std::unique_ptr<Vector3> Vector4::ToVector3()
     {
-        return std::make_unique<Vector3>(x, y, z);
+        return std::move(std::make_unique<Vector3>(x, y, z));
     }
 
     std::unique_ptr<Vector4> Vector4::Zero()
     {
-        return std::make_unique<Vector4>(0.0f, 0.0f, 0.0f, 0.0f);
+        return std::move(std::make_unique<Vector4>(0.0f, 0.0f, 0.0f, 0.0f));
     }
 
     std::unique_ptr<Vector4> Vector4::FromVector3(Vector3 *v, _Float32 w)
     {
-        return std::make_unique<Vector4>(v->x, v->y, v->z, w);
+        return std::move(std::make_unique<Vector4>(v->x, v->y, v->z, w));
     }
 }
