@@ -22,6 +22,10 @@ namespace Picasso::Engine::Math
         std::unique_ptr<Vector4> Add(Vector4 *otherVector);
         std::unique_ptr<Vector4> Sub(Vector4 *otherVector);
         std::unique_ptr<Vector3> ToVector3();
+        _Float32 Magnitude() override;
+        _Float32 SqrMagnitude() override;
+        void Normalize() override;
+        _Float32 Dot(Vector4 *otherVector);
 
         static std::unique_ptr<Vector4> Zero();
         static std::unique_ptr<Vector4> FromVector3(Vector3 *v, _Float32 w);
