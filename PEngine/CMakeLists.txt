@@ -2,13 +2,13 @@
 include_directories(vendor)
 
 if(UNIX AND NOT APPLE)
-        set(PICASSO_ENGINE_SRC      
-                
+        set(PICASSO_ENGINE_SRC        
                 Core/Clock.cpp
                 Core/PTime.cpp
                 
                 Math/Vector2.cpp
-                
+                Math/Vector3.cpp
+
                 File/FileManager.cpp
                 File/PFLoader.cpp
 

@@ -17,7 +17,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         }
     }
 
-    bool OpenGLGraphicsPipeline::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
     {
         if (!m_PipelineStarted)
         {
@@ -40,7 +40,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        std::shared_ptr<Shaders::OpenGLShader> shader = p_ShaderFactory->Create(vertexShader.content, fragmentShader.content);
+        std::unique_ptr<Shaders::OpenGLShader> shader = p_ShaderFactory->Create(vertexShader.content, fragmentShader.content);
 
         if (shader == nullptr)
         {
@@ -54,7 +54,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
-    bool OpenGLGraphicsPipeline::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool OpenGLGraphicsPipeline::EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
     {
         return p_Driver->EndFrame(apiData, deltaTime, pState);
     }

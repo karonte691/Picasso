@@ -7,7 +7,7 @@
 namespace Picasso::Engine::Render::Core::Drivers
 {
 
-    bool OpenGLDriver::InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState)
+    bool OpenGLDriver::InitDriver(RAPIData *rcData, const char *appName, PPlatformState *pState, EngineState *eState)
     {
         p_Context = new Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext();
         p_OpenGLContext = new OpenGLContext();
@@ -59,14 +59,14 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
     }
 
-    bool OpenGLDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool OpenGLDriver::BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
     {
         glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
 
         return true;
     }
 
-    bool OpenGLDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool OpenGLDriver::EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
     {
         glXSwapBuffers(pState->state->display, p_PlatformState->state->glxwindow);
         return true;

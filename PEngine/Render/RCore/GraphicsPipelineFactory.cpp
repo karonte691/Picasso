@@ -9,13 +9,13 @@
 namespace Picasso::Engine::Render::Core
 {
     using Picasso::Engine::Render::Core::Drivers::RDRIVERS;
-    using DriverMap = std::unordered_map<RDRIVERS, std::shared_ptr<RGraphicsPipeline>>;
+    using DriverMap = std::unordered_map<RDRIVERS, RGraphicsPipeline *>;
     using Picasso::Engine::Render::Core::Drivers::OpenGL::OpenGLGraphicsPipeline;
 
-    std::shared_ptr<RGraphicsPipeline> GraphicsPipelineFactory::Get(std::shared_ptr<DriverImplementation> driver)
+    RGraphicsPipeline *GraphicsPipelineFactory::Get(DriverImplementation *driver)
     {
         static const DriverMap dMap = {
-            {RDRIVERS::OPEN_GL, std::make_shared<OpenGLGraphicsPipeline>(driver)},
+            {RDRIVERS::OPEN_GL, new OpenGLGraphicsPipeline(driver)},
         };
 
         const auto &it = dMap.find(driver->GetType());

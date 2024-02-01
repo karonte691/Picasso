@@ -22,22 +22,22 @@
 
 namespace Picasso::Engine::Platform
 {
-    struct LinuxPlatformInternalState
-    {
-        Display *display;
-        xcb_connection_t *connection;
-        xcb_window_t window;
-        xcb_screen_t *screen;
-        xcb_atom_t wmDeleteProtocols;
-        xcb_atom_t wmDestroyWindow;
-        int screenCount;
+        struct LinuxPlatformInternalState
+        {
+                Display *display;
+                xcb_connection_t *connection;
+                xcb_window_t window;
+                xcb_screen_t *screen;
+                xcb_atom_t wmDeleteProtocols;
+                xcb_atom_t wmDestroyWindow;
+                int screenCount;
 
 #if PICASSO_VULKAN_BUILD
-        VkSurfaceKHR surface;
+                VkSurfaceKHR surface;
 #elif PICASSO_OPENGL_BUILD
-        GLXWindow glxwindow = 0;
+                GLXWindow glxwindow = 0;
 #endif
-    };
+        };
 }
 
 #endif

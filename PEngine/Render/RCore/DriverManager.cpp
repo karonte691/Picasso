@@ -11,19 +11,19 @@
 namespace Picasso::Engine::Render::Core
 {
 
-    std::shared_ptr<DriverImplementation> DriverManager::GetDriver(RDRIVERS driver)
+    std::unique_ptr<DriverImplementation> DriverManager::GetDriver(RDRIVERS driver)
     {
         switch (driver)
         {
         case RDRIVERS::VULKAN:
 #if PICASSO_VULKAN_BUILD
-            return std::make_shared<Picasso::Engine::Render::Core::Drivers::VulkanDriver>();
+            return std::move(std::make_unique<Picasso::Engine::Render::Core::Drivers::VulkanDriver>());
 #else
             return nullptr;
 #endif
         case RDRIVERS::OPEN_GL:
 #if PICASSO_OPENGL_BUILD
-            return std::make_shared<Picasso::Engine::Render::Core::Drivers::OpenGLDriver>();
+            return std::move(std::make_unique<Picasso::Engine::Render::Core::Drivers::OpenGLDriver>());
 #else
             return nullptr;
 #endif

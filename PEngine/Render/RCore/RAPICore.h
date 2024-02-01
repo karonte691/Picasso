@@ -22,16 +22,16 @@ namespace Picasso::Engine::Render::Core
     public:
         RAPICore();
 
-        bool Create(const char *appName, RDRIVERS driver, std::shared_ptr<PPlatformState> pState, EngineState *eState, std::shared_ptr<RAPIData> rcData);
+        bool Create(const char *appName, RDRIVERS driver, PPlatformState *pState, EngineState *eState, RAPIData *rcData);
         void Destroy();
-        void Resize(std::shared_ptr<RAPIData> apiData, uint16_t width, u_int16_t height);
-        bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState);
-        bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState);
+        void Resize(RAPIData *apiData, uint16_t width, u_int16_t height);
+        bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState);
+        bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState);
 
     private:
-        std::shared_ptr<DriverImplementation> m_renderDriver;
+        std::unique_ptr<DriverImplementation> m_renderDriver;
         std::unique_ptr<DriverManager> m_driverManager;
-        std::shared_ptr<RGraphicsPipeline> p_GraphicsPipeline;
+        std::unique_ptr<RGraphicsPipeline> p_GraphicsPipeline;
     };
 }
 

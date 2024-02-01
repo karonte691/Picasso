@@ -2,7 +2,7 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
 {
-    std::shared_ptr<OpenGLShader> OpenGLShaderFactory::Create(std::string vertexContent, std::string fragmentContent)
+    std::unique_ptr<OpenGLShader> OpenGLShaderFactory::Create(std::string vertexContent, std::string fragmentContent)
     {
         ShaderModule vertexModule = this->_createShaderModule(vertexContent, GL_VERTEX_SHADER);
 
@@ -47,7 +47,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
         glDeleteShader(vertexModule.Id);
         glDeleteShader(fragmentModule.Id);
 
-        return std::make_shared<OpenGLShader>(shaderId);
+        return std::move(std::make_unique<OpenGLShader>(shaderId));
     }
 
     ShaderModule OpenGLShaderFactory::_createShaderModule(std::string shaderContent, GLuint shaderType)

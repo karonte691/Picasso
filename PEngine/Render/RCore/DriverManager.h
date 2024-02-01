@@ -16,7 +16,7 @@ namespace Picasso::Engine::Render::Core
     class DriverManager
     {
     public:
-        std::shared_ptr<DriverImplementation> GetDriver(RDRIVERS driver);
+        std::unique_ptr<DriverImplementation> GetDriver(RDRIVERS driver);
     };
 }
 

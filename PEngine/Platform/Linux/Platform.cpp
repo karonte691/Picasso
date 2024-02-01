@@ -171,14 +171,14 @@ namespace Picasso::Engine::Platform
             case XCB_KEY_RELEASE:
             {
                 // keyboard input
-                m_inputManager->ProcessXCBKeyBoardEvent(event, m_pstate, m_inputState);
+                m_inputManager->ProcessXCBKeyBoardEvent(event, m_pstate.get(), m_inputState);
             }
             break;
             case XCB_BUTTON_PRESS:
             case XCB_BUTTON_RELEASE:
             {
                 // mouse input
-                m_inputManager->ProcessXCBMouseEvent(event, m_pstate, m_inputState);
+                m_inputManager->ProcessXCBMouseEvent(event, m_pstate.get(), m_inputState);
             }
             break;
             case XCB_MOTION_NOTIFY:
@@ -195,7 +195,7 @@ namespace Picasso::Engine::Platform
             case XCB_CLIENT_MESSAGE:
             {
                 // application event
-                quitRaised = m_inputManager->ProcessXCBClientMessage(event, m_pstate);
+                quitRaised = m_inputManager->ProcessXCBClientMessage(event, m_pstate.get());
             }
             break;
             default:

@@ -21,13 +21,13 @@ namespace Picasso::Engine::Render::Core
     class RGraphicsPipeline
     {
     public:
-        RGraphicsPipeline(std::shared_ptr<DriverImplementation> driver) : p_Driver(driver){};
+        RGraphicsPipeline(DriverImplementation *driver) : p_Driver(driver){};
 
-        virtual bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) = 0;
-        virtual bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) = 0;
+        virtual bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) = 0;
+        virtual bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) = 0;
 
     protected:
-        std::shared_ptr<DriverImplementation> p_Driver;
+        DriverImplementation *p_Driver;
     };
 }
 

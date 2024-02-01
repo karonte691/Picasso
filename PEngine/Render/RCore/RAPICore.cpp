@@ -7,7 +7,7 @@ namespace Picasso::Engine::Render::Core
         m_driverManager = std::make_unique<DriverManager>();
     }
 
-    bool RAPICore::Create(const char *appName, RDRIVERS driver, std::shared_ptr<PPlatformState> pState, EngineState *eState, std::shared_ptr<RAPIData> rcData)
+    bool RAPICore::Create(const char *appName, RDRIVERS driver, PPlatformState *pState, EngineState *eState, RAPIData *rcData)
     {
         rcData->pState = eState;
 
@@ -28,17 +28,19 @@ namespace Picasso::Engine::Render::Core
 
         GraphicsPipelineFactory *graphicsPipelineFactory = new GraphicsPipelineFactory();
 
-        p_GraphicsPipeline = graphicsPipelineFactory->Get(m_renderDriver);
+        RGraphicsPipeline *gPipeline = graphicsPipelineFactory->Get(m_renderDriver.get());
 
         delete graphicsPipelineFactory;
 
-        if (p_GraphicsPipeline == nullptr)
+        if (gPipeline == nullptr)
         {
             Picasso::Engine::Logger::Logger::Fatal("Unable to fetch a suitable graphics pipeline");
 
             m_renderDriver->Shutdown();
             return false;
         }
+
+        p_GraphicsPipeline.reset(gPipeline);
 
         return true;
     }
@@ -48,17 +50,17 @@ namespace Picasso::Engine::Render::Core
         m_renderDriver->Shutdown();
     }
 
-    void RAPICore::Resize(std::shared_ptr<RAPIData> apiData, uint16_t width, u_int16_t height)
+    void RAPICore::Resize(RAPIData *apiData, uint16_t width, u_int16_t height)
     {
         m_renderDriver->OnResize(width, height);
     }
 
-    bool RAPICore::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool RAPICore::BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
     {
         return p_GraphicsPipeline->BeginFrame(apiData, deltaTime, pState);
     }
 
-    bool RAPICore::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool RAPICore::EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
     {
         return p_GraphicsPipeline->EndFrame(apiData, deltaTime, pState);
     }

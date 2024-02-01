@@ -20,7 +20,8 @@ namespace Picasso::Engine::EventSystem
 
     void Dispatcher::Post(const PEvent eventType) const
     {
-        std::shared_ptr<BaseEvent<PEvent>> event = m_eventFactory->GetEvent(eventType);
+        BaseEvent<PEvent> *event;
+        event = m_eventFactory->GetEvent(eventType);
 
         if (event == nullptr)
         {
@@ -46,11 +47,14 @@ namespace Picasso::Engine::EventSystem
                 break;
             }
         }
+
+        delete event;
     }
 
     void Dispatcher::Post(const PEvent eventType, PEventData eventData) const
     {
-        std::shared_ptr<BaseEvent<PEvent>> event = m_eventFactory->GetEvent(eventType);
+        BaseEvent<PEvent> *event;
+        event = m_eventFactory->GetEvent(eventType);
 
         if (event == nullptr)
         {
@@ -76,5 +80,7 @@ namespace Picasso::Engine::EventSystem
                 break;
             }
         }
+
+        delete event;
     }
 }

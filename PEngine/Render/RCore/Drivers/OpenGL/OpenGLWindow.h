@@ -14,7 +14,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     class OpenGLWindow
     {
     public:
-        GLXWindow Get(std::shared_ptr<PPlatformState> pState, GLXFBConfig *frameBufferConfigs);
+        GLXWindow Get(PPlatformState *pState, GLXFBConfig *frameBufferConfigs);
     };
 }
 

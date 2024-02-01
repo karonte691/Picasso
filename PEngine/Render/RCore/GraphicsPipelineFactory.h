@@ -15,7 +15,7 @@ namespace Picasso::Engine::Render::Core
     class GraphicsPipelineFactory
     {
     public:
-        std::shared_ptr<RGraphicsPipeline> Get(std::shared_ptr<DriverImplementation> driver);
+        RGraphicsPipeline *Get(DriverImplementation *driver);
     };
 }
 #endif

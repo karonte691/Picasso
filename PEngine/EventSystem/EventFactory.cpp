@@ -11,18 +11,18 @@
 
 namespace Picasso::Engine::EventSystem
 {
-    using EventMap = std::unordered_map<PEvent, std::shared_ptr<BaseEvent<PEvent>>>;
+    using EventMap = std::unordered_map<PEvent, BaseEvent<PEvent> *>;
 
-    std::shared_ptr<BaseEvent<PEvent>> EventFactory::GetEvent(PEvent event)
+    BaseEvent<PEvent> *EventFactory::GetEvent(PEvent event)
     {
         static const EventMap eventMap = {
-            {PEvent::KEY_PRESSED, std::make_shared<Events::KeyPressedEvent>()},
-            {PEvent::KEY_RELEASED, std::make_shared<Events::KeyReleasedEvent>()},
-            {PEvent::BUTTON_RELEASED, std::make_shared<Events::ButtonReleasedEvent>()},
-            {PEvent::BUTTON_PRESSED, std::make_shared<Events::ButtonPressedEvent>()},
-            {PEvent::MOUSE_MOVED, std::make_shared<Events::MouseMovementEvent>()},
-            {PEvent::MOUSE_WHEEL, std::make_shared<Events::MouseWheelEvent>()},
-            {PEvent::PLATFORM_EXPOSE, std::make_shared<Events::PlatformExposedEvent>()}
+            {PEvent::KEY_PRESSED, new Events::KeyPressedEvent()},
+            {PEvent::KEY_RELEASED, new Events::KeyReleasedEvent()},
+            {PEvent::BUTTON_RELEASED, new Events::ButtonReleasedEvent()},
+            {PEvent::BUTTON_PRESSED, new Events::ButtonPressedEvent()},
+            {PEvent::MOUSE_MOVED, new Events::MouseMovementEvent()},
+            {PEvent::MOUSE_WHEEL, new Events::MouseWheelEvent()},
+            {PEvent::PLATFORM_EXPOSE, new Events::PlatformExposedEvent}
 
         };
 

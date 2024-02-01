@@ -17,14 +17,14 @@ namespace Picasso::Engine::Render
     class PRender
     {
     public:
-        bool Init(const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *engineState);
-        bool RenderFrame(RenderData *rData, std::shared_ptr<PPlatformState> pState);
+        bool Init(const char *appName, PPlatformState *pState, EngineState *engineState);
+        bool RenderFrame(RenderData *rData, PPlatformState *pState);
         void OnResize(uint16_t width, uint16_t height);
         void Shutdown();
 
     private:
         std::unique_ptr<RAPICore> m_internalRender;
-        std::shared_ptr<RAPIData> m_renderData;
+        std::unique_ptr<RAPIData> m_renderData;
     };
 }
 

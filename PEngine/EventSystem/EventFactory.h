@@ -15,8 +15,8 @@ namespace Picasso::Engine::EventSystem
 
     class EventFactory
     {
-        public:
-            std::shared_ptr<BaseEvent<PEvent>> GetEvent(PEvent event);
+    public:
+        BaseEvent<PEvent> *GetEvent(PEvent event);
     };
 }
 

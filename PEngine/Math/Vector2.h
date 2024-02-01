@@ -5,7 +5,6 @@
 
 #include <memory>
 #include <PEngine/Math/Vector.h>
-#include <bits/floatn-common.h>
 
 namespace Picasso::Engine::Math
 {
@@ -17,19 +16,19 @@ namespace Picasso::Engine::Math
 
         Vector2(_Float32 x, _Float32 y) : x(x), y(y){};
 
-        std::shared_ptr<Vector2> Add(std::shared_ptr<Vector2> otherVector);
-        std::shared_ptr<Vector2> Sub(std::shared_ptr<Vector2> otherVector);
-        _Float32 Magnitude();
-        _Float32 SqrMagnitude();
-        _Float32 Distance(std::shared_ptr<Vector2> otherVector);
-        void Normalize();
-        bool Equals(std::shared_ptr<Vector2> otherVector, float tollerance);
+        std::unique_ptr<Vector2> Add(std::unique_ptr<Vector2> otherVector);
+        std::unique_ptr<Vector2> Sub(std::unique_ptr<Vector2> otherVector);
+        _Float32 Magnitude() override;
+        _Float32 SqrMagnitude() override;
+        _Float32 Distance(std::unique_ptr<Vector2> otherVector);
+        void Normalize() override;
+        bool Equals(std::unique_ptr<Vector2> otherVector, float tollerance);
 
-        static std::shared_ptr<Vector2> Zero();
-        static std::shared_ptr<Vector2> Left();
-        static std::shared_ptr<Vector2> Right();
-        static std::shared_ptr<Vector2> Up();
-        static std::shared_ptr<Vector2> Down();
+        static std::unique_ptr<Vector2> Zero();
+        static std::unique_ptr<Vector2> Left();
+        static std::unique_ptr<Vector2> Right();
+        static std::unique_ptr<Vector2> Up();
+        static std::unique_ptr<Vector2> Down();
     };
 }
 

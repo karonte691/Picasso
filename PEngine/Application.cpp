@@ -85,7 +85,7 @@ namespace Picasso::Engine
             return false;
         }
 
-        std::shared_ptr<PPlatformState> pState = m_platform->GetState();
+        p_PlatformState = m_platform->GetState();
 
         Picasso::Engine::Logger::Logger::Info("Input layer startup...");
 
@@ -96,7 +96,7 @@ namespace Picasso::Engine
         Picasso::Engine::Logger::Logger::Info("Render layer startup...");
         m_render = new PRender();
 
-        if (!m_render->Init(config->appName, pState, engineState))
+        if (!m_render->Init(config->appName, p_PlatformState.get(), engineState))
         {
             Picasso::Engine::Logger::Logger::Fatal("Unable to start render layer...");
             return false;
@@ -165,7 +165,7 @@ namespace Picasso::Engine
         m_frameData->deltaTime = m_time->GetDeltaTime();
         Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
-        if (!m_render->RenderFrame(m_frameData, m_platform->GetState()))
+        if (!m_render->RenderFrame(m_frameData, m_platform->GetState().get()))
         {
             // not a critical error ONE corrupted frame..but..
             engineState->running = false;

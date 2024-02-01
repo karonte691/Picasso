@@ -29,11 +29,11 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     class OpenGLContext
     {
     public:
-        GLXContext Get(std::shared_ptr<PPlatformState> pState);
+        GLXContext Get(PPlatformState *pState);
         GLXFBConfig *GetFrameBufferConfig();
-        bool SetCurrentContext(std::shared_ptr<PPlatformState> pState, GLXContext context, GLXWindow window);
+        bool SetCurrentContext(PPlatformState *pState, GLXContext context, GLXWindow window);
         void ClearFrameBufferConfig();
-        void DestroyContext(std::shared_ptr<PPlatformState> pState, GLXContext context);
+        void DestroyContext(PPlatformState *pState, GLXContext context);
 
     private:
         GLXFBConfig *p_FbConfigs;

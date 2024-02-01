@@ -17,13 +17,13 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     class OpenGLGraphicsPipeline : public RGraphicsPipeline
     {
     public:
-        OpenGLGraphicsPipeline(std::shared_ptr<DriverImplementation> driver)
+        OpenGLGraphicsPipeline(DriverImplementation *driver)
             : RGraphicsPipeline(driver) {}
 
         ~OpenGLGraphicsPipeline();
 
-        bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState);
-        bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState);
+        bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
+        bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
 
     private:
         Picasso::Engine::File::PFLoader *p_FileLoader;

@@ -2,7 +2,7 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    GLXWindow OpenGLWindow::Get(std::shared_ptr<PPlatformState> pState, GLXFBConfig *frameBufferConfigs)
+    GLXWindow OpenGLWindow::Get(PPlatformState *pState, GLXFBConfig *frameBufferConfigs)
     {
         GLXDrawable drawable = 0;
 

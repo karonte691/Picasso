@@ -18,16 +18,16 @@ namespace Picasso::Engine::Render::Core::Drivers
     class OpenGLDriver : public DriverImplementation
     {
     public:
-        bool InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState) override;
+        bool InitDriver(RAPIData *rcData, const char *appName, PPlatformState *pState, EngineState *eState) override;
         void OnResize(u_int16_t width, u_int16_t height) override;
-        bool BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) override;
-        bool EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState) override;
+        bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
+        bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
         void Shutdown() override;
         RDRIVERS GetType() override;
 
     private:
         Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext *p_Context;
-        std::shared_ptr<PPlatformState> p_PlatformState;
+        PPlatformState *p_PlatformState;
         OpenGLContext *p_OpenGLContext;
         OpenGLWindow *p_OpenGLWindow;
 

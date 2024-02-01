@@ -47,6 +47,7 @@ namespace Picasso::Engine
         PRender *m_render;
         RenderData *m_frameData;
         Clock *m_internalClock;
+        std::shared_ptr<PPlatformState> p_PlatformState;
         PTime *m_time;
 
         void _Paint();

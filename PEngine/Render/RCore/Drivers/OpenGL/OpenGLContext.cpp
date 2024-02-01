@@ -2,7 +2,7 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    GLXContext OpenGLContext::Get(std::shared_ptr<PPlatformState> pState)
+    GLXContext OpenGLContext::Get(PPlatformState *pState)
     {
         int numFbConfigs = 0;
         int visualId = 0;
@@ -31,7 +31,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return p_FbConfigs;
     }
 
-    bool OpenGLContext::SetCurrentContext(std::shared_ptr<PPlatformState> pState, GLXContext context, GLXWindow window)
+    bool OpenGLContext::SetCurrentContext(PPlatformState *pState, GLXContext context, GLXWindow window)
     {
         return glXMakeContextCurrent(pState->state->display, window, window, context);
     }
@@ -42,7 +42,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_FbConfigs = nullptr;
     }
 
-    void OpenGLContext::DestroyContext(std::shared_ptr<PPlatformState> pState, GLXContext context)
+    void OpenGLContext::DestroyContext(PPlatformState *pState, GLXContext context)
     {
         glXDestroyContext(pState->state->display, context);
         this->ClearFrameBufferConfig();

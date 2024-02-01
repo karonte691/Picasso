@@ -22,7 +22,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
     class OpenGLShaderFactory
     {
     public:
-        std::shared_ptr<OpenGLShader> Create(std::string vertexContent, std::string fragmentContent);
+        std::unique_ptr<OpenGLShader> Create(std::string vertexContent, std::string fragmentContent);
 
     private:
         ShaderModule _createShaderModule(std::string shaderContent, GLuint shaderType);

@@ -4,7 +4,7 @@ namespace Picasso::Engine::Render
 {
     using Picasso::Engine::Render::Core::RDRIVERS;
 
-    bool PRender::Init(const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *engineState)
+    bool PRender::Init(const char *appName, PPlatformState *pState, EngineState *engineState)
     {
         if (m_renderData != nullptr)
         {
@@ -13,9 +13,9 @@ namespace Picasso::Engine::Render
         }
 
         m_internalRender = std::make_unique<RAPICore>();
-        m_renderData = std::make_shared<RAPIData>();
+        m_renderData = std::make_unique<RAPIData>();
 
-        if (!m_internalRender->Create(appName, RDRIVERS::OPEN_GL, pState, engineState, m_renderData))
+        if (!m_internalRender->Create(appName, RDRIVERS::OPEN_GL, pState, engineState, m_renderData.get()))
         {
             Picasso::Engine::Logger::Logger::Fatal("Error trying to setup the internal render...");
             return false;
@@ -33,7 +33,7 @@ namespace Picasso::Engine::Render
         m_internalRender = nullptr;
     }
 
-    bool PRender::RenderFrame(RenderData *rData, std::shared_ptr<PPlatformState> pState)
+    bool PRender::RenderFrame(RenderData *rData, PPlatformState *pState)
     {
         if (m_renderData == nullptr)
         {
@@ -42,9 +42,9 @@ namespace Picasso::Engine::Render
         }
 
         // rendering the frame...
-        if (m_internalRender->BeginFrame(m_renderData, rData->deltaTime, pState))
+        if (m_internalRender->BeginFrame(m_renderData.get(), rData->deltaTime, pState))
         {
-            if (!m_internalRender->EndFrame(m_renderData, rData->deltaTime, pState))
+            if (!m_internalRender->EndFrame(m_renderData.get(), rData->deltaTime, pState))
             {
                 Picasso::Engine::Logger::Logger::Error("Unable to rendering the frame...");
                 return false;

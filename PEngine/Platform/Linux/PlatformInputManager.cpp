@@ -2,25 +2,26 @@
 
 namespace Picasso::Engine::Platform::Linux
 {
-    using Picasso::Engine::Input::KEYS;
     using Picasso::Engine::Input::BUTTONS;
+    using Picasso::Engine::Input::KEYS;
 
     PlatformInputManager::PlatformInputManager()
     {
         m_keyboardListener = std::make_unique<KeyboardListener>();
         m_mouseListener = std::make_unique<MouseListener>();
-        
+
         m_keyCodeTranslator = std::make_unique<KeyCodeTranslator>();
         m_mouseCodeTranslator = std::make_unique<MouseCodeTranslator>();
     }
 
-    void PlatformInputManager::ProcessXCBKeyBoardEvent(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state, pInputState& inputState)
+    void PlatformInputManager::ProcessXCBKeyBoardEvent(xcb_generic_event_t *event, LinuxPlatformInternalState *state, pInputState &inputState)
     {
-        xcb_key_press_event_t* keyEvent = (xcb_key_press_event_t*)event;
+        xcb_key_press_event_t *keyEvent = (xcb_key_press_event_t *)event;
 
-        if(keyEvent == nullptr){
-                        Picasso::Engine::Logger::Logger::Error("Error while casting event to keyEvent");
-                        return;
+        if (keyEvent == nullptr)
+        {
+            Picasso::Engine::Logger::Logger::Error("Error while casting event to keyEvent");
+            return;
         }
 
         bool keyPressed = event->response_type == XCB_KEY_PRESS;
@@ -29,7 +30,7 @@ namespace Picasso::Engine::Platform::Linux
         KeySym keySym = XkbKeycodeToKeysym(state->display, (KeyCode)kCode, 0, kCode & ShiftMask ? 1 : 0);
         KEYS keyValue = m_keyCodeTranslator->TranslateKey(keySym);
 
-        if(keyValue == 0)
+        if (keyValue == 0)
         {
             Picasso::Engine::Logger::Logger::Warn("Key event translated to P_KEY_UNKNOWN. Skipping event...");
             return;
@@ -41,19 +42,20 @@ namespace Picasso::Engine::Platform::Linux
         Picasso::Engine::Logger::Logger::Debug("Key %d pressed: %d", keyValue, keyPressed);
     }
 
-    void PlatformInputManager::ProcessXCBMouseEvent(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state, pInputState& inputState)
+    void PlatformInputManager::ProcessXCBMouseEvent(xcb_generic_event_t *event, LinuxPlatformInternalState *state, pInputState &inputState)
     {
-        xcb_button_press_event_t* buttonEvent = (xcb_button_press_event_t*)event;
+        xcb_button_press_event_t *buttonEvent = (xcb_button_press_event_t *)event;
         bool buttonPressed = event->response_type == XCB_BUTTON_PRESS;
 
-        if(buttonEvent == nullptr){
+        if (buttonEvent == nullptr)
+        {
             Picasso::Engine::Logger::Logger::Error("Error while casting event to buttonEvent");
             return;
         }
- 
+
         BUTTONS buttonValue = m_mouseCodeTranslator->TranslateButton(buttonEvent->detail);
 
-        if(buttonValue == -1)
+        if (buttonValue == -1)
         {
             Picasso::Engine::Logger::Logger::Error("Button event translated to P_MOUSE_BUTTON_UNKW. Skipping event...");
             return;
@@ -65,11 +67,12 @@ namespace Picasso::Engine::Platform::Linux
         Picasso::Engine::Logger::Logger::Debug("Button %d pressed: %d", buttonValue, buttonPressed);
     }
 
-    void PlatformInputManager::ProcessXCBMouseMovement(xcb_generic_event_t* event, pInputState& inputState)
+    void PlatformInputManager::ProcessXCBMouseMovement(xcb_generic_event_t *event, pInputState &inputState)
     {
-        xcb_motion_notify_event_t* movementEvent = (xcb_motion_notify_event_t*)event;
+        xcb_motion_notify_event_t *movementEvent = (xcb_motion_notify_event_t *)event;
 
-         if(movementEvent == nullptr){
+        if (movementEvent == nullptr)
+        {
             Picasso::Engine::Logger::Logger::Error("Error while casting event to buttonEvent");
             return;
         }
@@ -80,11 +83,12 @@ namespace Picasso::Engine::Platform::Linux
         Picasso::Engine::Logger::Logger::Debug("x %d y: %d", movementEvent->event_x, movementEvent->event_y);
     }
 
-    bool PlatformInputManager::ProcessXCBClientMessage(xcb_generic_event_t* event, std::shared_ptr<LinuxPlatformInternalState> state)
+    bool PlatformInputManager::ProcessXCBClientMessage(xcb_generic_event_t *event, LinuxPlatformInternalState *state)
     {
-        xcb_client_message_event_t* messageEvent = (xcb_client_message_event_t*)event;
+        xcb_client_message_event_t *messageEvent = (xcb_client_message_event_t *)event;
 
-         if(messageEvent == nullptr){
+        if (messageEvent == nullptr)
+        {
             Picasso::Engine::Logger::Logger::Error("Error while casting event to messageEvent");
             return false;
         }
