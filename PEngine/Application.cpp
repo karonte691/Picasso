@@ -49,6 +49,9 @@ namespace Picasso::Engine
         delete m_time;
         m_time = nullptr;
 
+        delete m_render;
+        m_render = nullptr;
+
         PicassoRegistry::Reset();
 
         delete FileManager::Instance;

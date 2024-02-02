@@ -20,10 +20,9 @@ namespace Picasso::Engine::EventSystem
 
     void Dispatcher::Post(const PEvent eventType) const
     {
-        BaseEvent<PEvent> *event;
-        event = m_eventFactory->GetEvent(eventType);
+        BaseEvent<PEvent> *event = m_eventFactory->GetEvent(eventType);
 
-        if (event == nullptr)
+        if (!event)
         {
             Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
             return;
@@ -33,6 +32,7 @@ namespace Picasso::Engine::EventSystem
 
         if (m_listeners.find(type) == m_listeners.end())
         {
+            delete event;
             return;
         }
 
@@ -53,10 +53,9 @@ namespace Picasso::Engine::EventSystem
 
     void Dispatcher::Post(const PEvent eventType, PEventData eventData) const
     {
-        BaseEvent<PEvent> *event;
-        event = m_eventFactory->GetEvent(eventType);
+        BaseEvent<PEvent> *event = m_eventFactory->GetEvent(eventType);
 
-        if (event == nullptr)
+        if (!event)
         {
             Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
             return;
@@ -66,6 +65,10 @@ namespace Picasso::Engine::EventSystem
 
         if (m_listeners.find(type) == m_listeners.end())
         {
+            if (event != nullptr)
+            {
+                delete event;
+            }
             return;
         }
 

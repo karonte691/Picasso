@@ -9,6 +9,7 @@ if(UNIX AND NOT APPLE)
                 Math/Vector2.cpp
                 Math/Vector3.cpp
                 Math/Vector4.cpp
+                Math/Matrix.cpp
 
                 File/FileManager.cpp
                 File/PFLoader.cpp

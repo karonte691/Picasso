@@ -26,11 +26,8 @@ namespace Picasso::Engine::Render
 
     void PRender::Shutdown()
     {
-        m_renderData = nullptr;
-
+        m_renderData.reset();
         m_internalRender->Destroy();
-
-        m_internalRender = nullptr;
     }
 
     bool PRender::RenderFrame(RenderData *rData, PPlatformState *pState)

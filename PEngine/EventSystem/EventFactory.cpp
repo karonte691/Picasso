@@ -11,27 +11,26 @@
 
 namespace Picasso::Engine::EventSystem
 {
-    using EventMap = std::unordered_map<PEvent, BaseEvent<PEvent> *>;
-
     BaseEvent<PEvent> *EventFactory::GetEvent(PEvent event)
     {
-        static const EventMap eventMap = {
-            {PEvent::KEY_PRESSED, new Events::KeyPressedEvent()},
-            {PEvent::KEY_RELEASED, new Events::KeyReleasedEvent()},
-            {PEvent::BUTTON_RELEASED, new Events::ButtonReleasedEvent()},
-            {PEvent::BUTTON_PRESSED, new Events::ButtonPressedEvent()},
-            {PEvent::MOUSE_MOVED, new Events::MouseMovementEvent()},
-            {PEvent::MOUSE_WHEEL, new Events::MouseWheelEvent()},
-            {PEvent::PLATFORM_EXPOSE, new Events::PlatformExposedEvent}
-
-        };
-
-        const auto &it = eventMap.find(event);
-        if (it != eventMap.end())
+        switch (event)
         {
-            return it->second;
+        case PEvent::KEY_PRESSED:
+            return new Events::KeyPressedEvent();
+        case PEvent::KEY_RELEASED:
+            return new Events::KeyReleasedEvent();
+        case PEvent::BUTTON_RELEASED:
+            return new Events::ButtonReleasedEvent();
+        case PEvent::BUTTON_PRESSED:
+            return new Events::ButtonPressedEvent();
+        case PEvent::MOUSE_MOVED:
+            return new Events::MouseMovementEvent();
+        case PEvent::MOUSE_WHEEL:
+            return new Events::MouseWheelEvent();
+        case PEvent::PLATFORM_EXPOSE:
+            return new Events::PlatformExposedEvent();
+        default:
+            return nullptr;
         }
-
-        return nullptr;
     }
 }

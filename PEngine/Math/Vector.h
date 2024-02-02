@@ -11,7 +11,7 @@ namespace Picasso::Engine::Math
     class Vector
     {
     public:
-        virtual ~Vector() = default;
+        virtual ~Vector(){};
 
         virtual _Float32 Magnitude() = 0;
         virtual _Float32 SqrMagnitude() = 0;

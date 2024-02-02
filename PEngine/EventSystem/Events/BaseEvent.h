@@ -14,8 +14,10 @@ namespace Picasso::Engine::EventSystem::Events
     public:
         BaseEvent() = default;
         BaseEvent(T type, const std::string &name = "") : m_type(type), m_eventName(name){};
+        virtual ~BaseEvent() = default;
 
         inline const T type() const { return m_type; };
+        inline const std::string GetEventName() const { return m_eventName; }
         inline const bool IsHandled() const { return m_isHandled; }
 
     protected:
