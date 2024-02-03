@@ -16,13 +16,13 @@ namespace Picasso::Engine::Math
 
         Vector2(_Float32 x, _Float32 y) : x(x), y(y){};
 
-        std::unique_ptr<Vector2> Add(std::unique_ptr<Vector2> otherVector);
-        std::unique_ptr<Vector2> Sub(std::unique_ptr<Vector2> otherVector);
+        std::unique_ptr<Vector2> Add(const Vector2 *otherVector);
+        std::unique_ptr<Vector2> Sub(const Vector2 *otherVector);
         _Float32 Magnitude() override;
         _Float32 SqrMagnitude() override;
-        _Float32 Distance(std::unique_ptr<Vector2> otherVector);
+        _Float32 Distance(const Vector2 *otherVector);
         void Normalize() override;
-        bool Equals(std::unique_ptr<Vector2> otherVector, float tollerance);
+        bool Equals(const Vector2 *otherVector, float tollerance);
 
         static std::unique_ptr<Vector2> Zero();
         static std::unique_ptr<Vector2> Left();

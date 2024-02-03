@@ -3,7 +3,7 @@
 
 namespace Picasso::Engine::Math
 {
-    std::unique_ptr<Vector3> Vector3::Add(Vector3 *otherVector)
+    std::unique_ptr<Vector3> Vector3::Add(const Vector3 *otherVector)
     {
         _Float32 newVectorX = x + otherVector->x;
         _Float32 newVectorY = y + otherVector->y;
@@ -12,7 +12,7 @@ namespace Picasso::Engine::Math
         return std::move(std::make_unique<Vector3>(newVectorX, newVectorY, newVectorZ));
     }
 
-    std::unique_ptr<Vector3> Vector3::Sub(Vector3 *otherVector)
+    std::unique_ptr<Vector3> Vector3::Sub(const Vector3 *otherVector)
     {
         _Float32 newVectorX = x - otherVector->x;
         _Float32 newVectorY = y - otherVector->y;
@@ -21,7 +21,7 @@ namespace Picasso::Engine::Math
         return std::move(std::make_unique<Vector3>(newVectorX, newVectorY, newVectorZ));
     }
 
-    _Float32 Vector3::Dot(Vector3 *otherVector)
+    _Float32 Vector3::Dot(const Vector3 *otherVector)
     {
         _Float32 dotProduct = 0.0f;
 
@@ -32,7 +32,7 @@ namespace Picasso::Engine::Math
         return dotProduct;
     }
 
-    std::unique_ptr<Vector3> Vector3::Cross(Vector3 *otherVector)
+    std::unique_ptr<Vector3> Vector3::Cross(const Vector3 *otherVector)
     {
         _Float32 newVectorX = z * otherVector->y - y * otherVector->z;
         _Float32 newVectorY = z * otherVector->x - x * otherVector->z;
@@ -41,7 +41,7 @@ namespace Picasso::Engine::Math
         return std::move(std::make_unique<Vector3>(newVectorX, newVectorY, newVectorZ));
     }
 
-    _Float32 Vector3::Distance(Vector3 *otherVector)
+    _Float32 Vector3::Distance(const Vector3 *otherVector)
     {
         _Float32 newVectorX = x - otherVector->x;
         _Float32 newVectorY = y - otherVector->y;
@@ -56,7 +56,7 @@ namespace Picasso::Engine::Math
         return sqrDistance;
     }
 
-    bool Vector3::Equals(Vector3 *otherVector, float tollerance)
+    bool Vector3::Equals(const Vector3 *otherVector, float tollerance)
     {
         if (std::abs(x - otherVector->x) > tollerance)
         {

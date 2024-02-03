@@ -3,7 +3,7 @@
 
 namespace Picasso::Engine::Math
 {
-    std::unique_ptr<Vector2> Vector2::Add(std::unique_ptr<Vector2> otherVector)
+    std::unique_ptr<Vector2> Vector2::Add(const Vector2 *otherVector)
     {
         _Float32 newVectorX = x + otherVector->x;
         _Float32 newVectorY = y + otherVector->y;
@@ -11,7 +11,7 @@ namespace Picasso::Engine::Math
         return std::make_unique<Vector2>(newVectorX, newVectorY);
     }
 
-    std::unique_ptr<Vector2> Vector2::Sub(std::unique_ptr<Vector2> otherVector)
+    std::unique_ptr<Vector2> Vector2::Sub(const Vector2 *otherVector)
     {
         _Float32 newVectorX = x - otherVector->x;
         _Float32 newVectorY = y - otherVector->y;
@@ -37,7 +37,7 @@ namespace Picasso::Engine::Math
         y /= length;
     }
 
-    bool Vector2::Equals(std::unique_ptr<Vector2> otherVector, float tollerance)
+    bool Vector2::Equals(const Vector2 *otherVector, float tollerance)
     {
         if (std::abs(x - otherVector->x) > tollerance)
         {
@@ -52,7 +52,7 @@ namespace Picasso::Engine::Math
         return true;
     }
 
-    _Float32 Vector2::Distance(std::unique_ptr<Vector2> otherVector)
+    _Float32 Vector2::Distance(const Vector2 *otherVector)
     {
         _Float32 newVectorX = x - otherVector->x;
         _Float32 newVectorY = y - otherVector->y;
