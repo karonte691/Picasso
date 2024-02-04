@@ -7,9 +7,9 @@ namespace Picasso::Engine::Math
     {
         std::unique_ptr<Matrix> pMatrix = Matrix::Identity();
 
-        const _Float32 *thisData = this->data;
-        const _Float32 *otherData = otherMatrix->data;
-        _Float32 *dst = pMatrix->data;
+        const float *thisData = this->data;
+        const float *otherData = otherMatrix->data;
+        float *dst = pMatrix->data;
 
         // doom 3 engine docet
         for (int32_t i = 0; i < 4; ++i)
@@ -41,18 +41,18 @@ namespace Picasso::Engine::Math
         return std::move(pMatrix);
     }
 
-    std::unique_ptr<Matrix> Matrix::Ortographic(_Float32 left,
-                                                _Float32 right,
-                                                _Float32 top,
-                                                _Float32 bottom,
-                                                _Float32 nearClip,
-                                                _Float32 farClip)
+    std::unique_ptr<Matrix> Matrix::Ortographic(float left,
+                                                float right,
+                                                float top,
+                                                float bottom,
+                                                float nearClip,
+                                                float farClip)
     {
         std::unique_ptr<Matrix> pMatrix = Matrix::Identity();
 
-        _Float32 lr = 1.0f / (left - right);
-        _Float32 bt = 1.0f / (bottom - top);
-        _Float32 nf = 1.0f / (nearClip - farClip);
+        float lr = 1.0f / (left - right);
+        float bt = 1.0f / (bottom - top);
+        float nf = 1.0f / (nearClip - farClip);
 
         pMatrix->data[0] = 2.0f * lr;
         pMatrix->data[5] = 2.0f * bt;
@@ -65,11 +65,11 @@ namespace Picasso::Engine::Math
         return pMatrix;
     }
 
-    std::unique_ptr<Matrix> Matrix::Perspective(_Float32 fovRadians, _Float32 aspectRation, _Float32 nearClip, _Float32 farClip)
+    std::unique_ptr<Matrix> Matrix::Perspective(float fovRadians, float aspectRation, float nearClip, float farClip)
     {
         std::unique_ptr<Matrix> pMatrix = std::make_unique<Matrix>();
 
-        _Float32 halfTanFov = std::tan(fovRadians * 0.5f);
+        float halfTanFov = std::tan(fovRadians * 0.5f);
 
         pMatrix->data[0] = 1.0f / (aspectRation * halfTanFov);
         pMatrix->data[5] = 1.0f / halfTanFov;
@@ -119,40 +119,40 @@ namespace Picasso::Engine::Math
     std::unique_ptr<Matrix> Matrix::Inverse(const Matrix *otherMatrix)
     {
         std::unique_ptr<Matrix> pMatrix = std::make_unique<Matrix>();
-        const _Float32 *m = otherMatrix->data;
-        _Float32 *o = pMatrix->data;
+        const float *m = otherMatrix->data;
+        float *o = pMatrix->data;
 
-        _Float32 t0 = m[10] * m[15];
-        _Float32 t1 = m[14] * m[11];
-        _Float32 t2 = m[6] * m[15];
-        _Float32 t3 = m[14] * m[7];
-        _Float32 t4 = m[6] * m[11];
-        _Float32 t5 = m[10] * m[7];
-        _Float32 t6 = m[2] * m[15];
-        _Float32 t7 = m[14] * m[3];
-        _Float32 t8 = m[2] * m[11];
-        _Float32 t9 = m[10] * m[3];
-        _Float32 t10 = m[2] * m[7];
-        _Float32 t11 = m[6] * m[3];
-        _Float32 t12 = m[8] * m[13];
-        _Float32 t13 = m[12] * m[9];
-        _Float32 t14 = m[4] * m[13];
-        _Float32 t15 = m[12] * m[5];
-        _Float32 t16 = m[4] * m[9];
-        _Float32 t17 = m[8] * m[5];
-        _Float32 t18 = m[0] * m[13];
-        _Float32 t19 = m[12] * m[1];
-        _Float32 t20 = m[0] * m[9];
-        _Float32 t21 = m[8] * m[1];
-        _Float32 t22 = m[0] * m[5];
-        _Float32 t23 = m[4] * m[1];
+        float t0 = m[10] * m[15];
+        float t1 = m[14] * m[11];
+        float t2 = m[6] * m[15];
+        float t3 = m[14] * m[7];
+        float t4 = m[6] * m[11];
+        float t5 = m[10] * m[7];
+        float t6 = m[2] * m[15];
+        float t7 = m[14] * m[3];
+        float t8 = m[2] * m[11];
+        float t9 = m[10] * m[3];
+        float t10 = m[2] * m[7];
+        float t11 = m[6] * m[3];
+        float t12 = m[8] * m[13];
+        float t13 = m[12] * m[9];
+        float t14 = m[4] * m[13];
+        float t15 = m[12] * m[5];
+        float t16 = m[4] * m[9];
+        float t17 = m[8] * m[5];
+        float t18 = m[0] * m[13];
+        float t19 = m[12] * m[1];
+        float t20 = m[0] * m[9];
+        float t21 = m[8] * m[1];
+        float t22 = m[0] * m[5];
+        float t23 = m[4] * m[1];
 
         o[0] = (t0 * m[5] + t3 * m[9] + t4 * m[13]) - (t1 * m[5] + t2 * m[9] + t5 * m[13]);
         o[1] = (t1 * m[1] + t6 * m[9] + t9 * m[13]) - (t0 * m[1] + t7 * m[9] + t8 * m[13]);
         o[2] = (t2 * m[1] + t7 * m[5] + t10 * m[13]) - (t3 * m[1] + t6 * m[5] + t11 * m[13]);
         o[3] = (t5 * m[1] + t8 * m[5] + t11 * m[9]) - (t4 * m[1] + t9 * m[5] + t10 * m[9]);
 
-        _Float32 d = 1.0f / (m[0] * o[0] + m[4] * o[1] + m[8] * o[2] + m[12] * o[3]);
+        float d = 1.0f / (m[0] * o[0] + m[4] * o[1] + m[8] * o[2] + m[12] * o[3]);
 
         o[0] = d * o[0];
         o[1] = d * o[1];
@@ -170,6 +170,30 @@ namespace Picasso::Engine::Math
         o[13] = d * ((t20 * m[14] + t12 * m[2] + t19 * m[10]) - (t18 * m[10] + t21 * m[14] + t13 * m[2]));
         o[14] = d * ((t18 * m[6] + t23 * m[14] + t15 * m[2]) - (t22 * m[14] + t14 * m[2] + t19 * m[6]));
         o[15] = d * ((t22 * m[10] + t16 * m[2] + t21 * m[6]) - (t20 * m[6] + t23 * m[10] + t17 * m[2]));
+
+        return pMatrix;
+    }
+
+    std::unique_ptr<Matrix> Matrix::Transpose(const Matrix *otherMatrix)
+    {
+        std::unique_ptr<Matrix> pMatrix = std::make_unique<Matrix>();
+
+        pMatrix->data[0] = otherMatrix->data[0];
+        pMatrix->data[1] = otherMatrix->data[4];
+        pMatrix->data[2] = otherMatrix->data[8];
+        pMatrix->data[3] = otherMatrix->data[12];
+        pMatrix->data[4] = otherMatrix->data[1];
+        pMatrix->data[5] = otherMatrix->data[5];
+        pMatrix->data[6] = otherMatrix->data[9];
+        pMatrix->data[7] = otherMatrix->data[13];
+        pMatrix->data[8] = otherMatrix->data[2];
+        pMatrix->data[9] = otherMatrix->data[6];
+        pMatrix->data[10] = otherMatrix->data[10];
+        pMatrix->data[11] = otherMatrix->data[14];
+        pMatrix->data[12] = otherMatrix->data[3];
+        pMatrix->data[13] = otherMatrix->data[7];
+        pMatrix->data[14] = otherMatrix->data[11];
+        pMatrix->data[15] = otherMatrix->data[15];
 
         return pMatrix;
     }
@@ -192,6 +216,60 @@ namespace Picasso::Engine::Math
         pMatrix->data[0] = scale->x;
         pMatrix->data[5] = scale->y;
         pMatrix->data[10] = scale->z;
+
+        return pMatrix;
+    }
+
+    std::unique_ptr<Matrix> Matrix::EulerX(float angleRadians)
+    {
+        std::unique_ptr<Matrix> pMatrix = Matrix::Identity();
+        float c = std::cos(angleRadians);
+        float s = std::sin(angleRadians);
+
+        pMatrix->data[5] = c;
+        pMatrix->data[6] = s;
+        pMatrix->data[9] = -s;
+        pMatrix->data[10] = c;
+
+        return pMatrix;
+    }
+
+    std::unique_ptr<Matrix> Matrix::EulerY(float angleRadians)
+    {
+        std::unique_ptr<Matrix> pMatrix = Matrix::Identity();
+        float c = std::cos(angleRadians);
+        float s = std::sin(angleRadians);
+
+        pMatrix->data[5] = c;
+        pMatrix->data[6] = -s;
+        pMatrix->data[9] = s;
+        pMatrix->data[10] = c;
+
+        return pMatrix;
+    }
+
+    std::unique_ptr<Matrix> Matrix::EulerZ(float angleRadians)
+    {
+        std::unique_ptr<Matrix> pMatrix = Matrix::Identity();
+        float c = std::cos(angleRadians);
+        float s = std::sin(angleRadians);
+
+        pMatrix->data[5] = c;
+        pMatrix->data[6] = s;
+        pMatrix->data[9] = -s;
+        pMatrix->data[10] = c;
+
+        return pMatrix;
+    }
+
+    std::unique_ptr<Matrix> Matrix::EulerXYZ(float xRadians, float yRadians, float zRadians)
+    {
+        std::unique_ptr<Matrix> rx = Matrix::EulerX(xRadians);
+        std::unique_ptr<Matrix> ry = Matrix::EulerY(yRadians);
+        std::unique_ptr<Matrix> rz = Matrix::EulerZ(zRadians);
+
+        std::unique_ptr<Matrix> pMatrix = rx->Multiply(ry.get());
+        pMatrix = pMatrix->Multiply(rz.get());
 
         return pMatrix;
     }

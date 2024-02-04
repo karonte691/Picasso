@@ -11,19 +11,19 @@ namespace Picasso::Engine::Math
     class Vector3 : public Vector
     {
     public:
-        _Float32 x;
-        _Float32 y;
-        _Float32 z;
+        float x;
+        float y;
+        float z;
 
         Vector3() : x(0.0f), y(0.0f), z(0.0f){};
-        Vector3(_Float32 x, _Float32 y, _Float32 z) : x(x), y(y), z(z){};
+        Vector3(float x, float y, float z) : x(x), y(y), z(z){};
 
         std::unique_ptr<Vector3> Add(const Vector3 *otherVector);
         std::unique_ptr<Vector3> Sub(const Vector3 *otherVector);
-        _Float32 Magnitude() override;
-        _Float32 SqrMagnitude() override;
-        _Float32 Distance(const Vector3 *otherVector);
-        _Float32 Dot(const Vector3 *otherVector);
+        float Magnitude() override;
+        float SqrMagnitude() override;
+        float Distance(const Vector3 *otherVector);
+        float Dot(const Vector3 *otherVector);
         std::unique_ptr<Vector3> Cross(const Vector3 *otherVector);
         void Normalize() override;
         bool Equals(const Vector3 *otherVector, float tollerance);

@@ -5,33 +5,33 @@ namespace Picasso::Engine::Math
 {
     std::unique_ptr<Vector2> Vector2::Add(const Vector2 *otherVector)
     {
-        _Float32 newVectorX = x + otherVector->x;
-        _Float32 newVectorY = y + otherVector->y;
+        float newVectorX = x + otherVector->x;
+        float newVectorY = y + otherVector->y;
 
         return std::make_unique<Vector2>(newVectorX, newVectorY);
     }
 
     std::unique_ptr<Vector2> Vector2::Sub(const Vector2 *otherVector)
     {
-        _Float32 newVectorX = x - otherVector->x;
-        _Float32 newVectorY = y - otherVector->y;
+        float newVectorX = x - otherVector->x;
+        float newVectorY = y - otherVector->y;
 
         return std::make_unique<Vector2>(newVectorX, newVectorY);
     }
 
-    _Float32 Vector2::Magnitude()
+    float Vector2::Magnitude()
     {
         return x * x + y * y;
     }
 
-    _Float32 Vector2::SqrMagnitude()
+    float Vector2::SqrMagnitude()
     {
         return std::sqrt(this->Magnitude());
     }
 
     void Vector2::Normalize()
     {
-        _Float32 length = this->SqrMagnitude();
+        float length = this->SqrMagnitude();
 
         x /= length;
         y /= length;
@@ -52,14 +52,14 @@ namespace Picasso::Engine::Math
         return true;
     }
 
-    _Float32 Vector2::Distance(const Vector2 *otherVector)
+    float Vector2::Distance(const Vector2 *otherVector)
     {
-        _Float32 newVectorX = x - otherVector->x;
-        _Float32 newVectorY = y - otherVector->y;
+        float newVectorX = x - otherVector->x;
+        float newVectorY = y - otherVector->y;
 
         Vector2 *vDist = new Vector2(newVectorX, newVectorY);
 
-        _Float32 sqrDistance = vDist->SqrMagnitude();
+        float sqrDistance = vDist->SqrMagnitude();
 
         delete vDist;
 

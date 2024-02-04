@@ -5,37 +5,37 @@ namespace Picasso::Engine::Math
 {
     std::unique_ptr<Vector4> Vector4::Add(Vector4 *otherVector)
     {
-        _Float32 newVectorX = x + otherVector->x;
-        _Float32 newVectorY = y + otherVector->y;
-        _Float32 newVectorZ = z + otherVector->z;
-        _Float32 newVectorW = z + otherVector->w;
+        float newVectorX = x + otherVector->x;
+        float newVectorY = y + otherVector->y;
+        float newVectorZ = z + otherVector->z;
+        float newVectorW = z + otherVector->w;
 
         return std::move(std::make_unique<Vector4>(newVectorX, newVectorY, newVectorZ, newVectorW));
     }
 
     std::unique_ptr<Vector4> Vector4::Sub(Vector4 *otherVector)
     {
-        _Float32 newVectorX = x - otherVector->x;
-        _Float32 newVectorY = y - otherVector->y;
-        _Float32 newVectorZ = z - otherVector->z;
-        _Float32 newVectorW = z - otherVector->w;
+        float newVectorX = x - otherVector->x;
+        float newVectorY = y - otherVector->y;
+        float newVectorZ = z - otherVector->z;
+        float newVectorW = z - otherVector->w;
 
         return std::move(std::make_unique<Vector4>(newVectorX, newVectorY, newVectorZ, newVectorW));
     }
 
-    _Float32 Vector4::Magnitude()
+    float Vector4::Magnitude()
     {
         return x * x + y * y + z * z + w * w;
     }
 
-    _Float32 Vector4::SqrMagnitude()
+    float Vector4::SqrMagnitude()
     {
         return std::sqrt(this->Magnitude());
     }
 
     void Vector4::Normalize()
     {
-        _Float32 length = this->SqrMagnitude();
+        float length = this->SqrMagnitude();
 
         x /= length;
         y /= length;
@@ -43,9 +43,9 @@ namespace Picasso::Engine::Math
         w /= length;
     }
 
-    _Float32 Vector4::Dot(Vector4 *otherVector)
+    float Vector4::Dot(Vector4 *otherVector)
     {
-        _Float32 dotProduct = 0.0f;
+        float dotProduct = 0.0f;
 
         dotProduct += x * otherVector->x;
         dotProduct += y * otherVector->y;
@@ -65,7 +65,7 @@ namespace Picasso::Engine::Math
         return std::move(std::make_unique<Vector4>(0.0f, 0.0f, 0.0f, 0.0f));
     }
 
-    std::unique_ptr<Vector4> Vector4::FromVector3(Vector3 *v, _Float32 w)
+    std::unique_ptr<Vector4> Vector4::FromVector3(Vector3 *v, float w)
     {
         return std::move(std::make_unique<Vector4>(v->x, v->y, v->z, w));
     }

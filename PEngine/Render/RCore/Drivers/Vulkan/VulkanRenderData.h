@@ -31,23 +31,23 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     struct VulkanRenderPassArea
     {
-        _Float32 x;
-        _Float32 y;
-        _Float32 w;
-        _Float32 h;
+        float x;
+        float y;
+        float w;
+        float h;
 
-        VulkanRenderPassArea(_Float32 x = 0.0f, _Float32 y = 0.0f, _Float32 w = 0.0f, _Float32 h = 0.0f)
+        VulkanRenderPassArea(float x = 0.0f, float y = 0.0f, float w = 0.0f, float h = 0.0f)
             : x(x), y(y), w(w), h(h) {}
     };
 
     struct VulkanRenderPassColor
     {
-        _Float32 r;
-        _Float32 g;
-        _Float32 b;
-        _Float32 a;
+        float r;
+        float g;
+        float b;
+        float a;
 
-        VulkanRenderPassColor(_Float32 r = 0.0f, _Float32 g = 0.0f, _Float32 b = 0.0f, _Float32 a = 1.0f)
+        VulkanRenderPassColor(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f)
             : r(r), g(g), b(b), a(a) {}
     };
 
@@ -69,7 +69,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         std::shared_ptr<VkRenderPass> renderHandler;
         VulkanRenderPassArea area;
         VulkanRenderPassColor color;
-        _Float32 depth;
+        float depth;
         u_int32_t stencil;
         VulkanRenderState state;
 

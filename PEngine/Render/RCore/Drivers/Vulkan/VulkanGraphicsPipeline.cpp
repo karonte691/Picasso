@@ -7,7 +7,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     VulkanRenderPass VulkanGraphicsPipeline::RenderPassCreate(DriverContext *context,
                                                               VulkanRenderPassArea area,
                                                               VulkanRenderPassColor color,
-                                                              _Float32 depth,
+                                                              float depth,
                                                               u_int32_t stencil)
     {
         if (!context || !context->devices.logicalDevice)

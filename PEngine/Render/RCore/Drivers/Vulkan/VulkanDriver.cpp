@@ -70,7 +70,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         Picasso::Engine::Logger::Logger::Debug("Resize action invoke: %d/%d generation: %d", width, height, m_context->frameBufferSizeGeneration);
     }
 
-    bool VulkanDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool VulkanDriver::BeginFrame(std::shared_ptr<RAPIData> apiData, float deltaTime, std::shared_ptr<PPlatformState> pState)
     {
         if (m_context == nullptr)
         {
@@ -173,7 +173,7 @@ namespace Picasso::Engine::Render::Core::Drivers
         return true;
     }
 
-    bool VulkanDriver::EndFrame(std::shared_ptr<RAPIData> apiData, _Float32 deltaTime, std::shared_ptr<PPlatformState> pState)
+    bool VulkanDriver::EndFrame(std::shared_ptr<RAPIData> apiData, float deltaTime, std::shared_ptr<PPlatformState> pState)
     {
         if (m_context == nullptr)
         {

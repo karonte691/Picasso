@@ -55,12 +55,12 @@ namespace Picasso::Engine::Render::Core
         m_renderDriver->OnResize(width, height);
     }
 
-    bool RAPICore::BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
+    bool RAPICore::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         return p_GraphicsPipeline->BeginFrame(apiData, deltaTime, pState);
     }
 
-    bool RAPICore::EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
+    bool RAPICore::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         return p_GraphicsPipeline->EndFrame(apiData, deltaTime, pState);
     }

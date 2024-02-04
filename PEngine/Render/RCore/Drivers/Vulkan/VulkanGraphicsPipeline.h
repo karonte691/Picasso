@@ -23,7 +23,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         VulkanRenderPass RenderPassCreate(DriverContext *context,
                                           VulkanRenderPassArea area,
                                           VulkanRenderPassColor color,
-                                          _Float32 depth,
+                                          float depth,
                                           u_int32_t stencil);
         void RenderPassDestroy(DriverContext *context, VulkanRenderPass *vRenderPassData);
         void RenderPassBegin(VulkanCommandBufferDto *vCmBuffer, VulkanRenderPass *vRenderPassData, VkFramebuffer frameBuffer);

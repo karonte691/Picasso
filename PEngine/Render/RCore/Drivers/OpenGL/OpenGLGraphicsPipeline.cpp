@@ -17,7 +17,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         }
     }
 
-    bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
+    bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         if (!m_PipelineStarted)
         {
@@ -54,7 +54,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
-    bool OpenGLGraphicsPipeline::EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
+    bool OpenGLGraphicsPipeline::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         return p_Driver->EndFrame(apiData, deltaTime, pState);
     }

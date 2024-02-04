@@ -25,8 +25,8 @@ namespace Picasso::Engine::Render::Core
         bool Create(const char *appName, RDRIVERS driver, PPlatformState *pState, EngineState *eState, RAPIData *rcData);
         void Destroy();
         void Resize(RAPIData *apiData, uint16_t width, u_int16_t height);
-        bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState);
-        bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState);
+        bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState);
+        bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState);
 
     private:
         std::unique_ptr<DriverImplementation> m_renderDriver;

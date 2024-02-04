@@ -24,8 +24,8 @@ namespace Picasso::Engine::Render::Core
         RGraphicsPipeline(DriverImplementation *driver) : p_Driver(driver){};
         virtual ~RGraphicsPipeline() = default;
 
-        virtual bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) = 0;
-        virtual bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) = 0;
+        virtual bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
+        virtual bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
 
     protected:
         DriverImplementation *p_Driver;

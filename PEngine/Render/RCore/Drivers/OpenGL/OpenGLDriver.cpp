@@ -59,14 +59,14 @@ namespace Picasso::Engine::Render::Core::Drivers
     {
     }
 
-    bool OpenGLDriver::BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
+    bool OpenGLDriver::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
 
         return true;
     }
 
-    bool OpenGLDriver::EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState)
+    bool OpenGLDriver::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         glXSwapBuffers(pState->state->display, p_PlatformState->state->glxwindow);
         return true;

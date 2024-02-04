@@ -4,7 +4,6 @@
 #define R_DATA_H
 
 #include <cstdint>
-#include <bits/floatn-common.h>
 
 #include <PEngine/PState.h>
 namespace Picasso::Engine::Render

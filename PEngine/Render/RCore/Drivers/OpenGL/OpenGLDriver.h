@@ -20,8 +20,8 @@ namespace Picasso::Engine::Render::Core::Drivers
     public:
         bool InitDriver(RAPIData *rcData, const char *appName, PPlatformState *pState, EngineState *eState) override;
         void OnResize(u_int16_t width, u_int16_t height) override;
-        bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
-        bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
+        bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
+        bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
         void Shutdown() override;
         RDRIVERS GetType() override;
 

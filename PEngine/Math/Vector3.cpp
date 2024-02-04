@@ -5,25 +5,25 @@ namespace Picasso::Engine::Math
 {
     std::unique_ptr<Vector3> Vector3::Add(const Vector3 *otherVector)
     {
-        _Float32 newVectorX = x + otherVector->x;
-        _Float32 newVectorY = y + otherVector->y;
-        _Float32 newVectorZ = z + otherVector->z;
+        float newVectorX = x + otherVector->x;
+        float newVectorY = y + otherVector->y;
+        float newVectorZ = z + otherVector->z;
 
         return std::move(std::make_unique<Vector3>(newVectorX, newVectorY, newVectorZ));
     }
 
     std::unique_ptr<Vector3> Vector3::Sub(const Vector3 *otherVector)
     {
-        _Float32 newVectorX = x - otherVector->x;
-        _Float32 newVectorY = y - otherVector->y;
-        _Float32 newVectorZ = z - otherVector->z;
+        float newVectorX = x - otherVector->x;
+        float newVectorY = y - otherVector->y;
+        float newVectorZ = z - otherVector->z;
 
         return std::move(std::make_unique<Vector3>(newVectorX, newVectorY, newVectorZ));
     }
 
-    _Float32 Vector3::Dot(const Vector3 *otherVector)
+    float Vector3::Dot(const Vector3 *otherVector)
     {
-        _Float32 dotProduct = 0.0f;
+        float dotProduct = 0.0f;
 
         dotProduct += x * otherVector->x;
         dotProduct += y * otherVector->y;
@@ -34,22 +34,22 @@ namespace Picasso::Engine::Math
 
     std::unique_ptr<Vector3> Vector3::Cross(const Vector3 *otherVector)
     {
-        _Float32 newVectorX = z * otherVector->y - y * otherVector->z;
-        _Float32 newVectorY = z * otherVector->x - x * otherVector->z;
-        _Float32 newVectorZ = x * otherVector->y - y * otherVector->x;
+        float newVectorX = z * otherVector->y - y * otherVector->z;
+        float newVectorY = z * otherVector->x - x * otherVector->z;
+        float newVectorZ = x * otherVector->y - y * otherVector->x;
 
         return std::move(std::make_unique<Vector3>(newVectorX, newVectorY, newVectorZ));
     }
 
-    _Float32 Vector3::Distance(const Vector3 *otherVector)
+    float Vector3::Distance(const Vector3 *otherVector)
     {
-        _Float32 newVectorX = x - otherVector->x;
-        _Float32 newVectorY = y - otherVector->y;
-        _Float32 newVectorZ = z - otherVector->z;
+        float newVectorX = x - otherVector->x;
+        float newVectorY = y - otherVector->y;
+        float newVectorZ = z - otherVector->z;
 
         Vector3 *vDist = new Vector3(newVectorX, newVectorY, newVectorZ);
 
-        _Float32 sqrDistance = vDist->SqrMagnitude();
+        float sqrDistance = vDist->SqrMagnitude();
 
         delete vDist;
 
@@ -76,19 +76,19 @@ namespace Picasso::Engine::Math
         return true;
     }
 
-    _Float32 Vector3::Magnitude()
+    float Vector3::Magnitude()
     {
         return x * x + y * y + z * z;
     }
 
-    _Float32 Vector3::SqrMagnitude()
+    float Vector3::SqrMagnitude()
     {
         return std::sqrt(this->Magnitude());
     }
 
     void Vector3::Normalize()
     {
-        _Float32 length = this->SqrMagnitude();
+        float length = this->SqrMagnitude();
 
         x /= length;
         y /= length;

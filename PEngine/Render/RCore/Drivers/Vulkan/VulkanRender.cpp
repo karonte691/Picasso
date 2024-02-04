@@ -258,8 +258,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
 
     bool VulkanRender::_decorateContext(DriverContext *context)
     {
-        _Float32 fbWidth = static_cast<_Float32>(context->frameBufferWidth);
-        _Float32 fbHeight = static_cast<_Float32>(context->frameBufferHeight);
+        float fbWidth = static_cast<float>(context->frameBufferWidth);
+        float fbHeight = static_cast<float>(context->frameBufferHeight);
 
         VulkanRenderPassArea area = {0, 0, fbWidth, fbHeight};
         VulkanRenderPassColor color = {0.0f, 0.0f, 0.2f, 1.0f};
@@ -281,8 +281,8 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
     VkViewport VulkanRender::_getViewPort(const DriverContext *context)
     {
         VkViewport vPort;
-        _Float32 fbWidth = static_cast<_Float32>(context->frameBufferWidth);
-        _Float32 fbHeight = static_cast<_Float32>(context->frameBufferHeight);
+        float fbWidth = static_cast<float>(context->frameBufferWidth);
+        float fbHeight = static_cast<float>(context->frameBufferHeight);
 
         vPort.x = 0.0f;
         vPort.y = fbHeight;

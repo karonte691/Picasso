@@ -22,8 +22,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         ~OpenGLGraphicsPipeline();
 
-        bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
-        bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) override;
+        bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
+        bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
 
     private:
         Picasso::Engine::File::PFLoader *p_FileLoader;

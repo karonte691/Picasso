@@ -10,6 +10,8 @@ if(UNIX AND NOT APPLE)
                 Math/Vector3.cpp
                 Math/Vector4.cpp
                 Math/Matrix.cpp
+                Math/Quaternion.cpp
+                Math/PMath.cpp
 
                 File/FileManager.cpp
                 File/PFLoader.cpp

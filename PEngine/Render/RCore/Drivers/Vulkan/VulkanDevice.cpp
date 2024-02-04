@@ -245,7 +245,7 @@ namespace Picasso::Engine::Render::Core::Drivers::Vulkan
         }
 
         std::vector<VkDeviceQueueCreateInfo> qCreateInfo(indexCount);
-        _Float32 queuePriority = 1.0f;
+        float queuePriority = 1.0f;
 
         for (u_int32_t i = 0; i < indexCount; ++i)
         {

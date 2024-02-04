@@ -31,7 +31,7 @@ namespace Picasso::Engine::EventSystem::Events
 
             int32_t i32[4];
             u_int32_t u32[4];
-            _Float32 f32[4];
+            float f32[4];
 
             int16_t i16[8];
             u_int16_t u16[8];

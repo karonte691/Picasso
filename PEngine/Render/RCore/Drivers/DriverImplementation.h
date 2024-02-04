@@ -23,8 +23,8 @@ namespace Picasso::Engine::Render::Core::Drivers
 
         virtual bool InitDriver(RAPIData *rcData, const char *appName, PPlatformState *pState, EngineState *eState) = 0;
         virtual void OnResize(u_int16_t width, u_int16_t height) = 0;
-        virtual bool BeginFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) = 0;
-        virtual bool EndFrame(RAPIData *apiData, _Float32 deltaTime, PPlatformState *pState) = 0;
+        virtual bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
+        virtual bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
         virtual void Shutdown() = 0;
         virtual RDRIVERS GetType() = 0;
     };
