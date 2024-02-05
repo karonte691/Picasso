@@ -6,7 +6,6 @@
 
 namespace Picasso::Engine::Render::Core::Drivers
 {
-
     bool OpenGLDriver::InitDriver(RAPIData *rcData, const char *appName, PPlatformState *pState, EngineState *eState)
     {
         p_Context = new Picasso::Engine::Render::Core::Drivers::OpenGL::DriverContext();
@@ -69,6 +68,8 @@ namespace Picasso::Engine::Render::Core::Drivers
     bool OpenGLDriver::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
         glXSwapBuffers(pState->state->display, p_PlatformState->state->glxwindow);
+        glFlush();
+
         return true;
     }
 

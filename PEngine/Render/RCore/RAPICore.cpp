@@ -40,6 +40,14 @@ namespace Picasso::Engine::Render::Core
             return false;
         }
 
+        if (!gPipeline->Init())
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Unable to init the graphics pipeline");
+
+            m_renderDriver->Shutdown();
+            return false;
+        }
+
         p_GraphicsPipeline.reset(gPipeline);
 
         return true;

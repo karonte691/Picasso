@@ -15,7 +15,7 @@ namespace Picasso::Engine::Render::Core
     using Picasso::Engine::Render::Core::Drivers::DriverImplementation;
 
     /**
-     *  Each driver has it's own children implementation of the graphics pipeline. This class
+     *  Each driver has it's own implementation of the graphics pipeline. This class
      *  serve the purpose to abstract the low level code from this layer of Picasso
      */
     class RGraphicsPipeline
@@ -24,6 +24,7 @@ namespace Picasso::Engine::Render::Core
         RGraphicsPipeline(DriverImplementation *driver) : p_Driver(driver){};
         virtual ~RGraphicsPipeline() = default;
 
+        virtual bool Init() = 0;
         virtual bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
         virtual bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
 

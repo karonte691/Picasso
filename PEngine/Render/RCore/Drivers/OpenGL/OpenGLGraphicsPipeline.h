@@ -10,6 +10,7 @@
 #include <PEngine/File/PFLoader.h>
 #include <PEngine/Render/RCore/Drivers/DriverImplementation.h>
 #include <PEngine/Render/RCore/RGraphicsPipeline.h>
+#include <PEngine/Render/RCore/Vertex.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
@@ -20,17 +21,19 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         OpenGLGraphicsPipeline(DriverImplementation *driver)
             : RGraphicsPipeline(driver) {}
 
-        ~OpenGLGraphicsPipeline();
-
+        bool Init() override;
         bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
         bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
 
     private:
-        Picasso::Engine::File::PFLoader *p_FileLoader;
-        Shaders::OpenGLShaderFactory *p_ShaderFactory;
-        bool m_PipelineStarted;
-
-        bool _initPipeline();
+        std::unique_ptr<Picasso::Engine::File::PFLoader> p_FileLoader;
+        std::unique_ptr<Shaders::OpenGLShaderFactory> p_ShaderFactory;
+        std::unique_ptr<Shaders::OpenGLShader> p_Shader;
+        Vertex m_Vertices[3];
+        GLuint m_Indices[3];
+        GLuint m_VAD;
+        GLuint m_VB0;
+        GLuint m_EBO;
     };
 }
 

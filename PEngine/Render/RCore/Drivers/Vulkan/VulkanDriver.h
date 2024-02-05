@@ -35,6 +35,7 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     class VulkanDriver : public DriverImplementation
     {
+
     public:
         bool InitDriver(std::shared_ptr<RAPIData> rcData, const char *appName, std::shared_ptr<PPlatformState> pState, EngineState *eState) override;
         void OnResize(u_int16_t width, u_int16_t height) override;

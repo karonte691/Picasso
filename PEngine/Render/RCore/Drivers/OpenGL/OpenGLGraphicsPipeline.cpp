@@ -1,35 +1,30 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.h>
 
+#include <PEngine/Math/Vector3.h>
+
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    OpenGLGraphicsPipeline::~OpenGLGraphicsPipeline()
+    bool OpenGLGraphicsPipeline::Init()
     {
-        if (p_FileLoader != nullptr)
-        {
-            delete p_FileLoader;
-            p_FileLoader = nullptr;
-        }
+        p_FileLoader = std::make_unique<Picasso::Engine::File::PFLoader>();
+        p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
 
-        if (p_ShaderFactory != nullptr)
-        {
-            delete p_ShaderFactory;
-            p_ShaderFactory = nullptr;
-        }
-    }
+        m_Vertices[0] = Vertex{
+            std::make_unique<Math::Vector3>(0.0f, 0.5f, 0.0f),
+            std::make_unique<Math::Vector3>(1.0f, 0.0f, 0.0f),
+            std::make_unique<Math::Vector2>(0.0f, 1.0f)};
+        m_Vertices[1] = Vertex{
+            std::make_unique<Math::Vector3>(-0.5f, -0.5f, 0.0f),
+            std::make_unique<Math::Vector3>(0.0f, 1.0f, 0.0f),
+            std::make_unique<Math::Vector2>(0.0f, 0.0f)};
+        m_Vertices[2] = Vertex{
+            std::make_unique<Math::Vector3>(0.5f, -0.5f, 0.0f),
+            std::make_unique<Math::Vector3>(0.0f, 0.0f, 1.0f),
+            std::make_unique<Math::Vector2>(1.0f, 0.0f)};
 
-    bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
-    {
-        if (!m_PipelineStarted)
-        {
-            // start the pipeline
-            m_PipelineStarted = this->_initPipeline();
-        }
-
-        if (!p_Driver->BeginFrame(apiData, deltaTime, pState))
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] driver function begin frame returned error");
-            return false;
-        }
+        m_Indices[0] = 0;
+        m_Indices[1] = 1;
+        m_Indices[2] = 2;
 
         File::PFile vertexShader = p_FileLoader->LoadShader("VertexCore.glsl");
         File::PFile fragmentShader = p_FileLoader->LoadShader("FragmentCore.glsl");
@@ -40,37 +35,60 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        std::unique_ptr<Shaders::OpenGLShader> shader = p_ShaderFactory->Create(vertexShader.content, fragmentShader.content);
+        p_Shader = p_ShaderFactory->Create(vertexShader.content, fragmentShader.content);
 
-        if (shader == nullptr)
+        if (p_Shader == nullptr)
         {
             Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to create the shader");
             return false;
         }
 
-        shader->Use();
-        shader->Destroy();
+        glCreateVertexArrays(1, &m_VAD);
+        glBindVertexArray(m_VAD);
+
+        glGenBuffers(1, &m_VB0);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VB0);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertices), m_Vertices, GL_STATIC_DRAW);
+
+        glGenBuffers(1, &m_EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(m_Indices), m_Indices, GL_STATIC_DRAW);
+
+        // position
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position));
+        glEnableVertexAttribArray(0);
+        // color
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color));
+        glEnableVertexAttribArray(1);
+        // texcoord
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord));
+        glEnableVertexAttribArray(2);
+
+        glBindVertexArray(0);
+
+        return true;
+    }
+
+    bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
+    {
+        if (!p_Driver->BeginFrame(apiData, deltaTime, pState))
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] driver function begin frame returned error");
+            return false;
+        }
+
+        p_Shader->Use();
+
+        glBindVertexArray(m_VAD);
+
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         return true;
     }
 
     bool OpenGLGraphicsPipeline::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
+        p_Shader->Destroy();
         return p_Driver->EndFrame(apiData, deltaTime, pState);
-    }
-
-    bool OpenGLGraphicsPipeline::_initPipeline()
-    {
-        if (p_FileLoader == nullptr)
-        {
-            p_FileLoader = new Picasso::Engine::File::PFLoader();
-        }
-
-        if (p_ShaderFactory == nullptr)
-        {
-            p_ShaderFactory = new Shaders::OpenGLShaderFactory();
-        }
-
-        return true;
     }
 }
