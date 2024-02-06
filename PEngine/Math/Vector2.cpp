@@ -3,20 +3,20 @@
 
 namespace Picasso::Engine::Math
 {
-    std::unique_ptr<Vector2> Vector2::Add(const Vector2 *otherVector)
+    Vector2 Vector2::Add(const Vector2 *otherVector)
     {
         float newVectorX = x + otherVector->x;
         float newVectorY = y + otherVector->y;
 
-        return std::make_unique<Vector2>(newVectorX, newVectorY);
+        return Vector2{newVectorX, newVectorY};
     }
 
-    std::unique_ptr<Vector2> Vector2::Sub(const Vector2 *otherVector)
+    Vector2 Vector2::Sub(const Vector2 *otherVector)
     {
         float newVectorX = x - otherVector->x;
         float newVectorY = y - otherVector->y;
 
-        return std::make_unique<Vector2>(newVectorX, newVectorY);
+        return Vector2{newVectorX, newVectorY};
     }
 
     float Vector2::Magnitude()
@@ -69,28 +69,28 @@ namespace Picasso::Engine::Math
     /**
      *  STATIC FUNCTIONS
      */
-    std::unique_ptr<Vector2> Vector2::Zero()
+    Vector2 Vector2::Zero()
     {
-        return std::make_unique<Vector2>(0.0f, 0.0f);
+        return Vector2{0.0f, 0.0f};
     }
 
-    std::unique_ptr<Vector2> Vector2::Left()
+    Vector2 Vector2::Left()
     {
-        return std::make_unique<Vector2>(-1.0f, 0.0f);
+        return Vector2{-1.0f, 0.0f};
     }
 
-    std::unique_ptr<Vector2> Vector2::Right()
+    Vector2 Vector2::Right()
     {
-        return std::make_unique<Vector2>(1.0f, 0.0f);
+        return Vector2{1.0f, 0.0f};
     }
 
-    std::unique_ptr<Vector2> Vector2::Up()
+    Vector2 Vector2::Up()
     {
-        return std::make_unique<Vector2>(0.0f, 1.0f);
+        return Vector2{0.0f, 1.0f};
     }
 
-    std::unique_ptr<Vector2> Vector2::Down()
+    Vector2 Vector2::Down()
     {
-        return std::make_unique<Vector2>(0.0f, -1.0f);
+        return Vector2{0.0f, -1.0f};
     }
 }

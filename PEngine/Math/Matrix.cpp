@@ -83,34 +83,34 @@ namespace Picasso::Engine::Math
     std::unique_ptr<Matrix> Matrix::LookAt(const Vector3 *position, const Vector3 *target, const Vector3 *up)
     {
         std::unique_ptr<Matrix> pMatrix = std::make_unique<Matrix>();
-        Vector3 *zAxis;
+        Vector3 zAxis;
 
-        zAxis->x = target->x - position->x;
-        zAxis->y = target->y - position->y;
-        zAxis->z = target->z - position->z;
+        zAxis.x = target->x - position->x;
+        zAxis.y = target->y - position->y;
+        zAxis.z = target->z - position->z;
 
-        zAxis->Normalize();
+        zAxis.Normalize();
 
-        std::unique_ptr<Vector3> xAxis = zAxis->Cross(up);
-        xAxis->Normalize();
+        Vector3 xAxis = zAxis.Cross(up);
+        xAxis.Normalize();
 
-        std::unique_ptr<Vector3> yAxis = xAxis->Cross(zAxis);
+        Vector3 yAxis = xAxis.Cross(&zAxis);
 
-        pMatrix->data[0] = xAxis->x;
-        pMatrix->data[1] = yAxis->x;
-        pMatrix->data[2] = -zAxis->x;
+        pMatrix->data[0] = xAxis.x;
+        pMatrix->data[1] = yAxis.x;
+        pMatrix->data[2] = -zAxis.x;
         pMatrix->data[3] = 0;
-        pMatrix->data[4] = xAxis->y;
-        pMatrix->data[5] = yAxis->y;
-        pMatrix->data[6] = -zAxis->y;
+        pMatrix->data[4] = xAxis.y;
+        pMatrix->data[5] = yAxis.y;
+        pMatrix->data[6] = -zAxis.y;
         pMatrix->data[7] = 0;
-        pMatrix->data[8] = xAxis->z;
-        pMatrix->data[9] = yAxis->z;
-        pMatrix->data[10] = -zAxis->z;
+        pMatrix->data[8] = xAxis.z;
+        pMatrix->data[9] = yAxis.z;
+        pMatrix->data[10] = -zAxis.z;
         pMatrix->data[11] = 0;
-        pMatrix->data[12] = -xAxis->Dot(position);
-        pMatrix->data[13] = -yAxis->Dot(position);
-        pMatrix->data[14] = zAxis->Dot(position);
+        pMatrix->data[12] = -xAxis.Dot(position);
+        pMatrix->data[13] = -yAxis.Dot(position);
+        pMatrix->data[14] = zAxis.Dot(position);
         pMatrix->data[15] = 1.0f;
 
         return pMatrix;

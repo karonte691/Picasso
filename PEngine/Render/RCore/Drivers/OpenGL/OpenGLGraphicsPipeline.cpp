@@ -10,17 +10,17 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
 
         m_Vertices[0] = Vertex{
-            std::make_unique<Math::Vector3>(0.0f, 0.5f, 0.0f),
-            std::make_unique<Math::Vector3>(1.0f, 0.0f, 0.0f),
-            std::make_unique<Math::Vector2>(0.0f, 1.0f)};
+            Math::Vector3(0.0f, 0.5f, 0.0f),
+            Math::Vector3(1.0f, 0.0f, 0.0f),
+            Math::Vector2(0.0f, 1.0f)};
         m_Vertices[1] = Vertex{
-            std::make_unique<Math::Vector3>(-0.5f, -0.5f, 0.0f),
-            std::make_unique<Math::Vector3>(0.0f, 1.0f, 0.0f),
-            std::make_unique<Math::Vector2>(0.0f, 0.0f)};
+            Math::Vector3(-0.5f, -0.5f, 0.0f),
+            Math::Vector3(0.0f, 1.0f, 0.0f),
+            Math::Vector2(0.0f, 0.0f)};
         m_Vertices[2] = Vertex{
-            std::make_unique<Math::Vector3>(0.5f, -0.5f, 0.0f),
-            std::make_unique<Math::Vector3>(0.0f, 0.0f, 1.0f),
-            std::make_unique<Math::Vector2>(1.0f, 0.0f)};
+            Math::Vector3(0.5f, -0.5f, 0.0f),
+            Math::Vector3(0.0f, 0.0f, 1.0f),
+            Math::Vector2(1.0f, 0.0f)};
 
         m_Indices[0] = 0;
         m_Indices[1] = 1;
@@ -46,13 +46,19 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         glCreateVertexArrays(1, &m_VAD);
         glBindVertexArray(m_VAD);
 
+        if (glGetError() != GL_NO_ERROR)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Error after creating and binding VAO");
+            return false;
+        }
+
         glGenBuffers(1, &m_VB0);
         glBindBuffer(GL_ARRAY_BUFFER, m_VB0);
         glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertices), m_Vertices, GL_STATIC_DRAW);
 
         glGenBuffers(1, &m_EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(m_Indices), m_Indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices), m_Indices, GL_STATIC_DRAW);
 
         // position
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position));
@@ -61,8 +67,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color));
         glEnableVertexAttribArray(1);
         // texcoord
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord));
         glEnableVertexAttribArray(2);
+
+        if (glGetError() != GL_NO_ERROR)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Error after setting vertex attribute pointers");
+            return false;
+        }
 
         glBindVertexArray(0);
 
@@ -80,8 +92,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_Shader->Use();
 
         glBindVertexArray(m_VAD);
-
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+        GLenum error;
+        while ((error = glGetError()) != GL_NO_ERROR)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] OpenGL Error: %s ", std::to_string(error));
+            return false;
+        }
 
         return true;
     }

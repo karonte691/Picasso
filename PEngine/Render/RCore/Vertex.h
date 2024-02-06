@@ -11,9 +11,14 @@ namespace Picasso::Engine::Render::Core
 {
     struct Vertex
     {
-        std::unique_ptr<Math::Vector3> position;
-        std::unique_ptr<Math::Vector3> color;
-        std::unique_ptr<Math::Vector2> texcoord;
+        Math::Vector3 position;
+        Math::Vector3 color;
+        Math::Vector2 texcoord;
+
+        Vertex() : position(Math::Vector3()), color(Math::Vector3()), texcoord(Math::Vector2()) {}
+
+        Vertex(const Math::Vector3 &pos, const Math::Vector3 &col, const Math::Vector2 &tex)
+            : position(pos), color(col), texcoord(tex) {}
     };
 }
 
