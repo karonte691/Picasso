@@ -8,6 +8,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         p_FileLoader = std::make_unique<Picasso::Engine::File::PFLoader>();
         p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
+        p_Texture = std::make_unique<OpenGLTexture>();
 
         m_Vertices[0] = Vertex{
             Math::Vector3(0.0f, 0.5f, 0.0f),
@@ -78,6 +79,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         glBindVertexArray(0);
 
+        // texture
+        if (!p_Texture->LoadTexture("demo.png"))
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Unable to load the texture");
+
+            return false;
+        }
+
         return true;
     }
 
@@ -90,6 +99,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         }
 
         p_Shader->Use();
+        p_Texture->ActivateTexture();
 
         glBindVertexArray(m_VAD);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);

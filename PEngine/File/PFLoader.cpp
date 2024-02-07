@@ -6,8 +6,17 @@ namespace Picasso::Engine::File
     {
         std::string shaderDir = "Data/Shader/";
 
-        std::string fullShaderPathPath = shaderDir + shaderName;
+        std::string fullShaderPath = shaderDir + shaderName;
 
-        return FileManager::Instance->Read(fullShaderPathPath);
+        return FileManager::Instance->Read(fullShaderPath);
+    }
+
+    PFile PFLoader::LoadTexture(std::string textureName)
+    {
+        std::string textureDir = "Data/Texture/";
+
+        std::string texturePathPath = textureDir + textureName;
+
+        return FileManager::Instance->Read(texturePathPath);
     }
 }

@@ -12,6 +12,7 @@ namespace Picasso::Engine::File
     {
     public:
         PFile LoadShader(std::string shaderName);
+        PFile LoadTexture(std::string textureName);
     };
 }
 #endif

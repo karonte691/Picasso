@@ -6,7 +6,7 @@
 namespace Picasso::Engine::Render::Core
 {
     /**
-     *  Each driver has it's own children implementation of tshaders.
+     *  Each driver has it's own children implementation of rshaders.
      *  This class serve the purpose to abstract the low level code
      *  from this layer of Picasso
      */

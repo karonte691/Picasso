@@ -34,6 +34,7 @@ if(UNIX AND NOT APPLE)
                                 Render/RCore/Drivers/OpenGL/OpenGLContext.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLWindow.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLTexture.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.cpp
                         )
                 endif()
@@ -81,5 +82,6 @@ if(UNIX AND NOT APPLE)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGL.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libglfw.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGLEW.so)
+        target_link_libraries(PEngine /home/luca/pp/Picasso/build/Lib/Linux/libSOIL.so)
 endif()
 
