@@ -3,6 +3,7 @@
 #include <SOIL/SOIL.h>
 #include <PEngine/File/PFLoader.h>
 #include <PEngine/Logger/Logger.h>
+#include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
 #include <memory>
 #include <stdexcept>
 
@@ -31,19 +32,19 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        glGenTextures(1, &m_TextureMemId);
-        glBindTexture(GL_TEXTURE_2D, m_TextureMemId);
+        CHECK_GL_ERROR(glGenTextures(1, &m_TextureMemId));
+        CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, m_TextureMemId));
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+        CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+        CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Texture.imageWidth, m_Texture.imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_Texture.image);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        CHECK_GL_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Texture.imageWidth, m_Texture.imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_Texture.image));
+        CHECK_GL_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
-        glActiveTexture(0);
         glBindTexture(GL_TEXTURE_2D, 0);
+
         SOIL_free_image_data(m_Texture.image);
 
         GLenum error = glGetError();
@@ -61,8 +62,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         try
         {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m_TextureMemId);
+            CHECK_GL_ERROR(glActiveTexture(GL_TEXTURE0));
+            CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, m_TextureMemId));
         }
         catch (std::exception &e)
         {

@@ -1,6 +1,7 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.h>
 
 #include <PEngine/Math/Vector3.h>
+#include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
@@ -22,10 +23,17 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             Math::Vector3(0.5f, -0.5f, 0.0f),
             Math::Vector3(0.0f, 0.0f, 1.0f),
             Math::Vector2(1.0f, 0.0f)};
+        m_Vertices[3] = Vertex{
+            Math::Vector3(0.5f, 0.5f, 0.0f),
+            Math::Vector3(1.0f, 1.0f, 0.0f),
+            Math::Vector2(1.0f, 1.0f)};
 
         m_Indices[0] = 0;
         m_Indices[1] = 1;
         m_Indices[2] = 2;
+        m_Indices[3] = 0;
+        m_Indices[4] = 2;
+        m_Indices[5] = 3;
 
         File::PFile vertexShader = p_FileLoader->LoadShader("VertexCore.glsl");
         File::PFile fragmentShader = p_FileLoader->LoadShader("FragmentCore.glsl");
@@ -44,43 +52,31 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        glCreateVertexArrays(1, &m_VAD);
-        glBindVertexArray(m_VAD);
+        CHECK_GL_ERROR(glCreateVertexArrays(1, &m_VAD));
+        CHECK_GL_ERROR(glBindVertexArray(m_VAD));
 
-        if (glGetError() != GL_NO_ERROR)
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Error after creating and binding VAO");
-            return false;
-        }
+        CHECK_GL_ERROR(glGenBuffers(1, &m_VB0));
+        CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, m_VB0));
+        CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertices), m_Vertices, GL_STATIC_DRAW));
 
-        glGenBuffers(1, &m_VB0);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VB0);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertices), m_Vertices, GL_STATIC_DRAW);
-
-        glGenBuffers(1, &m_EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices), m_Indices, GL_STATIC_DRAW);
+        CHECK_GL_ERROR(glGenBuffers(1, &m_EBO));
+        CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
+        CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices), m_Indices, GL_STATIC_DRAW));
 
         // position
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position));
-        glEnableVertexAttribArray(0);
+        CHECK_GL_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position)));
+        CHECK_GL_ERROR(glEnableVertexAttribArray(0));
         // color
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color));
-        glEnableVertexAttribArray(1);
+        CHECK_GL_ERROR(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color)));
+        CHECK_GL_ERROR(glEnableVertexAttribArray(1));
         // texcoord
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord));
-        glEnableVertexAttribArray(2);
-
-        if (glGetError() != GL_NO_ERROR)
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Error after setting vertex attribute pointers");
-            return false;
-        }
+        CHECK_GL_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord)));
+        CHECK_GL_ERROR(glEnableVertexAttribArray(2));
 
         glBindVertexArray(0);
 
         // texture
-        if (!p_Texture->LoadTexture("demo.png"))
+        if (!p_Texture->LoadTexture("pngegg.png"))
         {
             Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Unable to load the texture");
 
@@ -102,7 +98,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_Texture->ActivateTexture();
 
         glBindVertexArray(m_VAD);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         GLenum error;
         while ((error = glGetError()) != GL_NO_ERROR)

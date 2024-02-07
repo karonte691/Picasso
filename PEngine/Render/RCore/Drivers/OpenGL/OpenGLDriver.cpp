@@ -71,6 +71,10 @@ namespace Picasso::Engine::Render::Core::Drivers
         glXSwapBuffers(pState->state->display, p_PlatformState->state->glxwindow);
         glFlush();
 
+        // reset
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         return true;
     }
 

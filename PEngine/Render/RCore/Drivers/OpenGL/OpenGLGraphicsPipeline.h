@@ -31,8 +31,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<Shaders::OpenGLShaderFactory> p_ShaderFactory;
         std::unique_ptr<Shaders::OpenGLShader> p_Shader;
         std::unique_ptr<OpenGLTexture> p_Texture;
-        Vertex m_Vertices[3];
-        GLuint m_Indices[3];
+        Vertex m_Vertices[4];
+        GLuint m_Indices[6];
         GLuint m_VAD;
         GLuint m_VB0;
         GLuint m_EBO;
