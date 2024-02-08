@@ -3,22 +3,22 @@
 #ifndef OPEN_GL_TEXTURE_H
 #define OPEN_GL_TEXTURE_H
 
-#include <PEngine/Render/RCore/Texture.h>
-
 #include <Glew/glew.h>
 #include <GL/glx.h>
 #include <GL/gl.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    class OpenGLTexture : public Texture
+    class OpenGLTexture
     {
     public:
-        bool LoadTexture(const char *textureName) override;
-        bool ActivateTexture() override;
+        GLuint Id;
+        int Width;
+        int Height;
 
-    private:
-        GLuint m_TextureMemId;
+        OpenGLTexture(GLuint id) : Id(id){};
+
+        bool ActivateTexture(unsigned int unit);
     };
 }
 

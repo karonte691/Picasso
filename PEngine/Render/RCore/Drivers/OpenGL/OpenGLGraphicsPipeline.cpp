@@ -3,16 +3,19 @@
 #include <PEngine/Math/Vector3.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
 
+#include <vector>
+#include <string>
+
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
     bool OpenGLGraphicsPipeline::Init()
     {
         p_FileLoader = std::make_unique<Picasso::Engine::File::PFLoader>();
         p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
-        p_Texture = std::make_unique<OpenGLTexture>();
+        p_TextureManager = std::make_unique<OpenGLTextureManager>();
 
         m_Vertices[0] = Vertex{
-            Math::Vector3(0.0f, 0.5f, 0.0f),
+            Math::Vector3(-0.5f, 0.5f, 0.0f),
             Math::Vector3(1.0f, 0.0f, 0.0f),
             Math::Vector2(0.0f, 1.0f)};
         m_Vertices[1] = Vertex{
@@ -75,8 +78,15 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         glBindVertexArray(0);
 
+        std::vector<std::string> texturesToLoad;
+
+        texturesToLoad.resize(2);
+
+        texturesToLoad.push_back("pngegg.png");
+        texturesToLoad.push_back("bg.png");
+
         // texture
-        if (!p_Texture->LoadTexture("pngegg.png"))
+        if (!p_TextureManager->LoadTextures(texturesToLoad))
         {
             Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Unable to load the texture");
 
@@ -95,7 +105,11 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         }
 
         p_Shader->Use();
-        p_Texture->ActivateTexture();
+
+        if (!p_TextureManager->ActivateTextures(p_Shader->GetId()))
+        {
+            return false;
+        }
 
         glBindVertexArray(m_VAD);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

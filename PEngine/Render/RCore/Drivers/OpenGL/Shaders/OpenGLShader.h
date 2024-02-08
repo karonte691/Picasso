@@ -17,6 +17,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
     public:
         OpenGLShader(GLuint id);
 
+        GLuint GetId() { return m_Id; };
+
         void Use() override;
         void Destroy() override;
 
