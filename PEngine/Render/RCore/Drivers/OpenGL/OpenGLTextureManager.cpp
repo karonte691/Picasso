@@ -48,9 +48,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
                 return false;
             }
 
-            const char *samplerName = "texture" + i;
+            std::string samplerName = "texture" + std::to_string(i);
 
-            if (!_SetTextureSampler(shaderProgram, samplerName, i))
+            if (!_SetTextureSampler(shaderProgram, samplerName.c_str(), i))
             {
                 return false;
             }
@@ -85,6 +85,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         std::unique_ptr<File::PFLoader> fileLoader = std::make_unique<File::PFLoader>();
         GLuint textureId;
+
+        Picasso::Engine::Logger::Logger::Debug("[OpenGLTextureManager] loading texture %s", textureName);
 
         File::PFile textureFile = fileLoader->LoadTexture(textureName);
 

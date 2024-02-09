@@ -80,10 +80,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         std::vector<std::string> texturesToLoad;
 
-        texturesToLoad.resize(2);
-
-        texturesToLoad.push_back("pngegg.png");
         texturesToLoad.push_back("bg.png");
+        texturesToLoad.push_back("pngegg.png");
 
         // texture
         if (!p_TextureManager->LoadTextures(texturesToLoad))
