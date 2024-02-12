@@ -9,7 +9,7 @@ if(UNIX AND NOT APPLE)
                 Math/Vector2.cpp
                 Math/Vector3.cpp
                 Math/Vector4.cpp
-                Math/Matrix.cpp
+                Math/Mat4.cpp
                 Math/Quaternion.cpp
                 Math/PMath.cpp
 

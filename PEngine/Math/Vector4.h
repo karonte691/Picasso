@@ -4,12 +4,11 @@
 #define VECTOR4_H
 
 #include <memory>
-#include <PEngine/Math/Vector.h>
 #include <PEngine/Math/Vector3.h>
 
 namespace Picasso::Engine::Math
 {
-    class Vector4 : public Vector
+    class Vector4
     {
     public:
         float x;
@@ -22,9 +21,9 @@ namespace Picasso::Engine::Math
         std::unique_ptr<Vector4> Add(Vector4 *otherVector);
         std::unique_ptr<Vector4> Sub(Vector4 *otherVector);
         std::unique_ptr<Vector3> ToVector3();
-        float Magnitude() override;
-        float SqrMagnitude() override;
-        void Normalize() override;
+        float Magnitude();
+        float SqrMagnitude();
+        void Normalize();
         float Dot(Vector4 *otherVector);
 
         static std::unique_ptr<Vector4> Zero();

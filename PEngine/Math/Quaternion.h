@@ -5,7 +5,6 @@
 
 #include <memory>
 
-#include <PEngine/Math/Matrix.h>
 #include <PEngine/Math/Vector3.h>
 
 namespace Picasso::Engine::Math
@@ -27,8 +26,6 @@ namespace Picasso::Engine::Math
         void Inverse();
         std::unique_ptr<Quaternion> Multiply(const Quaternion *otherQuaternion);
         float Dot(const Quaternion *otherQuaternion);
-        std::unique_ptr<Matrix> ToMatrix();
-        std::unique_ptr<Matrix> ToRotationMatrix(const Vector3 *center);
         void Slerp(const Quaternion *otherQuaternion, float percentage);
 
         static std::unique_ptr<Quaternion> Identity();
