@@ -78,22 +78,37 @@ namespace Picasso::Engine::Math
             m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
     }
 
-    Mat4 &Mat4::Translate(const Vector3 &v)
+    void Mat4::Translate(const Vector3 &v)
     {
-        return *this = *this * Mat4(
-                                   1, 0, 0, v.x,
-                                   0, 1, 0, v.y,
-                                   0, 0, 1, v.z,
-                                   0, 0, 0, 1);
+        *this = *this * Mat4(
+                            1, 0, 0, v.x,
+                            0, 1, 0, v.y,
+                            0, 0, 1, v.z,
+                            0, 0, 0, 1);
     }
 
-    Mat4 &Mat4::Scale(const Vector3 &v)
+    void Mat4::Scale(const Vector3 &v)
     {
-        return *this = *this * Mat4(
-                                   v.x, 0, 0, 0,
-                                   0, v.y, 0, 0,
-                                   0, 0, v.z, 0,
-                                   0, 0, 0, 1);
+        *this = *this * Mat4(
+                            v.x, 0, 0, 0,
+                            0, v.y, 0, 0,
+                            0, 0, v.z, 0,
+                            0, 0, 0, 1);
+    }
+
+    void Mat4::Rotate(Vector3 &axis, float ang)
+    {
+        float s = std::sin(ang);
+        float c = std::cos(ang);
+        float t = 1 - c;
+
+        axis.Normalize();
+
+        *this = *this * Mat4(
+                            axis.x * axis.x * t + c, axis.x * axis.y * t - axis.z * s, axis.x * axis.z * t + axis.y * s, 0,
+                            axis.y * axis.x * t + axis.z * s, axis.y * axis.y * t + c, axis.y * axis.z * t - axis.x * s, 0,
+                            axis.z * axis.x * t - axis.y * s, axis.z * axis.y * t + axis.x * s, axis.z * axis.z * t + c, 0,
+                            0, 0, 0, 1);
     }
 
     std::unique_ptr<Mat4> Mat4::Identity()

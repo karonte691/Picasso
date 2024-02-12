@@ -25,8 +25,9 @@ namespace Picasso::Engine::Math
         const Vector3 operator*(const Vector3 &v) const;
         const Vector4 operator*(const Vector4 &v) const;
 
-        Mat4 &Translate(const Vector3 &v);
-        Mat4 &Scale(const Vector3 &v);
+        void Translate(const Vector3 &v);
+        void Scale(const Vector3 &v);
+        void Rotate(Vector3 &v, float ang);
 
         static std::unique_ptr<Mat4> Identity();
     };
