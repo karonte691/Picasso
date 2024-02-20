@@ -1,6 +1,7 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.h>
 
 #include <PEngine/Math/Vector3.h>
+#include <PEngine/Math/PMath.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
 
 #include <vector>
@@ -80,7 +81,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         std::vector<std::string> texturesToLoad;
 
-        texturesToLoad.push_back("bg.png");
+        // texturesToLoad.push_back("bg.png");
         texturesToLoad.push_back("pngegg.png");
 
         // texture
@@ -90,6 +91,25 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
             return false;
         }
+
+        p_ModelMatrix = Math::Mat4::Identity();
+
+        p_ModelMatrix->Translate(Math::Vector3::Zero());
+
+        /**
+         *  rotation
+         */
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::X, Math::PMath::Deg2Rad(0.0f));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, Math::PMath::Deg2Rad(0.0f));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, Math::PMath::Deg2Rad(0.0f));
+
+        /************************************************/
+
+        p_ModelMatrix->Scale(Math::Vector3::One());
+
+        p_Shader->Use();
+
+        glUniformMatrix4fv(glGetUniformLocation(p_Shader->GetId(), "ModelMatrix"), 1, GL_FALSE, &p_ModelMatrix->m[0]);
 
         return true;
     }
@@ -102,22 +122,21 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        p_Shader->Use();
-
         if (!p_TextureManager->ActivateTextures(p_Shader->GetId()))
         {
             return false;
         }
 
-        glBindVertexArray(m_VAD);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        CHECK_GL_ERROR(glBindVertexArray(m_VAD));
+        CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
-        GLenum error;
-        while ((error = glGetError()) != GL_NO_ERROR)
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] OpenGL Error: %s ", std::to_string(error));
-            return false;
-        }
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::X, Math::PMath::Deg2Rad(0.0f));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, Math::PMath::Deg2Rad(5.0f));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, Math::PMath::Deg2Rad(0.0f));
+
+        p_Shader->Use();
+
+        glUniformMatrix4fv(glGetUniformLocation(p_Shader->GetId(), "ModelMatrix"), 1, GL_FALSE, &p_ModelMatrix->m[0]);
 
         return true;
     }

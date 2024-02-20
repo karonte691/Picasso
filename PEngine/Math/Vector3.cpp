@@ -100,6 +100,11 @@ namespace Picasso::Engine::Math
         return Vector3{0.0f, 0.0f, 0.0f};
     }
 
+    Vector3 Vector3::One()
+    {
+        return Vector3{1.0f, 1.0f, 1.0f};
+    }
+
     Vector3 Vector3::Left()
     {
         return Vector3{-1.0f, 0.0f, 0.0f};

@@ -96,18 +96,48 @@ namespace Picasso::Engine::Math
                             0, 0, 0, 1);
     }
 
-    void Mat4::Rotate(Vector3 &axis, float ang)
+    void Mat4::Rotate(const Mat4Rotation axisRotation, const float ang)
     {
-        float s = std::sin(ang);
-        float c = std::cos(ang);
-        float t = 1 - c;
+        switch (axisRotation)
+        {
+        case Mat4Rotation::X:
+            return _rotateOnX(ang);
+            break;
+        case Mat4Rotation::Y:
+            return _rotateOnY(ang);
+            break;
+        case Mat4Rotation::Z:
+            return _rotateOnZ(ang);
+            break;
+        default:
+            break;
+        }
+    }
 
-        axis.Normalize();
-
+    void Mat4::_rotateOnX(const float ang)
+    {
         *this = *this * Mat4(
-                            axis.x * axis.x * t + c, axis.x * axis.y * t - axis.z * s, axis.x * axis.z * t + axis.y * s, 0,
-                            axis.y * axis.x * t + axis.z * s, axis.y * axis.y * t + c, axis.y * axis.z * t - axis.x * s, 0,
-                            axis.z * axis.x * t - axis.y * s, axis.z * axis.y * t + axis.x * s, axis.z * axis.z * t + c, 0,
+                            1, 0, 0, 0,
+                            0, std::cos(ang), -std::sin(ang), 0,
+                            0, std::sin(ang), std::cos(ang), 0,
+                            0, 0, 0, 1);
+    }
+
+    void Mat4::_rotateOnY(const float ang)
+    {
+        *this = *this * Mat4(
+                            std::cos(ang), 0, std::sin(ang), 0,
+                            0, 1, 0, 0,
+                            -std::sin(ang), 0, std::cos(ang), 0,
+                            0, 0, 0, 1);
+    }
+
+    void Mat4::_rotateOnZ(const float ang)
+    {
+        *this = *this * Mat4(
+                            std::cos(ang), -std::sin(ang), 0, 0,
+                            std::sin(ang), std::cos(ang), 0, 0,
+                            0, 0, 1, 0,
                             0, 0, 0, 1);
     }
 

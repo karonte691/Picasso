@@ -9,6 +9,13 @@
 // taken from https://github.com/Overv/OOGL/blob/master/include/GL/Math/Mat4.hpp. All credits to them
 namespace Picasso::Engine::Math
 {
+    enum class Mat4Rotation
+    {
+        X,
+        Y,
+        Z
+    };
+
     class Mat4
     {
     public:
@@ -27,9 +34,14 @@ namespace Picasso::Engine::Math
 
         void Translate(const Vector3 &v);
         void Scale(const Vector3 &v);
-        void Rotate(Vector3 &v, float ang);
+        void Rotate(const Mat4Rotation axisRotation, const float ang);
 
         static std::unique_ptr<Mat4> Identity();
+
+    private:
+        void _rotateOnX(const float ang);
+        void _rotateOnY(const float ang);
+        void _rotateOnZ(const float ang);
     };
 }
 #endif

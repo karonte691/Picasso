@@ -13,6 +13,7 @@
 #include <PEngine/Render/RCore/Vertex.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLTextureManager.h>
+#include <PEngine/Math/Mat4.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
@@ -31,6 +32,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<Shaders::OpenGLShaderFactory> p_ShaderFactory;
         std::unique_ptr<Shaders::OpenGLShader> p_Shader;
         std::unique_ptr<OpenGLTextureManager> p_TextureManager;
+        std::unique_ptr<Math::Mat4> p_ModelMatrix;
         Vertex m_Vertices[4];
         GLuint m_Indices[6];
         GLuint m_VAD;

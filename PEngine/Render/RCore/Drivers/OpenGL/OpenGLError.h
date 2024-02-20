@@ -8,15 +8,18 @@
 #include <PEngine/PBuild.h>
 #include <GL/gl.h>
 
-inline void CheckOpenGLError(const char *statement, const char *file, int line)
+inline bool CheckOpenGLError(const char *statement, const char *file, int line)
 {
 #if PICASSO_DEBUG_ENABLE
     GLenum error = glGetError();
     if (error != GL_NO_ERROR)
     {
         Picasso::Engine::Logger::Logger::Error("[OpenGL Error] %s, FILE %s, LINE %d: %u", statement, file, line, error);
+        return false;
     }
 #endif
+
+    return true;
 }
 
 #define CHECK_GL_ERROR(statement)                         \

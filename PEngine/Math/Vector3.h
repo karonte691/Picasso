@@ -26,6 +26,7 @@ namespace Picasso::Engine::Math
         bool Equals(const Vector3 *otherVector, float tollerance);
 
         static Vector3 Zero();
+        static Vector3 One();
         static Vector3 Left();
         static Vector3 Right();
         static Vector3 Up();
