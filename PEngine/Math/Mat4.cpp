@@ -114,7 +114,7 @@ namespace Picasso::Engine::Math
         }
     }
 
-    void Mat4::_rotateOnX(const float ang)
+    void Mat4::_rotateOnY(const float ang)
     {
         *this = *this * Mat4(
                             1, 0, 0, 0,
@@ -123,7 +123,7 @@ namespace Picasso::Engine::Math
                             0, 0, 0, 1);
     }
 
-    void Mat4::_rotateOnY(const float ang)
+    void Mat4::_rotateOnX(const float ang)
     {
         *this = *this * Mat4(
                             std::cos(ang), 0, std::sin(ang), 0,
