@@ -40,7 +40,7 @@ namespace Picasso::Engine::Render::Core
             return false;
         }
 
-        if (!gPipeline->Init())
+        if (!gPipeline->Init(rcData))
         {
             Picasso::Engine::Logger::Logger::Fatal("Unable to init the graphics pipeline");
 
@@ -61,6 +61,7 @@ namespace Picasso::Engine::Render::Core
     void RAPICore::Resize(RAPIData *apiData, uint16_t width, u_int16_t height)
     {
         m_renderDriver->OnResize(width, height);
+        p_GraphicsPipeline->Resize(width, height);
     }
 
     bool RAPICore::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)

@@ -9,11 +9,12 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    bool OpenGLGraphicsPipeline::Init()
+    bool OpenGLGraphicsPipeline::Init(RAPIData *apiData)
     {
         p_FileLoader = std::make_unique<Picasso::Engine::File::PFLoader>();
         p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
         p_TextureManager = std::make_unique<OpenGLTextureManager>();
+        p_MatrixManager = std::make_unique<OpenGLMatrixManager>();
 
         m_Vertices[0] = Vertex{
             Math::Vector3(-0.5f, 0.5f, 0.0f),
@@ -92,24 +93,19 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        p_ModelMatrix = Math::Mat4::Identity();
+        // matrices
+        p_MatrixManager->CreateModelMatrix(Math::Vector3::Zero(), Math::Vector3::One());
+        p_MatrixManager->CreateViewMatrix();
 
-        p_ModelMatrix->Translate(Math::Vector3::Zero());
-
-        /**
-         *  rotation
-         */
-        p_ModelMatrix->Rotate(Math::Mat4Rotation::X, Math::PMath::Deg2Rad(0.0f));
-        p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, Math::PMath::Deg2Rad(0.0f));
-        p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, Math::PMath::Deg2Rad(0.0f));
-
-        /************************************************/
-
-        p_ModelMatrix->Scale(Math::Vector3::One());
+        float fWidth = static_cast<float>(apiData->pState->width);
+        float fHeight = static_cast<float>(apiData->pState->height);
+        p_MatrixManager->CreateProjectionMatrix(fWidth, fHeight);
 
         p_Shader->Use();
 
-        glUniformMatrix4fv(glGetUniformLocation(p_Shader->GetId(), "ModelMatrix"), 1, GL_FALSE, &p_ModelMatrix->m[0]);
+        p_MatrixManager->UniformModelMatrix(p_Shader->GetId());
+        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
+        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
 
         return true;
     }
@@ -130,13 +126,13 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         CHECK_GL_ERROR(glBindVertexArray(m_VAD));
         CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
-        p_ModelMatrix->Rotate(Math::Mat4Rotation::X, Math::PMath::Deg2Rad(0.0f));
-        p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, Math::PMath::Deg2Rad(5.0f));
-        p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, Math::PMath::Deg2Rad(0.0f));
+        p_MatrixManager->RotateModelMatrixAxisY(Math::PMath::Deg2Rad(0.0f));
 
         p_Shader->Use();
 
-        glUniformMatrix4fv(glGetUniformLocation(p_Shader->GetId(), "ModelMatrix"), 1, GL_FALSE, &p_ModelMatrix->m[0]);
+        p_MatrixManager->UniformModelMatrix(p_Shader->GetId());
+        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
+        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
 
         return true;
     }
@@ -145,5 +141,15 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         p_Shader->Destroy();
         return p_Driver->EndFrame(apiData, deltaTime, pState);
+    }
+
+    bool OpenGLGraphicsPipeline::Resize(u_int16_t width, u_int16_t height)
+    {
+        float fWidth = static_cast<float>(width);
+        float fHeight = static_cast<float>(height);
+
+        p_MatrixManager->ResetProjectionMatrix(fWidth, fHeight);
+
+        return true;
     }
 }

@@ -51,6 +51,7 @@ namespace Picasso::Engine
         PTime *m_time;
 
         void _Paint();
+        void _OnResize(BaseEvent<PEvent> *&event);
     };
 }
 

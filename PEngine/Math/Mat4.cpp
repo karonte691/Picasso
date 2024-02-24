@@ -114,6 +114,54 @@ namespace Picasso::Engine::Math
         }
     }
 
+    void Mat4::LookAt(Vector3 eye, const Vector3 center, const Vector3 up)
+    {
+        eye.Sub(&center).Normalize();
+
+        Vector3 X(
+            up.y * eye.z - up.z * eye.y,
+            up.z * eye.x - up.x * eye.z,
+            up.x * eye.y - up.y * eye.x);
+
+        Vector3 Y(
+            eye.y * X.z - eye.z * X.y,
+            eye.z * X.x - eye.x * X.z,
+            eye.x * X.y - eye.y * X.x);
+
+        X.Normalize();
+        Y.Normalize();
+
+        this->m[0] = X.x;
+        this->m[1] = Y.x;
+        this->m[2] = eye.x;
+        this->m[4] = X.y;
+        this->m[5] = Y.y;
+        this->m[6] = eye.y;
+        this->m[8] = X.z;
+        this->m[9] = Y.z;
+        this->m[10] = eye.z;
+        this->m[12] = -X.Dot(&eye);
+        this->m[13] = -Y.Dot(&eye);
+        this->m[14] = -eye.Dot(&eye);
+    }
+
+    void Mat4::Perspective(float fovy, float aspect, float near, float far)
+    {
+        float top = near * std::tan(fovy / 2.0f);
+        float right = top * aspect;
+        float left = -right;
+        float bottom = -top;
+
+        this->m[0] = near * 2.0f / (right - left);
+        this->m[5] = near * 2.0f / (top - bottom);
+        this->m[8] = (right + left) / (right - left);
+        this->m[9] = (top + bottom) / (top - bottom);
+        this->m[10] = (-far - near) / (far - near);
+        this->m[11] = -1;
+        this->m[14] = -2.0f * far * near / (far - near);
+        this->m[15] = 0;
+    }
+
     void Mat4::_rotateOnY(const float ang)
     {
         *this = *this * Mat4(

@@ -48,9 +48,14 @@ namespace Picasso::Engine::Render
             }
 
             m_renderData->frameNumber++;
-            Picasso::Engine::Logger::Logger::Debug("Render frame completed succesfully");
+            // Picasso::Engine::Logger::Logger::Debug("Render frame completed succesfully");
         }
 
         return true;
+    }
+
+    void PRender::OnResize(u_int16_t width, u_int16_t height)
+    {
+        m_internalRender->Resize(m_renderData.get(), width, height);
     }
 }

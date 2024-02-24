@@ -6,6 +6,7 @@
 #include <PEngine/EventSystem/Events/MouseMovedEvent.h>
 #include <PEngine/EventSystem/Events/MouseWheelEvent.h>
 #include <PEngine/EventSystem/Events/PlatformExposeEvent.h>
+#include <PEngine/EventSystem/Events/ResizeEvent.h>
 
 #include <unordered_map>
 
@@ -29,6 +30,8 @@ namespace Picasso::Engine::EventSystem
             return new Events::MouseWheelEvent();
         case PEvent::PLATFORM_EXPOSE:
             return new Events::PlatformExposedEvent();
+        case PEvent::RESIZED:
+            return new Events::ResizeEvent();
         default:
             return nullptr;
         }

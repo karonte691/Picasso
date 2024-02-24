@@ -19,13 +19,13 @@ namespace Picasso::Engine::EventSystem
     using Events::BaseEvent;
     using Events::PEvent;
     using Events::PEventData;
+    using SlotType = std::function<void(BaseEvent<PEvent> *&)>;
 
     class Dispatcher
     {
     public:
         Dispatcher();
 
-        using SlotType = std::function<void(BaseEvent<PEvent> *&)>;
         static Dispatcher *Instance;
 
         void Subscribe(const PEvent &eventName, SlotType &&slot);

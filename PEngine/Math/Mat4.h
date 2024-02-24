@@ -35,6 +35,8 @@ namespace Picasso::Engine::Math
         void Translate(const Vector3 &v);
         void Scale(const Vector3 &v);
         void Rotate(const Mat4Rotation axisRotation, const float ang);
+        void LookAt(Vector3 eye, const Vector3 center, const Vector3 up);
+        void Perspective(float fovy, float aspect, float near, float far);
 
         static std::unique_ptr<Mat4> Identity();
 

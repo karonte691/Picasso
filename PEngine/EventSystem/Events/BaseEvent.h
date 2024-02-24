@@ -19,11 +19,15 @@ namespace Picasso::Engine::EventSystem::Events
         inline const T type() const { return m_type; };
         inline const std::string GetEventName() const { return m_eventName; }
         inline const bool IsHandled() const { return m_isHandled; }
+        inline const PEventData GetData() const { return m_data; }
+
+        void SetData(PEventData data) { m_data = data; }
 
     protected:
         T m_type;
         std::string m_eventName;
         bool m_isHandled = false;
+        PEventData m_data;
     };
 
     struct BaseEventComparator

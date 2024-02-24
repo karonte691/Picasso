@@ -114,6 +114,10 @@ namespace Picasso::Engine
         engineState->running = true;
         engineState->suspended = false;
 
+        // setting up listener to the resize event
+        PicassoRegistry::Subscribe(PEvent::RESIZED, [this](BaseEvent<PEvent> *&event)
+                                   { this->_OnResize(event); });
+
         return true;
     }
 
@@ -166,7 +170,7 @@ namespace Picasso::Engine
         }
 
         m_frameData->deltaTime = m_time->GetDeltaTime();
-        Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
+        // Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
         if (!m_render->RenderFrame(m_frameData, m_platform->GetState().get()))
         {
@@ -176,5 +180,19 @@ namespace Picasso::Engine
         }
 
         m_input->Update(m_frameData->deltaTime);
+    }
+
+    void Application::_OnResize(BaseEvent<PEvent> *&event)
+    {
+        Picasso::Engine::Logger::Logger::Debug("Received resize event");
+
+        EventSystem::Events::PEventData eventData = event->GetData();
+
+        u_int16_t width = eventData.data.u16[0];
+        u_int16_t height = eventData.data.u16[1];
+
+        Picasso::Engine::Logger::Logger::Debug("New width %d, new height %d", width, height);
+
+        m_render->OnResize(width, height);
     }
 }

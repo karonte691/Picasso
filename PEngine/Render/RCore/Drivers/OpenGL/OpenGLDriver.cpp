@@ -56,6 +56,23 @@ namespace Picasso::Engine::Render::Core::Drivers
 
     void OpenGLDriver::OnResize(u_int16_t width, u_int16_t height)
     {
+        const float aspectRatio = ((float)width) / height;
+        float xSpan = 1;
+        float ySpan = 1;
+
+        if (aspectRatio > 1)
+        {
+            // Width > Height, so scale xSpan accordinly.
+            xSpan *= aspectRatio;
+        }
+        else
+        {
+            // Height >= Width, so scale ySpan accordingly.
+            ySpan = xSpan / aspectRatio;
+        }
+
+        // glOrhto2D(-1 * xSpan, xSpan, -1 * ySpan, ySpan, -1, 1);
+        glViewport(0, 0, width, height);
     }
 
     bool OpenGLDriver::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)

@@ -28,6 +28,10 @@ namespace Picasso::Engine::EventSystem
         {
             Dispatcher::Instance->Post(event, eventData);
         }
+        static void Subscribe(const PEvent &eventName, SlotType &&slot)
+        {
+            Dispatcher::Instance->Subscribe(eventName, std::move(slot));
+        }
         static void Reset()
         {
             delete Dispatcher::Instance;

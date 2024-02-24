@@ -9,7 +9,6 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLData.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLContext.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLWindow.h>
-
 namespace Picasso::Engine::Render::Core::Drivers
 {
     using Picasso::Engine::Render::Core::Drivers::OpenGL::OpenGLContext;

@@ -61,6 +61,8 @@ namespace Picasso::Engine::EventSystem
             return;
         }
 
+        event->SetData(eventData);
+
         PEvent type = event->type();
 
         if (m_listeners.find(type) == m_listeners.end())

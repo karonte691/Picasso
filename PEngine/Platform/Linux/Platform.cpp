@@ -188,7 +188,18 @@ namespace Picasso::Engine::Platform
             }
             break;
             case XCB_CONFIGURE_NOTIFY:
-                break;
+            {
+                // resize
+                xcb_configure_notify_event_t *cn_event = (xcb_configure_notify_event_t *)event;
+
+                EventSystem::Events::PEventData eventData;
+
+                eventData.data.u16[0] = cn_event->width;
+                eventData.data.u16[1] = cn_event->height;
+
+                PicassoRegistry::Dispatch(PEvent::RESIZED, eventData);
+            }
+            break;
             case XCB_EXPOSE:
                 PicassoRegistry::Dispatch(PEvent::PLATFORM_EXPOSE);
                 break;
