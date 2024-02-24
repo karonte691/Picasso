@@ -26,7 +26,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             }
         }
 
-        Picasso::Engine::Logger::Logger::Error("Textures loaded correctly");
+        Picasso::Engine::Logger::Logger::Debug("Textures loaded correctly");
 
         return true;
     }

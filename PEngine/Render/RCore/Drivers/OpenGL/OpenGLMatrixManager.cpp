@@ -37,7 +37,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
     void OpenGLMatrixManager::CreateViewMatrix()
     {
-        Math::Vector3 camPosition = Math::Vector3::Zero();
+        Math::Vector3 camPosition(0.0f, 0.0f, 1.0f); // (0.0f, 0.0f, 3.0f
         Math::Vector3 worlUp(0.0f, 1.0f, 0.0f);
         Math::Vector3 camFront(0.0f, 0.0f, -1.0f);
 

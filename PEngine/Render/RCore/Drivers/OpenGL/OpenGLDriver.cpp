@@ -71,7 +71,7 @@ namespace Picasso::Engine::Render::Core::Drivers
             ySpan = xSpan / aspectRatio;
         }
 
-        // glOrhto2D(-1 * xSpan, xSpan, -1 * ySpan, ySpan, -1, 1);
+        glOrtho(-1 * xSpan, xSpan, -1 * ySpan, ySpan, -1, 1);
         glViewport(0, 0, width, height);
     }
 

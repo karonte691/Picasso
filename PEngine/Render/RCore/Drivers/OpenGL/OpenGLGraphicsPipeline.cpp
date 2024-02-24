@@ -126,7 +126,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         CHECK_GL_ERROR(glBindVertexArray(m_VAD));
         CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
-        p_MatrixManager->RotateModelMatrixAxisY(Math::PMath::Deg2Rad(0.0f));
+        p_MatrixManager->RotateModelMatrixAxisX(Math::PMath::Deg2Rad(2.0f));
 
         p_Shader->Use();
 
