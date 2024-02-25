@@ -23,6 +23,7 @@ if(UNIX AND NOT APPLE)
                 Input/Translator/MouseCodeTranslator.cpp
                 Input/Listener/KeyboardListener.cpp
                 Input/Listener/MouseListener.cpp
+                Input/InputListener.cpp
                 Input/PInput.cpp
         )
 
@@ -68,6 +69,10 @@ if(UNIX AND NOT APPLE)
 
                 Platform/Linux/PlatformInputManager.cpp
                 Platform/Linux/Platform.cpp
+                
+                Controller/MovementController.cpp
+                Controller/CameraController.cpp
+                Controller/ControllerSystem.cpp
                 
                 Application.cpp
                 PicassoEngine.cpp

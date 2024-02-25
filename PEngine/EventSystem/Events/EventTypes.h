@@ -11,14 +11,23 @@ namespace Picasso::Engine::EventSystem::Events
     {
         APPLICATION_QUIT,
         RESIZED,
+        PLATFORM_EXPOSE,
+        CAMERA_UPDATE,
+        RENDERER_UPDATE,
+
+        // keyboard
         KEY_PRESSED,
         KEY_RELEASED,
         BUTTON_PRESSED,
         BUTTON_RELEASED,
+
+        // mouse
         MOUSE_MOVED,
         MOUSE_WHEEL,
 
-        PLATFORM_EXPOSE
+        // controller
+        CONTROLLER_MOVEMENT
+
     };
 
     struct PEventData
@@ -31,7 +40,7 @@ namespace Picasso::Engine::EventSystem::Events
 
             int32_t i32[4];
             u_int32_t u32[4];
-            float f32[4];
+            float f32[6]; // Modify this line to store six floats
 
             int16_t i16[8];
             u_int16_t u16[8];

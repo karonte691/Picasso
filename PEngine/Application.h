@@ -15,9 +15,11 @@
 #include <PEngine/Render/PRender.h>
 #include <PEngine/Render/RData.h>
 #include <PEngine/Input/PInput.h>
+#include <PEngine/Controller/ControllerSystem.h>
 
 namespace Picasso::Engine
 {
+    using Picasso::Engine::Controller::ControllerSystem;
     using Picasso::Engine::Core::Clock;
     using Picasso::Engine::Core::ClockData;
     using Picasso::Engine::Core::PTime;
@@ -42,13 +44,14 @@ namespace Picasso::Engine
         static Picasso::Engine::EngineState *engineState;
 
     private:
-        PPlatform *m_platform;
-        PInput *m_input;
-        PRender *m_render;
-        RenderData *m_frameData;
-        Clock *m_internalClock;
+        std::unique_ptr<PPlatform> p_Platform;
+        std::unique_ptr<PInput> p_Input;
+        std::unique_ptr<PRender> p_Render;
+        std::unique_ptr<RenderData> p_FrameData;
+        std::unique_ptr<Clock> p_InternalClock;
         std::shared_ptr<PPlatformState> p_PlatformState;
-        PTime *m_time;
+        std::unique_ptr<ControllerSystem> p_ControllerSystem;
+        std::unique_ptr<PTime> p_Time;
 
         void _Paint();
         void _OnResize(BaseEvent<PEvent> *&event);

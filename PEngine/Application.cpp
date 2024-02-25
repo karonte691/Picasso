@@ -31,27 +31,6 @@ namespace Picasso::Engine
             engineState = nullptr;
         }
 
-        if (m_frameData != nullptr)
-        {
-            delete m_frameData;
-            m_frameData = nullptr;
-        }
-
-        delete m_platform;
-        m_platform = nullptr;
-
-        delete m_input;
-        m_input = nullptr;
-
-        delete m_internalClock;
-        m_internalClock = nullptr;
-
-        delete m_time;
-        m_time = nullptr;
-
-        delete m_render;
-        m_render = nullptr;
-
         PicassoRegistry::Reset();
 
         delete FileManager::Instance;
@@ -73,9 +52,9 @@ namespace Picasso::Engine
         FileManager::Instance->Init();
 
         Picasso::Engine::Logger::Logger::Info("Platform layer startup...");
-        m_platform = new PPlatform();
+        p_Platform = std::make_unique<PPlatform>();
 
-        bool platformInitResult = m_platform->Init(
+        bool platformInitResult = p_Platform->Init(
             config->appName,
             config->startPositionX,
             config->startPositionY,
@@ -88,28 +67,37 @@ namespace Picasso::Engine
             return false;
         }
 
-        p_PlatformState = m_platform->GetState();
+        p_PlatformState = p_Platform->GetState();
 
         Picasso::Engine::Logger::Logger::Info("Input layer startup...");
 
-        m_input = new PInput();
-        m_input->Init();
+        p_Input = std::make_unique<PInput>();
+        p_Input->Init();
+
+        Picasso::Engine::Logger::Logger::Info("Controller system startup...");
+        p_ControllerSystem = std::make_unique<ControllerSystem>();
+
+        if (!p_ControllerSystem->LoadControllers())
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Unable to load controllers");
+            return false;
+        }
 
         // render system
         Picasso::Engine::Logger::Logger::Info("Render layer startup...");
-        m_render = new PRender();
+        p_Render = std::make_unique<PRender>();
 
-        if (!m_render->Init(config->appName, p_PlatformState.get(), engineState))
+        if (!p_Render->Init(config->appName, p_PlatformState.get(), engineState))
         {
             Picasso::Engine::Logger::Logger::Fatal("Unable to start render layer...");
             return false;
         }
 
-        m_frameData = new RenderData{0};
+        p_FrameData = std::make_unique<RenderData>();
 
         // setting up the internal clock
-        m_internalClock = new Clock();
-        m_time = new PTime();
+        p_InternalClock = std::make_unique<Clock>();
+        p_Time = std::make_unique<PTime>();
 
         engineState->running = true;
         engineState->suspended = false;
@@ -129,23 +117,23 @@ namespace Picasso::Engine
         }
 
         Picasso::Engine::Logger::Logger::Debug("Shutting down Internal clock");
-        m_internalClock->Stop(engineState->clockData);
+        p_InternalClock->Stop(engineState->clockData);
 
         Picasso::Engine::Logger::Logger::Debug("Shutting down Input system");
-        m_input->Shutdown();
+        p_Input->Shutdown();
 
         Picasso::Engine::Logger::Logger::Debug("Shutting down Rendering system");
-        m_render->Shutdown();
+        p_Render->Shutdown();
 
         Picasso::Engine::Logger::Logger::Debug("Shutting down Platform layer");
-        m_platform->Shutdown();
+        p_Platform->Shutdown();
 
         return true;
     }
 
     void Application::_Paint()
     {
-        m_time->StartDeltaTime();
+        p_Time->StartDeltaTime();
 
         if (engineState->suspended)
         {
@@ -154,32 +142,30 @@ namespace Picasso::Engine
             return;
         }
 
-        if (!m_platform->Process())
+        if (!p_Platform->Process())
         {
             // quitting event
             engineState->running = false;
             return;
         }
 
-        m_time->EndDeltaTime();
-        float rawDeltaTime = m_time->GetRawDeltaTime();
+        p_Time->EndDeltaTime();
+        float rawDeltaTime = p_Time->GetRawDeltaTime();
 
         if (rawDeltaTime < PICASSO_FRAME_MS_LIMIT)
         {
-            std::this_thread::sleep_for(m_time->GetSleepTime());
+            std::this_thread::sleep_for(p_Time->GetSleepTime());
         }
 
-        m_frameData->deltaTime = m_time->GetDeltaTime();
+        p_FrameData->deltaTime = p_Time->GetDeltaTime();
         // Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
-        if (!m_render->RenderFrame(m_frameData, m_platform->GetState().get()))
+        if (!p_Render->RenderFrame(p_FrameData.get(), p_Platform->GetState().get()))
         {
             // not a critical error ONE corrupted frame..but..
             engineState->running = false;
             return;
         }
-
-        m_input->Update(m_frameData->deltaTime);
     }
 
     void Application::_OnResize(BaseEvent<PEvent> *&event)
@@ -193,6 +179,6 @@ namespace Picasso::Engine
 
         Picasso::Engine::Logger::Logger::Debug("New width %d, new height %d", width, height);
 
-        m_render->OnResize(width, height);
+        p_Render->OnResize(width, height);
     }
 }

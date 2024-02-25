@@ -5,6 +5,16 @@
 
 namespace Picasso::Engine::Input
 {
+    enum class InputDirection
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        FORWARD,
+        BACKWARD
+    };
+
     struct kState
     {
         bool key[256];
