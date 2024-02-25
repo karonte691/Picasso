@@ -28,6 +28,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         void UniforProjectionMatrix(GLuint shaderId);
         void ResetProjectionMatrix(float width, float height);
 
+        void UpdateMatrices(float px, float py, float pz, float rx, float ry, float rz);
+        void UniformMatrices(GLuint shaderId);
+
     private:
         std::unique_ptr<Math::Mat4> p_ModelMatrix;
         std::unique_ptr<Math::Mat4> p_ViewMatrix;

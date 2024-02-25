@@ -25,6 +25,7 @@ namespace Picasso::Engine::Render::Core
         virtual ~RGraphicsPipeline() = default;
 
         virtual bool Init(RAPIData *apiData) = 0;
+        virtual void RegisterHooks() = 0;
         virtual bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
         virtual bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) = 0;
         virtual bool Resize(u_int16_t width, u_int16_t height) = 0;

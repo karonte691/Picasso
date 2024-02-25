@@ -65,6 +65,24 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         _initProjectionMatrix(width, height);
     }
 
+    void OpenGLMatrixManager::UpdateMatrices(float px, float py, float pz, float rx, float ry, float rz)
+    {
+        // reset model matrix
+        p_ModelMatrix = Math::Mat4::Identity();
+
+        p_ModelMatrix->Translate(Math::Vector3(px, py, pz));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::X, Math::PMath::Deg2Rad(rx));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, Math::PMath::Deg2Rad(ry));
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, Math::PMath::Deg2Rad(rz));
+    }
+
+    void OpenGLMatrixManager::UniformMatrices(GLuint shaderId)
+    {
+        UniformModelMatrix(shaderId);
+        UniformViewMatrix(shaderId);
+        UniforProjectionMatrix(shaderId);
+    }
+
     void OpenGLMatrixManager::_initProjectionMatrix(float width, float height)
     {
         p_ProjectionMatrix = Math::Mat4::Identity();

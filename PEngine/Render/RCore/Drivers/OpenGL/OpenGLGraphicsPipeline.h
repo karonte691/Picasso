@@ -14,10 +14,15 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMatrixManager.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLTextureManager.h>
+#include <PEngine/EventSystem/PERegistry.h>
 #include <PEngine/Math/Mat4.h>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
+    using Picasso::Engine::EventSystem::PicassoRegistry;
+    using Picasso::Engine::EventSystem::Events::BaseEvent;
+    using Picasso::Engine::EventSystem::Events::PEvent;
+
     class OpenGLGraphicsPipeline : public RGraphicsPipeline
     {
     public:
@@ -25,6 +30,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             : RGraphicsPipeline(driver) {}
 
         bool Init(RAPIData *apiData) override;
+        void RegisterHooks() override;
         bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
         bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
         bool Resize(u_int16_t width, u_int16_t height) override;
@@ -40,6 +46,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         GLuint m_VAD;
         GLuint m_VB0;
         GLuint m_EBO;
+
+        void _onRenderUpdate(BaseEvent<PEvent> *&event);
     };
 }
 

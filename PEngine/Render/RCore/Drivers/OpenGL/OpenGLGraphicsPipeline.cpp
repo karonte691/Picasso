@@ -103,11 +103,15 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         p_Shader->Use();
 
-        p_MatrixManager->UniformModelMatrix(p_Shader->GetId());
-        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
-        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
+        p_MatrixManager->UniformMatrices(p_Shader->GetId());
 
         return true;
+    }
+
+    void OpenGLGraphicsPipeline::RegisterHooks()
+    {
+        PicassoRegistry::Subscribe(PEvent::RENDERER_UPDATE, [this](BaseEvent<PEvent> *&event)
+                                   { this->_onRenderUpdate(event); });
     }
 
     bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
@@ -126,13 +130,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         CHECK_GL_ERROR(glBindVertexArray(m_VAD));
         CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
-        p_MatrixManager->RotateModelMatrixAxisX(Math::PMath::Deg2Rad(2.0f));
-
         p_Shader->Use();
 
-        p_MatrixManager->UniformModelMatrix(p_Shader->GetId());
-        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
-        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
+        p_MatrixManager->UniformMatrices(p_Shader->GetId());
 
         return true;
     }
@@ -151,5 +151,39 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_MatrixManager->ResetProjectionMatrix(fWidth, fHeight);
 
         return true;
+    }
+
+    void OpenGLGraphicsPipeline::_onRenderUpdate(BaseEvent<PEvent> *&event)
+    {
+        EventSystem::Events::PEventData eData = event->GetData();
+
+        Picasso::Engine::Logger::Logger::Debug("OpenGLGraphicsPipeline: Updating renderer matrices");
+
+        float px, py, pz, rx, ry, rz;
+        bool updateCameraPos = false;
+
+        // update positions?
+        if (eData.data.f32[0] != 0.0f || eData.data.f32[1] != 0.0f || eData.data.f32[2] != 0.0f)
+        {
+            px = eData.data.f32[0];
+            py = eData.data.f32[1];
+            pz = eData.data.f32[2];
+            updateCameraPos = true;
+        }
+
+        // update rotations?
+        if (eData.data.f32[3] != 0.0f || eData.data.f32[4] != 0.0f || eData.data.f32[5] != 0.0f)
+        {
+            rx = eData.data.f32[3];
+            ry = eData.data.f32[4];
+            rz = eData.data.f32[5];
+            updateCameraPos = true;
+        }
+
+        if (updateCameraPos)
+        {
+            Picasso::Engine::Logger::Logger::Debug("[OpenGLGraphicsPipeline]px: %f, py: %f, pz: %f, rx: %f, ry: %f, rz: %f", px, py, pz, rx, ry, rz);
+            p_MatrixManager->UpdateMatrices(px, py, pz, rx, ry, rz);
+        }
     }
 }

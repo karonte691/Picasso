@@ -48,6 +48,8 @@ namespace Picasso::Engine::Render::Core
             return false;
         }
 
+        gPipeline->RegisterHooks();
+
         p_GraphicsPipeline.reset(gPipeline);
 
         return true;
