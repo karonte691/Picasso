@@ -14,11 +14,12 @@ namespace Picasso::Engine::Render::Core
         Math::Vector3 position;
         Math::Vector3 color;
         Math::Vector2 texcoord;
+        Math::Vector3 normal;
 
-        Vertex() : position(Math::Vector3()), color(Math::Vector3()), texcoord(Math::Vector2()) {}
+        Vertex() : position(Math::Vector3()), color(Math::Vector3()), texcoord(Math::Vector2()), normal(Math::Vector3()) {}
 
-        Vertex(const Math::Vector3 &pos, const Math::Vector3 &col, const Math::Vector2 &tex)
-            : position(pos), color(col), texcoord(tex) {}
+        Vertex(const Math::Vector3 &pos, const Math::Vector3 &col, const Math::Vector2 &tex, const Math::Vector3 &norm)
+            : position(pos), color(col), texcoord(tex), normal(norm) {}
     };
 }
 

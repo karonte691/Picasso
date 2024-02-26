@@ -15,23 +15,28 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
         p_TextureManager = std::make_unique<OpenGLTextureManager>();
         p_MatrixManager = std::make_unique<OpenGLMatrixManager>();
+        p_LightManager = std::make_unique<OpenGLLightManager>();
 
         m_Vertices[0] = Vertex{
             Math::Vector3(-0.5f, 0.5f, 0.0f),
             Math::Vector3(1.0f, 0.0f, 0.0f),
-            Math::Vector2(0.0f, 1.0f)};
+            Math::Vector2(0.0f, 1.0f),
+            Math::Vector3(0.0f, 0.0f, -1.0f)};
         m_Vertices[1] = Vertex{
             Math::Vector3(-0.5f, -0.5f, 0.0f),
             Math::Vector3(0.0f, 1.0f, 0.0f),
-            Math::Vector2(0.0f, 0.0f)};
+            Math::Vector2(0.0f, 0.0f),
+            Math::Vector3(0.0f, 0.0f, -1.0f)};
         m_Vertices[2] = Vertex{
             Math::Vector3(0.5f, -0.5f, 0.0f),
             Math::Vector3(0.0f, 0.0f, 1.0f),
-            Math::Vector2(1.0f, 0.0f)};
+            Math::Vector2(1.0f, 0.0f),
+            Math::Vector3(0.0f, 0.0f, -1.0f)};
         m_Vertices[3] = Vertex{
             Math::Vector3(0.5f, 0.5f, 0.0f),
             Math::Vector3(1.0f, 1.0f, 0.0f),
-            Math::Vector2(1.0f, 1.0f)};
+            Math::Vector2(1.0f, 1.0f),
+            Math::Vector3(0.0f, 0.0f, -1.0f)};
 
         m_Indices[0] = 0;
         m_Indices[1] = 1;
@@ -77,6 +82,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         // texcoord
         CHECK_GL_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord)));
         CHECK_GL_ERROR(glEnableVertexAttribArray(2));
+        // normal
+        CHECK_GL_ERROR(glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, normal)));
+        CHECK_GL_ERROR(glEnableVertexAttribArray(3));
 
         glBindVertexArray(0);
 
@@ -101,9 +109,13 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         float fHeight = static_cast<float>(apiData->pState->height);
         p_MatrixManager->CreateProjectionMatrix(fWidth, fHeight);
 
+        // lights
+        p_LightManager->SetLightPosition(Math::Vector3(0.0f, 0.0f, 2.0f));
+
         p_Shader->Use();
 
         p_MatrixManager->UniformMatrices(p_Shader->GetId());
+        p_LightManager->UniformLightPosition(p_Shader->GetId());
 
         return true;
     }
