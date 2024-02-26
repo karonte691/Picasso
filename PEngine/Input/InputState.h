@@ -3,6 +3,8 @@
 #ifndef INPUT_STATE_H
 #define INPUT_STATE_H
 
+#include <string>
+
 namespace Picasso::Engine::Input
 {
     enum class InputDirection
@@ -12,7 +14,8 @@ namespace Picasso::Engine::Input
         LEFT,
         RIGHT,
         FORWARD,
-        BACKWARD
+        BACKWARD,
+        NONE
     };
 
     struct kState

@@ -24,4 +24,12 @@ namespace Picasso::Engine::Controller
         }
         return true;
     }
+
+    void ControllerSystem::UpdateControllers()
+    {
+        for (auto &controller : p_Controllers)
+        {
+            controller->Update();
+        }
+    }
 }

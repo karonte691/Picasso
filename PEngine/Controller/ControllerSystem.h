@@ -15,6 +15,7 @@ namespace Picasso::Engine::Controller
         ControllerSystem();
 
         bool LoadControllers();
+        void UpdateControllers();
 
     private:
         std::vector<std::unique_ptr<PicassoController>> p_Controllers;

@@ -49,6 +49,8 @@ namespace Picasso::Engine::EventSystem::Events
             u_int8_t u8[16];
 
             char c[16];
+            int i[16];
+            bool b[16];
         } data;
     };
 }

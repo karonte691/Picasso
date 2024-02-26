@@ -2,6 +2,7 @@
 
 #include <PEngine/Input/Maps/Keyboard.h>
 #include <PEngine/Input/InputState.h>
+#include <PEngine/Logger/Logger.h>
 
 namespace Picasso::Engine::Input
 {
@@ -94,12 +95,10 @@ namespace Picasso::Engine::Input
             return;
         }
 
-        if (pressed)
-        {
-            // Dispatch the controller movement event with the determined direction
-            PEventData movementData;
-            movementData.data.u16[0] = static_cast<u_int16_t>(direction);
-            PicassoRegistry::Dispatch(PEvent::CONTROLLER_MOVEMENT, movementData);
-        }
+        PEventData movementData;
+
+        movementData.data.i[0] = static_cast<int>(direction); // Assign the int value of direction to movementData.data.i[0]
+        movementData.data.i[1] = static_cast<int>(pressed);   // Assign the int value of pressed to movementData.data.i[1]
+        PicassoRegistry::Dispatch(PEvent::CONTROLLER_MOVEMENT, movementData);
     }
 } // namespace Picasso::Engine::Input::Listener

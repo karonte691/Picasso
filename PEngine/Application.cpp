@@ -160,6 +160,10 @@ namespace Picasso::Engine
         p_FrameData->deltaTime = p_Time->GetDeltaTime();
         // Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
+        // controllers update
+
+        p_ControllerSystem->UpdateControllers();
+
         if (!p_Render->RenderFrame(p_FrameData.get(), p_Platform->GetState().get()))
         {
             // not a critical error ONE corrupted frame..but..

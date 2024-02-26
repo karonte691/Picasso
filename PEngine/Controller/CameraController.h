@@ -17,6 +17,7 @@ namespace Picasso::Engine::Controller
     public:
         CameraController() : PicassoController("CameraController"){};
         bool InitController() override;
+        void Update() override;
 
     private:
         void _onCameraUpdate(BaseEvent<PEvent> *&event);

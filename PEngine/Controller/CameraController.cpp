@@ -9,6 +9,11 @@ namespace Picasso::Engine::Controller
         return true;
     }
 
+    void CameraController::Update()
+    {
+        // nothing to do here
+    }
+
     void CameraController::_onCameraUpdate(BaseEvent<PEvent> *&event)
     {
         // for now this is only a bridge to update the position and rotation of

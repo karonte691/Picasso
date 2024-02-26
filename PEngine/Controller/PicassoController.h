@@ -15,6 +15,7 @@ namespace Picasso::Engine::Controller
         virtual ~PicassoController(){};
 
         virtual bool InitController() = 0;
+        virtual void Update() = 0;
 
         inline const std::string GeControllerName() const { return m_ControllerName; }
 
