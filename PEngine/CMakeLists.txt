@@ -39,6 +39,7 @@ if(UNIX AND NOT APPLE)
                                 Render/RCore/Drivers/OpenGL/OpenGLTextureManager.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLMatrixManager.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLLightManager.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLMaterialManager.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.cpp
                         )
                 endif()

@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <PEngine/Render/RCore/Texture.h>
+
 namespace Picasso::Engine::Render::Core
 {
     class TextureManager
@@ -14,6 +16,7 @@ namespace Picasso::Engine::Render::Core
         virtual ~TextureManager(){};
 
         virtual bool LoadTextures(std::vector<std::string> textures) = 0;
+        virtual std::vector<Texture *> GetTextures() = 0;
         virtual bool ActivateTextures(unsigned int shaderProgram) = 0;
     };
 }

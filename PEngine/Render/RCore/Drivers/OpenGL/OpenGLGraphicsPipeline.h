@@ -11,10 +11,12 @@
 #include <PEngine/Render/RCore/Drivers/DriverImplementation.h>
 #include <PEngine/Render/RCore/RGraphicsPipeline.h>
 #include <PEngine/Render/RCore/Vertex.h>
+#include <PEngine/Render/RCore/Material.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/Shaders/OpenGLShaderFactory.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMatrixManager.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLTextureManager.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLLightManager.h>
+#include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMaterialManager.h>
 #include <PEngine/EventSystem/PERegistry.h>
 #include <PEngine/Math/Mat4.h>
 
@@ -43,11 +45,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<OpenGLTextureManager> p_TextureManager;
         std::unique_ptr<OpenGLMatrixManager> p_MatrixManager;
         std::unique_ptr<OpenGLLightManager> p_LightManager;
+        std::unique_ptr<OpenGLMaterialManager> p_MaterialManager;
         Vertex m_Vertices[4];
         GLuint m_Indices[6];
         GLuint m_VAD;
         GLuint m_VB0;
         GLuint m_EBO;
+        std::vector<Texture *> m_Textures;
+        std::vector<Material> m_Materials;
 
         void _onRenderUpdate(BaseEvent<PEvent> *&event);
     };

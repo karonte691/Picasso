@@ -59,6 +59,18 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
+    std::vector<Texture *> OpenGLTextureManager::GetTextures()
+    {
+        std::vector<Texture *> textures;
+
+        for (unsigned int i = 0; i < m_Textures.size(); ++i)
+        {
+            textures.push_back(&m_Textures[i]);
+        }
+
+        return textures;
+    }
+
     bool OpenGLTextureManager::_SetTextureSampler(GLuint shaderProgram, const char *samplerName, int textureUnit)
     {
         GLint samplerLocation = glGetUniformLocation(shaderProgram, samplerName);

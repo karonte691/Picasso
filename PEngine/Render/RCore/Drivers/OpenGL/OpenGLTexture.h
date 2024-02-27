@@ -7,16 +7,14 @@
 #include <GL/glx.h>
 #include <GL/gl.h>
 
+#include <PEngine/Render/RCore/Texture.h>
+
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    class OpenGLTexture
+    class OpenGLTexture : public Texture
     {
     public:
-        GLuint Id;
-        int Width;
-        int Height;
-
-        OpenGLTexture(GLuint id) : Id(id){};
+        OpenGLTexture(GLuint id) : Texture(id){};
 
         bool ActivateTexture(unsigned int unit);
     };

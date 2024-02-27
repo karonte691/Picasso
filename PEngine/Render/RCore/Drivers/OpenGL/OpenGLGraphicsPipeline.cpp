@@ -16,6 +16,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_TextureManager = std::make_unique<OpenGLTextureManager>();
         p_MatrixManager = std::make_unique<OpenGLMatrixManager>();
         p_LightManager = std::make_unique<OpenGLLightManager>();
+        p_MaterialManager = std::make_unique<OpenGLMaterialManager>();
 
         m_Vertices[0] = Vertex{
             Math::Vector3(-0.5f, 0.5f, 0.0f),
@@ -101,6 +102,21 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
+        m_Textures = p_TextureManager->GetTextures();
+
+        // materials
+        for (Texture *texture : m_Textures)
+        {
+            Material material = p_MaterialManager->CreateMaterial(
+                Math::Vector3(0.1f, 0.1f, 0.1f),
+                Math::Vector3(1.0f, 1.0f, 1.0f),
+                Math::Vector3(1.0f, 1.0f, 1.0f),
+                32.0f,
+                texture, texture);
+
+            m_Materials.push_back(material);
+        }
+
         // matrices
         p_MatrixManager->CreateModelMatrix(Math::Vector3::Zero(), Math::Vector3::One());
         p_MatrixManager->CreateViewMatrix();
@@ -138,6 +154,11 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         if (!p_TextureManager->ActivateTextures(p_Shader->GetId()))
         {
             return false;
+        }
+
+        for (Material material : m_Materials)
+        {
+            p_MaterialManager->SendMaterialToShader(material, *p_Shader);
         }
 
         CHECK_GL_ERROR(glBindVertexArray(m_VAD));
