@@ -110,11 +110,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_MatrixManager->CreateProjectionMatrix(fWidth, fHeight);
 
         // lights
-        p_LightManager->SetLightPosition(Math::Vector3(0.0f, 0.0f, 2.0f));
+        p_LightManager->SetLightPosition(Math::Vector3(0.0f, 0.0f, 1.0f));
 
         p_Shader->Use();
 
         p_MatrixManager->UniformMatrices(p_Shader->GetId());
+        p_MatrixManager->UniformCameraPosition(p_Shader->GetId());
         p_LightManager->UniformLightPosition(p_Shader->GetId());
 
         return true;

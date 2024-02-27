@@ -161,7 +161,6 @@ namespace Picasso::Engine
         // Picasso::Engine::Logger::Logger::Debug("Delta time: %f", m_frameData->deltaTime);
 
         // controllers update
-
         p_ControllerSystem->UpdateControllers();
 
         if (!p_Render->RenderFrame(p_FrameData.get(), p_Platform->GetState().get()))

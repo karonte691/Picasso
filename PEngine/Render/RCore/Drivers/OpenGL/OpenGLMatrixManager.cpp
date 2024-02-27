@@ -37,12 +37,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
     void OpenGLMatrixManager::CreateViewMatrix()
     {
-        Math::Vector3 camPosition(0.0f, 0.0f, 1.0f); // (0.0f, 0.0f, 3.0f
-        Math::Vector3 worlUp(0.0f, 1.0f, 0.0f);
-        Math::Vector3 camFront(0.0f, 0.0f, -1.0f);
+        m_CamPosition = Math::Vector3(0.0f, 0.0f, 1.0f); // (0.0f, 0.0f, 3.0f
+        m_WorlUp = Math::Vector3(0.0f, 1.0f, 0.0f);
+        m_CamFront = Math::Vector3(0.0f, 0.0f, -1.0f);
 
         p_ViewMatrix = Math::Mat4::Identity();
-        p_ViewMatrix->LookAt(camPosition, camPosition.Add(&camFront), worlUp);
+        p_ViewMatrix->LookAt(m_CamPosition, m_CamPosition.Add(&m_CamFront), m_WorlUp);
     }
 
     void OpenGLMatrixManager::UniformViewMatrix(GLuint shaderId)
@@ -81,6 +81,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         UniformModelMatrix(shaderId);
         UniformViewMatrix(shaderId);
         UniforProjectionMatrix(shaderId);
+    }
+
+    void OpenGLMatrixManager::UniformCameraPosition(unsigned int shaderProgram)
+    {
+        int camPosLocation = glGetUniformLocation(shaderProgram, "cameraPosition");
+        glUniform3fv(camPosLocation, 1, &m_CamPosition.x);
     }
 
     void OpenGLMatrixManager::_initProjectionMatrix(float width, float height)
