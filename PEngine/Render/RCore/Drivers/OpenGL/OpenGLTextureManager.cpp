@@ -129,8 +129,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         CHECK_GL_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image));
         CHECK_GL_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-
         SOIL_free_image_data(image);
 
         GLenum error = glGetError();

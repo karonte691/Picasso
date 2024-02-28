@@ -4,6 +4,8 @@
 #include <GL/glx.h>
 #include <GL/gl.h>
 
+#include <PEngine/Logger/Logger.h>
+
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
     Material OpenGLMaterialManager::CreateMaterial(const Math::Vector3 &ambient,
@@ -13,6 +15,18 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
                                                    Texture *diffuseTexture,
                                                    Texture *specularTexture)
     {
+        if (diffuseTexture == nullptr || specularTexture == nullptr)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLMaterialManager] material textures are null");
+            return Material{};
+        }
+
+        if (diffuseTexture->Id <= 0 || specularTexture->Id <= 0)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLMaterialManager] material textures are not loaded");
+            return Material{};
+        }
+
         return Material{ambient, diffuse, specular, shininess, diffuseTexture, specularTexture};
     }
 

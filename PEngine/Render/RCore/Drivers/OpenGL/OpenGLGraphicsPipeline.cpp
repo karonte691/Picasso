@@ -114,6 +114,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
                 32.0f,
                 texture, texture);
 
+            if (material.DiffuseTexture == nullptr || material.SpecularTexture == nullptr)
+            {
+                Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] material textures are null");
+                return false;
+            }
+
             m_Materials.push_back(material);
         }
 
@@ -156,15 +162,15 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        for (Material material : m_Materials)
-        {
-            p_MaterialManager->SendMaterialToShader(material, *p_Shader);
-        }
-
         CHECK_GL_ERROR(glBindVertexArray(m_VAD));
         CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         p_Shader->Use();
+
+        for (Material material : m_Materials)
+        {
+            p_MaterialManager->SendMaterialToShader(material, *p_Shader);
+        }
 
         p_MatrixManager->UniformMatrices(p_Shader->GetId());
 
