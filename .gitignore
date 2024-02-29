@@ -1,4 +1,5 @@
+/build/*
+!/build/Data/
 .vscode/
-build/
 PEngine/vendor/
 package/
