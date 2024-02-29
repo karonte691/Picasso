@@ -14,11 +14,17 @@ namespace Picasso::Engine::Render::Core
     {
     public:
         unsigned int Id;
+        unsigned int TextureUnit;
         unsigned int Width;
         unsigned int Height;
 
-        Texture(unsigned int id) : Id(id){};
+        Texture(unsigned int id, unsigned int textureUnit, unsigned int width, unsigned int height)
+            : Id(id), TextureUnit(textureUnit), Width(width), Height(height){};
+
         virtual ~Texture(){};
+
+        virtual bool ActivateTexture(unsigned int unit) = 0;
+        virtual bool UniformTexture(unsigned int unit, unsigned int shaderProgram, const char *samplerName) = 0;
     };
 }
 

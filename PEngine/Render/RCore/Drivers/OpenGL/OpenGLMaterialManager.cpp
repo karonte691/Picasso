@@ -30,13 +30,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return Material{ambient, diffuse, specular, shininess, diffuseTexture, specularTexture};
     }
 
-    void OpenGLMaterialManager::SendMaterialToShader(Material material, Shader &shader)
+    void OpenGLMaterialManager::SendMaterialToShader(const Material material, Shader *shader)
     {
-        shader.SetVector("material.ambient", material.Ambient);
-        shader.SetVector("material.diffuse", material.Diffuse);
-        shader.SetVector("material.specular", material.Specular);
-        shader.SetVector("material.shininess", material.Shininess);
-        shader.setTexture("material.diffuseTexture", material.DiffuseTexture->Id);
-        shader.setTexture("material.specularTexture", material.SpecularTexture->Id);
+        shader->SetVector("material.ambient", material.Ambient);
+        shader->SetVector("material.diffuse", material.Diffuse);
+        shader->SetVector("material.specular", material.Specular);
+        shader->SetVector("material.shininess", material.Shininess);
+
+        material.DiffuseTexture->UniformTexture(material.DiffuseTexture->TextureUnit, shader->GetId(), "material.diffuseTexture");
+        material.SpecularTexture->UniformTexture(material.SpecularTexture->TextureUnit, shader->GetId(), "material.specularTexture");
     }
 }

@@ -23,6 +23,30 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
+        TextureUnit = unit;
+
+        return true;
+    }
+
+    bool OpenGLTexture::UniformTexture(unsigned int unit, unsigned int shaderProgram, const char *samplerName)
+    {
+        GLint samplerLocation = glGetUniformLocation(shaderProgram, samplerName);
+
+        if (samplerLocation == -1)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Sampler uniform '%s' not found in shader program", samplerName);
+            return false;
+        }
+
+        glUniform1i(samplerLocation, unit);
+
+        GLenum error = glGetError();
+        if (error != GL_NO_ERROR)
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Error setting texture sampler '%s': %u", samplerName, error);
+            return false;
+        }
+
         return true;
     }
 }

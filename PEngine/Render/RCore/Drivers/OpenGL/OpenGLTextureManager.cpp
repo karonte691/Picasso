@@ -8,7 +8,7 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    bool OpenGLTextureManager::LoadTextures(std::vector<std::string> textures)
+    bool OpenGLTextureManager::LoadTextures(const std::vector<std::string> textures)
     {
         unsigned int tSize = textures.size();
 
@@ -20,7 +20,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         for (unsigned int i = 0; i < tSize; ++i)
         {
-            if (!_LoadTexture(textures[i].c_str()))
+            if (!_LoadTexture(textures[i].c_str(), i))
             {
                 return false;
             }
@@ -31,7 +31,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
-    bool OpenGLTextureManager::ActivateTextures(unsigned int shaderProgram)
+    bool OpenGLTextureManager::ActivateTextures(const unsigned int shaderProgram)
     {
         unsigned int tSize = m_Textures.size();
 
@@ -47,13 +47,26 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             {
                 return false;
             }
+        }
 
+        return true;
+    }
+
+    bool OpenGLTextureManager::BindTextures(const unsigned int shaderProgram)
+    {
+        unsigned int tSize = m_Textures.size();
+
+        if (tSize == 0)
+        {
+            // no texture to bind, quit
+            return true;
+        }
+
+        for (unsigned int i = 0; i < tSize; ++i)
+        {
             std::string samplerName = "texture" + std::to_string(i);
 
-            if (!_SetTextureSampler(shaderProgram, samplerName.c_str(), i))
-            {
-                return false;
-            }
+            m_Textures[i].UniformTexture(i, shaderProgram, samplerName.c_str());
         }
 
         return true;
@@ -71,29 +84,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return textures;
     }
 
-    bool OpenGLTextureManager::_SetTextureSampler(GLuint shaderProgram, const char *samplerName, int textureUnit)
-    {
-        GLint samplerLocation = glGetUniformLocation(shaderProgram, samplerName);
-
-        if (samplerLocation == -1)
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Sampler uniform '%s' not found in shader program", samplerName);
-            return false;
-        }
-
-        glUniform1i(samplerLocation, textureUnit);
-
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR)
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Error setting texture sampler '%s': %u", samplerName, error);
-            return false;
-        }
-
-        return true;
-    }
-
-    bool OpenGLTextureManager::_LoadTexture(const char *textureName)
+    bool OpenGLTextureManager::_LoadTexture(const char *textureName, const unsigned int textureUnit)
     {
         std::unique_ptr<File::PFLoader> fileLoader = std::make_unique<File::PFLoader>();
         GLuint textureId;
@@ -139,13 +130,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        OpenGLTexture texture(textureId);
-        texture.Width = imageWidth;
-        texture.Height = imageHeight;
-
-        m_Textures.push_back(texture);
+        m_Textures.push_back(OpenGLTexture(textureId, textureUnit, imageWidth, imageHeight));
 
         return true;
     }
-
 }

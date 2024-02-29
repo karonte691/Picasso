@@ -120,6 +120,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
                 return false;
             }
 
+            if (material.DiffuseTexture->Id == 0 || material.SpecularTexture->Id == 0)
+            {
+                Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] material textures are null");
+                return false;
+            }
+
             m_Materials.push_back(material);
         }
 
@@ -157,22 +163,22 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
+        p_Shader->Use();
+
+        p_MatrixManager->UniformMatrices(p_Shader->GetId());
+
         if (!p_TextureManager->ActivateTextures(p_Shader->GetId()))
         {
             return false;
         }
 
-        CHECK_GL_ERROR(glBindVertexArray(m_VAD));
-        CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
-
-        p_Shader->Use();
-
         for (Material material : m_Materials)
         {
-            p_MaterialManager->SendMaterialToShader(material, *p_Shader);
+            p_MaterialManager->SendMaterialToShader(material, p_Shader.get());
         }
 
-        p_MatrixManager->UniformMatrices(p_Shader->GetId());
+        CHECK_GL_ERROR(glBindVertexArray(m_VAD));
+        CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         return true;
     }

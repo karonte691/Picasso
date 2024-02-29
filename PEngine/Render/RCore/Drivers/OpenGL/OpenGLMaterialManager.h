@@ -16,7 +16,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
                                 float shininess,
                                 Texture *diffuseTexture,
                                 Texture *specularTexture) override;
-        void SendMaterialToShader(Material material, Shader &shader) override;
+        void SendMaterialToShader(const Material material, Shader *shaderr) override;
     };
 }
 

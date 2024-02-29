@@ -15,12 +15,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
     class OpenGLShader : public Shader
     {
     public:
-        OpenGLShader(GLuint id);
-
-        GLuint GetId() { return m_Id; };
+        OpenGLShader(GLuint id) : Shader(id){};
 
         void Use() override;
-        void Clear() override;
         void Destroy() override;
 
         void SetVector(const char *name, const float value) override;
@@ -32,7 +29,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
         void setTexture(const char *name, const int value) override;
 
     private:
-        GLuint m_Id;
     };
 }
 

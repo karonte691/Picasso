@@ -19,15 +19,15 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     class OpenGLTextureManager : public TextureManager
     {
     public:
-        bool LoadTextures(std::vector<std::string> textures) override;
+        bool LoadTextures(const std::vector<std::string> textures) override;
         std::vector<Texture *> GetTextures() override;
-        bool ActivateTextures(unsigned int shaderProgram) override;
+        bool ActivateTextures(const unsigned int shaderProgram) override;
+        bool BindTextures(const unsigned int shaderProgram) override;
 
     private:
         std::vector<OpenGLTexture> m_Textures;
 
-        bool _LoadTexture(const char *textureName);
-        bool _SetTextureSampler(unsigned int shaderProgram, const char *samplerName, int textureUnit);
+        bool _LoadTexture(const char *textureName, const unsigned int textureUnit);
     };
 }
 

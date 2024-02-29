@@ -18,10 +18,12 @@ namespace Picasso::Engine::Render::Core
     class Shader
     {
     public:
+        Shader(unsigned int id) : m_Id(id){};
         virtual ~Shader(){};
 
+        unsigned int GetId() { return m_Id; }
+
         virtual void Use() = 0;
-        virtual void Clear() = 0;
         virtual void Destroy() = 0;
 
         // vector operations
@@ -33,6 +35,9 @@ namespace Picasso::Engine::Render::Core
         virtual void SetMatrix(const char *name, const Math::Mat4 value) = 0;
 
         virtual void setTexture(const char *name, const int value) = 0;
+
+    protected:
+        unsigned int m_Id;
     };
 }
 

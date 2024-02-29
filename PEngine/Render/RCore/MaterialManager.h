@@ -26,7 +26,7 @@ namespace Picasso::Engine::Render::Core
                                         float shininess,
                                         Texture *diffuseTexture,
                                         Texture *specularTexture) = 0;
-        virtual void SendMaterialToShader(Material material, Shader &shader) = 0;
+        virtual void SendMaterialToShader(const Material material, Shader *shaderr) = 0;
     };
 }
 

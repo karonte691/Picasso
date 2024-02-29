@@ -1,20 +1,11 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/Shaders/OpenGLShader.h>
 
+#include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL::Shaders
 {
-    OpenGLShader::OpenGLShader(GLuint id)
-    {
-        m_Id = id;
-    }
-
     void OpenGLShader::Use()
     {
         glUseProgram(m_Id);
-    }
-
-    void OpenGLShader::Clear()
-    {
-        glUseProgram(0);
     }
 
     void OpenGLShader::Destroy()
