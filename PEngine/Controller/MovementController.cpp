@@ -11,8 +11,9 @@ namespace Picasso::Engine::Controller
     {
         m_Position = Math::Vector3::Zero();
         m_Rotation = Math::Vector3::Zero();
+        m_Scale = Math::Vector3::One();
         m_IsPressed = false;
-        m_CurrentDirection = Input::InputDirection::NONE;
+        m_CurrentDirection = Input::InputAction::NONE;
 
         PicassoRegistry::Subscribe(PEvent::CONTROLLER_MOVEMENT, [this](BaseEvent<PEvent> *&event)
                                    { this->_onMovement(event); });
@@ -23,7 +24,7 @@ namespace Picasso::Engine::Controller
 
     void MovementController::_UpdateInputState(const EventSystem::Events::PEventData &eData)
     {
-        m_CurrentDirection = static_cast<Input::InputDirection>(eData.data.i[0]);
+        m_CurrentDirection = static_cast<Input::InputAction>(eData.data.i[0]);
         m_IsPressed = static_cast<bool>(eData.data.i[1]);
 
 #if PICASSO_DEBUG_ENABLE
@@ -35,34 +36,43 @@ namespace Picasso::Engine::Controller
     {
         if (!m_IsPressed)
         {
-            m_CurrentDirection = Input::InputDirection::NONE;
+            m_CurrentDirection = Input::InputAction::NONE;
             return;
         }
 
+        Math::Vector3 *sVec = new Math::Vector3{0.1f, 0.1f, 0.1f};
+
         switch (m_CurrentDirection)
         {
-        case Input::InputDirection::UP:
+        case Input::InputAction::UP:
             m_Position.z -= 0.01f;
             break;
-        case Input::InputDirection::DOWN:
+        case Input::InputAction::DOWN:
             m_Position.z += 0.01f;
             break;
-        case Input::InputDirection::LEFT:
+        case Input::InputAction::LEFT:
             m_Position.x -= 0.01f;
             break;
-        case Input::InputDirection::RIGHT:
+        case Input::InputAction::RIGHT:
             m_Position.x += 0.01f;
             break;
-        case Input::InputDirection::BACKWARD:
+        case Input::InputAction::BACKWARD:
             m_Rotation.y -= 1.0f;
             break;
-        case Input::InputDirection::FORWARD:
+        case Input::InputAction::FORWARD:
             m_Rotation.y += 1.0f;
             break;
+        case Input::InputAction::SCALE_UP:
+            m_Scale.Add(sVec);
+            break;
+        case Input::InputAction::SCALE_DOWN:
+            m_Scale.Sub(sVec);
+            break;
         default:
-            // If direction is not recognized, do nothing
             return;
         }
+
+        delete sVec;
 
         _DispatchUpdate();
     }
@@ -71,12 +81,15 @@ namespace Picasso::Engine::Controller
     {
         EventSystem::Events::PEventData eDataOut;
 
-        eDataOut.data.f32[0] = m_Position.x;
-        eDataOut.data.f32[1] = m_Position.y;
-        eDataOut.data.f32[2] = m_Position.z;
-        eDataOut.data.f32[3] = m_Rotation.x;
-        eDataOut.data.f32[4] = m_Rotation.y;
-        eDataOut.data.f32[5] = m_Rotation.z;
+        eDataOut.data.f[0] = m_Position.x;
+        eDataOut.data.f[1] = m_Position.y;
+        eDataOut.data.f[2] = m_Position.z;
+        eDataOut.data.f[3] = m_Rotation.x;
+        eDataOut.data.f[4] = m_Rotation.y;
+        eDataOut.data.f[5] = m_Rotation.z;
+        eDataOut.data.f[6] = m_Scale.x;
+        eDataOut.data.f[7] = m_Scale.y;
+        eDataOut.data.f[8] = m_Scale.z;
 
         PicassoRegistry::Dispatch(PEvent::CAMERA_UPDATE, eDataOut);
     }
@@ -88,28 +101,32 @@ namespace Picasso::Engine::Controller
 
         if (!m_IsPressed)
         {
-            m_CurrentDirection = Input::InputDirection::NONE;
+            m_CurrentDirection = Input::InputAction::NONE;
         }
     }
 
 #if PICASSO_DEBUG_ENABLE
-    std::string MovementController::_DebugPrintPosition(Input::InputDirection direction)
+    std::string MovementController::_DebugPrintPosition(Input::InputAction direction)
     {
         switch (direction)
         {
-        case Input::InputDirection::UP:
+        case Input::InputAction::UP:
             return "UP";
-        case Input::InputDirection::DOWN:
+        case Input::InputAction::DOWN:
             return "DOWN";
-        case Input::InputDirection::LEFT:
+        case Input::InputAction::LEFT:
             return "LEFT";
-        case Input::InputDirection::RIGHT:
+        case Input::InputAction::RIGHT:
             return "RIGHT";
-        case Input::InputDirection::FORWARD:
+        case Input::InputAction::FORWARD:
             return "FORWARD";
-        case Input::InputDirection::BACKWARD:
+        case Input::InputAction::BACKWARD:
             return "BACKWARD";
-        case Input::InputDirection::NONE:
+        case Input::InputAction::SCALE_UP:
+            return "SCALE_UP";
+        case Input::InputAction::SCALE_DOWN:
+            return "SCALE_DOWN";
+        case Input::InputAction::NONE:
             return "NONE";
         default:
             return "UNKNOWN";

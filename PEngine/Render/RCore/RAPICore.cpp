@@ -57,6 +57,7 @@ namespace Picasso::Engine::Render::Core
 
     void RAPICore::Destroy()
     {
+        p_GraphicsPipeline->Shutdown();
         m_renderDriver->Shutdown();
     }
 

@@ -56,42 +56,45 @@ namespace Picasso::Engine::Input
     {
         u_int16_t key = eData.data.u16[0];
 
-        // check if it is a movement
-        if (!(key == P_KEY_W || key == P_KEY_UP || key == P_KEY_S || key == P_KEY_DOWN ||
-              key == P_KEY_A || key == P_KEY_LEFT || key == P_KEY_D || key == P_KEY_RIGHT ||
-              key == P_KEY_Q || key == P_KEY_E))
-        {
-            return;
-        }
-
-        InputDirection direction;
+        InputAction direction = InputAction::NONE;
 
         // determine the direction based on the key
         switch (key)
         {
         case P_KEY_W:
         case P_KEY_UP:
-            direction = InputDirection::UP;
+            direction = InputAction::UP;
             break;
         case P_KEY_S:
         case P_KEY_DOWN:
-            direction = InputDirection::DOWN;
+            direction = InputAction::DOWN;
             break;
         case P_KEY_A:
         case P_KEY_LEFT:
-            direction = InputDirection::LEFT;
+            direction = InputAction::LEFT;
             break;
         case P_KEY_D:
         case P_KEY_RIGHT:
-            direction = InputDirection::RIGHT;
+            direction = InputAction::RIGHT;
             break;
         case P_KEY_Q:
-            direction = InputDirection::FORWARD;
+            direction = InputAction::FORWARD;
             break;
         case P_KEY_E:
-            direction = InputDirection::BACKWARD;
+            direction = InputAction::BACKWARD;
+            break;
+        case P_KEY_Z:
+            direction = InputAction::SCALE_UP;
+            break;
+        case P_KEY_X:
+            direction = InputAction::SCALE_DOWN;
             break;
         default:
+            return;
+        }
+
+        if (direction == InputAction::NONE)
+        {
             return;
         }
 
@@ -99,6 +102,7 @@ namespace Picasso::Engine::Input
 
         movementData.data.i[0] = static_cast<int>(direction); // Assign the int value of direction to movementData.data.i[0]
         movementData.data.i[1] = static_cast<int>(pressed);   // Assign the int value of pressed to movementData.data.i[1]
+
         PicassoRegistry::Dispatch(PEvent::CONTROLLER_MOVEMENT, movementData);
     }
 } // namespace Picasso::Engine::Input::Listener

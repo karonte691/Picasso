@@ -16,11 +16,11 @@ namespace Picasso::Engine::Controller
 
     void CameraController::_onCameraUpdate(BaseEvent<PEvent> *&event)
     {
-        // for now this is only a bridge to update the position and rotation of
+        // for now this is only a bridge to update the position,rotation and scaleof
         //  the matrices in the renderer
         EventSystem::Events::PEventData eData = event->GetData();
 
-        Picasso::Engine::Logger::Logger::Debug("CameraController: Updating camera position and rotation");
+        Picasso::Engine::Logger::Logger::Debug("CameraController: Updating camera position,rotation and scale");
 
         PicassoRegistry::Dispatch(PEvent::RENDERER_UPDATE, eData);
     }

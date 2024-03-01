@@ -47,8 +47,8 @@ int main(int argc, char **argv)
   Picasso::Config::AppConfig config = {
       1,
       1,
-      1920,
-      1080,
+      1280,
+      720,
       "Picasso Engine v 0.1"};
 
   // main loop

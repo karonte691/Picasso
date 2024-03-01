@@ -8,10 +8,13 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     static const float NEAR_PLANE = 0.1f;
     static const float FAR_PLANE = 1000.0f;
 
-    void OpenGLMatrixManager::CreateModelMatrix(const Math::Vector3 &translate, const Math::Vector3 &scale)
+    void OpenGLMatrixManager::CreateModelMatrix(const Math::Vector3 &translate, const Math::Vector3 &rotation, const Math::Vector3 &scale)
     {
         p_ModelMatrix = Math::Mat4::Identity();
         p_ModelMatrix->Translate(translate);
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::X, rotation.x);
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, rotation.y);
+        p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, rotation.z);
         p_ModelMatrix->Scale(scale);
     }
 
@@ -28,6 +31,11 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     void OpenGLMatrixManager::RotateModelMatrixAxisZ(float radians)
     {
         p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, radians);
+    }
+
+    void OpenGLMatrixManager::Scale(const Math::Vector3 &scale)
+    {
+        p_ModelMatrix->Scale(scale);
     }
 
     void OpenGLMatrixManager::UniformModelMatrix(GLuint shaderId)
@@ -65,7 +73,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         _initProjectionMatrix(width, height);
     }
 
-    void OpenGLMatrixManager::UpdateMatrices(float px, float py, float pz, float rx, float ry, float rz)
+    void OpenGLMatrixManager::UpdateModelMatrix(float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz)
     {
         // reset model matrix
         p_ModelMatrix = Math::Mat4::Identity();
@@ -74,6 +82,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_ModelMatrix->Rotate(Math::Mat4Rotation::X, Math::PMath::Deg2Rad(rx));
         p_ModelMatrix->Rotate(Math::Mat4Rotation::Y, Math::PMath::Deg2Rad(ry));
         p_ModelMatrix->Rotate(Math::Mat4Rotation::Z, Math::PMath::Deg2Rad(rz));
+        p_ModelMatrix->Scale(Math::Vector3(sx, sy, sz));
     }
 
     void OpenGLMatrixManager::UniformMatrices(GLuint shaderId)

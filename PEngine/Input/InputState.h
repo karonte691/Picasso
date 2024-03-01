@@ -7,7 +7,7 @@
 
 namespace Picasso::Engine::Input
 {
-    enum class InputDirection
+    enum class InputAction
     {
         UP,
         DOWN,
@@ -15,6 +15,8 @@ namespace Picasso::Engine::Input
         RIGHT,
         FORWARD,
         BACKWARD,
+        SCALE_UP,
+        SCALE_DOWN,
         NONE
     };
 

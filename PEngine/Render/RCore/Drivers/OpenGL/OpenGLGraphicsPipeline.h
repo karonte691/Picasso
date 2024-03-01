@@ -17,6 +17,7 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLTextureManager.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLLightManager.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMaterialManager.h>
+#include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMesh.h>
 #include <PEngine/EventSystem/PERegistry.h>
 #include <PEngine/Math/Mat4.h>
 
@@ -33,6 +34,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             : RGraphicsPipeline(driver) {}
 
         bool Init(RAPIData *apiData) override;
+        void Shutdown() override;
         void RegisterHooks() override;
         bool BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
         bool EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState) override;
@@ -46,6 +48,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<OpenGLMatrixManager> p_MatrixManager;
         std::unique_ptr<OpenGLLightManager> p_LightManager;
         std::unique_ptr<OpenGLMaterialManager> p_MaterialManager;
+        std::unique_ptr<OpenGLMesh> p_Mesh;
         Vertex m_Vertices[4];
         GLuint m_Indices[6];
         GLuint m_VAD;

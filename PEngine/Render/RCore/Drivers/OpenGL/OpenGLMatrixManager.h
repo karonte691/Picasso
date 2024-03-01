@@ -15,11 +15,13 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     class OpenGLMatrixManager
     {
     public:
-        void CreateModelMatrix(const Math::Vector3 &translate, const Math::Vector3 &scale);
+        void CreateModelMatrix(const Math::Vector3 &translate, const Math::Vector3 &rotation, const Math::Vector3 &scale);
         void UniformModelMatrix(GLuint shaderId);
         void RotateModelMatrixAxisX(float radians);
         void RotateModelMatrixAxisY(float radians);
         void RotateModelMatrixAxisZ(float radians);
+        void Scale(const Math::Vector3 &translate);
+        void UpdateModelMatrix(float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz);
 
         void CreateViewMatrix();
         void UniformViewMatrix(GLuint shaderId);
@@ -28,7 +30,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         void UniforProjectionMatrix(GLuint shaderId);
         void ResetProjectionMatrix(float width, float height);
 
-        void UpdateMatrices(float px, float py, float pz, float rx, float ry, float rz);
         void UniformMatrices(GLuint shaderId);
 
         void UniformCameraPosition(unsigned int shaderProgram);

@@ -15,6 +15,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
         p_TextureManager = std::make_unique<OpenGLTextureManager>();
         p_MatrixManager = std::make_unique<OpenGLMatrixManager>();
+        p_Mesh = std::make_unique<OpenGLMesh>(p_MatrixManager.get());
         p_LightManager = std::make_unique<OpenGLLightManager>();
         p_MaterialManager = std::make_unique<OpenGLMaterialManager>();
 
@@ -63,32 +64,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        CHECK_GL_ERROR(glCreateVertexArrays(1, &m_VAD));
-        CHECK_GL_ERROR(glBindVertexArray(m_VAD));
-
-        CHECK_GL_ERROR(glGenBuffers(1, &m_VB0));
-        CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, m_VB0));
-        CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertices), m_Vertices, GL_STATIC_DRAW));
-
-        CHECK_GL_ERROR(glGenBuffers(1, &m_EBO));
-        CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
-        CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices), m_Indices, GL_STATIC_DRAW));
-
-        // position
-        CHECK_GL_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position)));
-        CHECK_GL_ERROR(glEnableVertexAttribArray(0));
-        // color
-        CHECK_GL_ERROR(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color)));
-        CHECK_GL_ERROR(glEnableVertexAttribArray(1));
-        // texcoord
-        CHECK_GL_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord)));
-        CHECK_GL_ERROR(glEnableVertexAttribArray(2));
-        // normal
-        CHECK_GL_ERROR(glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, normal)));
-        CHECK_GL_ERROR(glEnableVertexAttribArray(3));
-
-        glBindVertexArray(0);
-
         std::vector<std::string> texturesToLoad;
 
         // texturesToLoad.push_back("bg.png");
@@ -111,7 +86,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
                 Math::Vector3(0.1f, 0.1f, 0.1f),
                 Math::Vector3(1.0f, 1.0f, 1.0f),
                 Math::Vector3(1.0f, 1.0f, 1.0f),
-                32.0f,
+                50.0f,
                 texture, texture);
 
             if (material.DiffuseTexture == nullptr || material.SpecularTexture == nullptr)
@@ -129,8 +104,18 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             m_Materials.push_back(material);
         }
 
+        p_Shader->Use();
+
+        std::vector<Vertex> vertices(std::begin(m_Vertices), std::end(m_Vertices));
+        std::vector<unsigned int> indices(std::begin(m_Indices), std::end(m_Indices));
+
         // matrices
-        p_MatrixManager->CreateModelMatrix(Math::Vector3::Zero(), Math::Vector3::One());
+        if (!p_Mesh->Create(vertices, indices, Math::Vector3(0.0f, 0.0f, 0.0f), Math::Vector3(0.0f, 0.0f, 0.0f), Math::Vector3(1.0f, 1.0f, 1.0f)))
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to create the mesh");
+            return false;
+        }
+
         p_MatrixManager->CreateViewMatrix();
 
         float fWidth = static_cast<float>(apiData->pState->width);
@@ -140,13 +125,18 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         // lights
         p_LightManager->SetLightPosition(Math::Vector3(0.0f, 0.0f, 1.0f));
 
-        p_Shader->Use();
-
-        p_MatrixManager->UniformMatrices(p_Shader->GetId());
+        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
+        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
         p_MatrixManager->UniformCameraPosition(p_Shader->GetId());
         p_LightManager->UniformLightPosition(p_Shader->GetId());
 
         return true;
+    }
+
+    void OpenGLGraphicsPipeline::Shutdown()
+    {
+        p_Shader->Destroy();
+        p_Mesh->Destroy();
     }
 
     void OpenGLGraphicsPipeline::RegisterHooks()
@@ -165,7 +155,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         p_Shader->Use();
 
-        p_MatrixManager->UniformMatrices(p_Shader->GetId());
+        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
+        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
 
         if (!p_TextureManager->ActivateTextures(p_Shader->GetId()))
         {
@@ -177,8 +168,11 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             p_MaterialManager->SendMaterialToShader(material, p_Shader.get());
         }
 
-        CHECK_GL_ERROR(glBindVertexArray(m_VAD));
-        CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+        if (!p_Mesh->Draw(p_Shader.get(), m_Textures, m_Materials))
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to draw the mesh");
+            return false;
+        }
 
         return true;
     }
@@ -206,30 +200,18 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         Picasso::Engine::Logger::Logger::Debug("OpenGLGraphicsPipeline: Updating renderer matrices");
 
         float px, py, pz, rx, ry, rz;
-        bool updateCameraPos = false;
+        float sx, sy, sz;
 
-        // update positions?
-        if (eData.data.f32[0] != 0.0f || eData.data.f32[1] != 0.0f || eData.data.f32[2] != 0.0f)
-        {
-            px = eData.data.f32[0];
-            py = eData.data.f32[1];
-            pz = eData.data.f32[2];
-            updateCameraPos = true;
-        }
+        px = eData.data.f[0];
+        py = eData.data.f[1];
+        pz = eData.data.f[2];
+        rx = eData.data.f[3];
+        ry = eData.data.f[4];
+        rz = eData.data.f[5];
+        sx = eData.data.f[6];
+        sy = eData.data.f[7];
+        sz = eData.data.f[8];
 
-        // update rotations?
-        if (eData.data.f32[3] != 0.0f || eData.data.f32[4] != 0.0f || eData.data.f32[5] != 0.0f)
-        {
-            rx = eData.data.f32[3];
-            ry = eData.data.f32[4];
-            rz = eData.data.f32[5];
-            updateCameraPos = true;
-        }
-
-        if (updateCameraPos)
-        {
-            Picasso::Engine::Logger::Logger::Debug("[OpenGLGraphicsPipeline]px: %f, py: %f, pz: %f, rx: %f, ry: %f, rz: %f", px, py, pz, rx, ry, rz);
-            p_MatrixManager->UpdateMatrices(px, py, pz, rx, ry, rz);
-        }
+        p_MatrixManager->UpdateModelMatrix(px, py, pz, rx, ry, rz, sx, sy, sz);
     }
 }

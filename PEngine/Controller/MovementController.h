@@ -27,15 +27,16 @@ namespace Picasso::Engine::Controller
     private:
         Math::Vector3 m_Position;
         Math::Vector3 m_Rotation;
+        Math::Vector3 m_Scale;
         bool m_IsPressed;
-        Input::InputDirection m_CurrentDirection;
+        Input::InputAction m_CurrentDirection;
 
         void _UpdateInputState(const EventSystem::Events::PEventData &eData);
         void _DispatchUpdate();
         void _onMovement(BaseEvent<PEvent> *&event);
 
 #if PICASSO_DEBUG_ENABLE
-        std::string _DebugPrintPosition(Input::InputDirection direction);
+        std::string _DebugPrintPosition(Input::InputAction direction);
 #endif
     };
 }
