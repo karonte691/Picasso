@@ -29,7 +29,8 @@ vec3 calcAmbientLight(Material material)
 
 vec3 calcDiffuseLight(Material material)
 {
-    vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f);
+    vec3 posToLight = normalize(lightPosition - vs_position);
+    float diffuseColor = max(dot(posToLight, normalize(vs_normal)), 1);
     return material.diffuse * diffuseColor;
 }
 
