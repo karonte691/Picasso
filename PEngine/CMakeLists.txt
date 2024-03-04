@@ -25,6 +25,10 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/InputListener.cpp
                 Input/PInput.cpp
+
+                Render/RCore/Primitives/Primitive.cpp
+                Render/RCore/Primitives/Quad.cpp
+                Render/RCore/Primitives/Triangle.cpp
         )
 
                 if(${DRIVER} STREQUAL "OpenGl")
@@ -37,10 +41,26 @@ if(UNIX AND NOT APPLE)
                                 Render/RCore/Drivers/OpenGL/OpenGLDriver.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLTexture.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLTextureManager.cpp
-                                Render/RCore/Drivers/OpenGL/OpenGLMatrixManager.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLVPMatrixManager.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLLightManager.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLMaterialManager.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLMesh.cpp
+                                Render/RCore/Drivers/OpenGL/OpenGLMeshManager.cpp
+                        )
+
+                        set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}  
+                                Render/RCore/Pipeline/PipelineDataBuilderManager.cpp
+                        )
+
+                        set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}  
+                                Render/RCore/Drivers/OpenGL/Pipeline/OpenGLShadersBuilder.cpp
+                                Render/RCore/Drivers/OpenGL/Pipeline/OpenGLTextureBuilder.cpp
+                                Render/RCore/Drivers/OpenGL/Pipeline/OpenGLMaterialBuilder.cpp
+                                Render/RCore/Drivers/OpenGL/Pipeline/OpenGLMeshBuilder.cpp
+                                Render/RCore/Drivers/OpenGL/Pipeline/OpenGLPipelineDataBuilderManager.cpp
+                        )
+
+                        set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}
                                 Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.cpp
                         )
                 endif()

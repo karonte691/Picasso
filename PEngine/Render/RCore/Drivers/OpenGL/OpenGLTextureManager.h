@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLTexture.h>
 
@@ -20,7 +21,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
     public:
         bool LoadTextures(const std::vector<std::string> textures) override;
-        std::vector<Texture *> GetTextures() override;
+        std::vector<std::unique_ptr<Texture>> GetTextures() override;
         bool ActivateTextures(const unsigned int shaderProgram) override;
         bool BindTextures(const unsigned int shaderProgram) override;
 

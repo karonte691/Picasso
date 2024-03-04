@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef OPEN_GL_MATRIX_MANAGER_H
-#define OPEN_GL_MATRIX_MANAGER_H
+#ifndef OPEN_GL_VP_MATRIX_MANAGER_H
+#define OPEN_GL_VP_MATRIX_MANAGER_H
 
 #include <memory>
 #include <PEngine/Math/Mat4.h>
@@ -12,17 +12,9 @@
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
-    class OpenGLMatrixManager
+    class OpenGLVPMatrixManager
     {
     public:
-        void CreateModelMatrix(const Math::Vector3 &translate, const Math::Vector3 &rotation, const Math::Vector3 &scale);
-        void UniformModelMatrix(GLuint shaderId);
-        void RotateModelMatrixAxisX(float radians);
-        void RotateModelMatrixAxisY(float radians);
-        void RotateModelMatrixAxisZ(float radians);
-        void Scale(const Math::Vector3 &translate);
-        void UpdateModelMatrix(float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz);
-
         void CreateViewMatrix();
         void UniformViewMatrix(GLuint shaderId);
 
@@ -35,7 +27,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         void UniformCameraPosition(unsigned int shaderProgram);
 
     private:
-        std::unique_ptr<Math::Mat4> p_ModelMatrix;
         std::unique_ptr<Math::Mat4> p_ViewMatrix;
         std::unique_ptr<Math::Mat4> p_ProjectionMatrix;
         Math::Vector3 m_CamPosition;

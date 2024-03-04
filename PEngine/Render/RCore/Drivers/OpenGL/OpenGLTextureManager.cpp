@@ -4,6 +4,7 @@
 #include <PEngine/File/PFLoader.h>
 #include <PEngine/Logger/Logger.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
+#include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLTexture.h>
 #include <memory>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
@@ -72,18 +73,28 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
-    std::vector<Texture *> OpenGLTextureManager::GetTextures()
+    std::vector<std::unique_ptr<Texture>> OpenGLTextureManager::GetTextures()
     {
-        std::vector<Texture *> textures;
+        std::vector<std::unique_ptr<Texture>> textures;
 
         for (unsigned int i = 0; i < m_Textures.size(); ++i)
         {
-            textures.push_back(&m_Textures[i]);
+            textures.push_back(std::make_unique<OpenGLTexture>(m_Textures[i].Id,
+                                                               m_Textures[i].TextureUnit,
+                                                               m_Textures[i].Width,
+                                                               m_Textures[i].Height));
         }
 
         return textures;
     }
 
+    /**
+     * Loads a texture from a file and stores it in the m_Textures vector.
+     *
+     * @param textureName The name of the texture file to load.
+     * @param textureUnit The texture unit to bind the texture to.
+     * @return True if the texture was successfully loaded and stored, false otherwise.
+     */
     bool OpenGLTextureManager::_LoadTexture(const char *textureName, const unsigned int textureUnit)
     {
         std::unique_ptr<File::PFLoader> fileLoader = std::make_unique<File::PFLoader>();

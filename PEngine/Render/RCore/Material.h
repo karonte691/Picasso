@@ -8,14 +8,23 @@
 
 namespace Picasso::Engine::Render::Core
 {
-    struct Material
+    class Material
     {
+    public:
         Math::Vector3 Ambient;
         Math::Vector3 Diffuse;
         Math::Vector3 Specular;
         float Shininess;
         Texture *DiffuseTexture;
         Texture *SpecularTexture;
+
+        Material(const Math::Vector3 &ambient,
+                 const Math::Vector3 &diffuse,
+                 const Math::Vector3 &specular,
+                 float shininess,
+                 Texture *diffuseTexture,
+                 Texture *specularTexture)
+            : Ambient(ambient), Diffuse(diffuse), Specular(specular), Shininess(shininess), DiffuseTexture(diffuseTexture), SpecularTexture(specularTexture) {}
     };
 }
 

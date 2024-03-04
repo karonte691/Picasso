@@ -7,6 +7,8 @@
 #include <PEngine/Render/RCore/Shader.h>
 #include <PEngine/Math/Vector3.h>
 
+#include <memory>
+
 namespace Picasso::Engine::Render::Core
 {
     /**
@@ -20,13 +22,13 @@ namespace Picasso::Engine::Render::Core
     public:
         virtual ~MaterialManager(){};
 
-        virtual Material CreateMaterial(const Math::Vector3 &ambient,
-                                        const Math::Vector3 &diffuse,
-                                        const Math::Vector3 &specular,
-                                        float shininess,
-                                        Texture *diffuseTexture,
-                                        Texture *specularTexture) = 0;
-        virtual void SendMaterialToShader(const Material material, Shader *shaderr) = 0;
+        virtual std::unique_ptr<Material> CreateMaterial(const Math::Vector3 &ambient,
+                                                         const Math::Vector3 &diffuse,
+                                                         const Math::Vector3 &specular,
+                                                         float shininess,
+                                                         Texture *diffuseTexture,
+                                                         Texture *specularTexture) = 0;
+        virtual void SendMaterialToShader(const Material *material, Shader *shader) = 0;
     };
 }
 

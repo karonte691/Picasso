@@ -4,19 +4,20 @@
 #define OPEN_GL_MATERIAL_H
 
 #include <PEngine/Render/RCore/MaterialManager.h>
+#include <memory>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
     class OpenGLMaterialManager : public MaterialManager
     {
     public:
-        Material CreateMaterial(const Math::Vector3 &ambient,
-                                const Math::Vector3 &diffuse,
-                                const Math::Vector3 &specular,
-                                float shininess,
-                                Texture *diffuseTexture,
-                                Texture *specularTexture) override;
-        void SendMaterialToShader(const Material material, Shader *shaderr) override;
+        std::unique_ptr<Material> CreateMaterial(const Math::Vector3 &ambient,
+                                                 const Math::Vector3 &diffuse,
+                                                 const Math::Vector3 &specular,
+                                                 float shininess,
+                                                 Texture *diffuseTexture,
+                                                 Texture *specularTexture) override;
+        void SendMaterialToShader(const Material *material, Shader *shaderr) override;
     };
 }
 

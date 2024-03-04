@@ -21,7 +21,7 @@ namespace Picasso::Engine::Render::Core
         Shader(unsigned int id) : m_Id(id){};
         virtual ~Shader(){};
 
-        unsigned int GetId() { return m_Id; }
+        unsigned int GetId() const { return m_Id; }
 
         virtual void Use() = 0;
         virtual void Destroy() = 0;

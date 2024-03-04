@@ -28,6 +28,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
+    /**
+     * Sets the uniform texture in the specified shader program.
+     *
+     * @param unit The texture unit to bind the texture to.
+     * @param shaderProgram The ID of the shader program.
+     * @param samplerName The name of the sampler uniform in the shader program.
+     * @return True if the texture was successfully set, false otherwise.
+     */
     bool OpenGLTexture::UniformTexture(unsigned int unit, unsigned int shaderProgram, const char *samplerName)
     {
         GLint samplerLocation = glGetUniformLocation(shaderProgram, samplerName);
@@ -43,7 +51,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         GLenum error = glGetError();
         if (error != GL_NO_ERROR)
         {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Error setting texture sampler '%s': %u", samplerName, error);
+            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Error setting texture sampler %d -> '%s': %u", unit, samplerName, error);
             return false;
         }
 

@@ -3,28 +3,33 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <PEngine/Render/RCore/Vertex.h>
-#include <PEngine/Render/RCore/Shader.h>
-#include <PEngine/Render/RCore/Texture.h>
-#include <PEngine/Render/RCore/Material.h>
-#include <PEngine/Math/Vector3.h>
-
-#include <vector>
-
 namespace Picasso::Engine::Render::Core
 {
+    // Each driver has its own implementation of Mesh
     class Mesh
     {
     public:
         virtual ~Mesh(){};
 
-        virtual bool Create(std::vector<Vertex> vertices,
-                            std::vector<unsigned int> indices,
-                            const Math::Vector3 position,
-                            const Math::Vector3 rotation,
-                            const Math::Vector3 scale) = 0;
-        virtual bool Draw(Shader *shader, std::vector<Texture *> textures, std::vector<Material> materials) = 0;
-        virtual void Destroy() = 0;
+        unsigned int getVertexCount() const
+        {
+            return m_VertexCount;
+        }
+
+        void setVertexCount(unsigned int newVertexCount)
+        {
+            m_VertexCount = newVertexCount;
+        }
+
+        unsigned int getIndexCount() const
+        {
+            return m_IndexCount;
+        }
+
+        void setIndexCount(unsigned int newIndexCount)
+        {
+            m_IndexCount = newIndexCount;
+        }
 
     protected:
         unsigned int m_VertexCount;

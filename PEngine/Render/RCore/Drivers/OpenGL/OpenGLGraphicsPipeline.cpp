@@ -3,140 +3,62 @@
 #include <PEngine/Math/Vector3.h>
 #include <PEngine/Math/PMath.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
+#include <PEngine/Render/RCore/Primitives/Quad.h>
 
 #include <vector>
 #include <string>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
+    /**
+     * @brief Initializes the OpenGL graphics pipeline.
+     *
+     * This function initializes various components of the graphics pipeline, such as the texture manager,
+     * VP matrix manager, light manager, pipeline data builder, material manager, and mesh manager.
+     * It also creates the view matrix and projection matrix based on the provided API data.
+     * Additionally, it sets the light position and checks if the pipeline data is successfully built.
+     * Finally, it sets the uniform variables for the view matrix, projection matrix, camera position, and light position.
+     *
+     * @param apiData A pointer to the RAPIData structure containing API data.
+     * @return True if the initialization is successful, false otherwise.
+     */
     bool OpenGLGraphicsPipeline::Init(RAPIData *apiData)
     {
-        p_FileLoader = std::make_unique<Picasso::Engine::File::PFLoader>();
-        p_ShaderFactory = std::make_unique<Shaders::OpenGLShaderFactory>();
         p_TextureManager = std::make_unique<OpenGLTextureManager>();
-        p_MatrixManager = std::make_unique<OpenGLMatrixManager>();
-        p_Mesh = std::make_unique<OpenGLMesh>(p_MatrixManager.get());
+        p_VPMatrixManager = std::make_unique<OpenGLVPMatrixManager>();
         p_LightManager = std::make_unique<OpenGLLightManager>();
+        p_PipelineDataBuilder = std::make_unique<OpenGLPipelineDataBuilderManager>();
         p_MaterialManager = std::make_unique<OpenGLMaterialManager>();
+        p_MeshManager = std::make_unique<OpenGLMeshManager>();
 
-        m_Vertices[0] = Vertex{
-            Math::Vector3(-0.5f, 0.5f, 0.0f),
-            Math::Vector3(1.0f, 0.0f, 0.0f),
-            Math::Vector2(0.0f, 1.0f),
-            Math::Vector3(0.0f, 0.0f, -1.0f)};
-        m_Vertices[1] = Vertex{
-            Math::Vector3(-0.5f, -0.5f, 0.0f),
-            Math::Vector3(0.0f, 1.0f, 0.0f),
-            Math::Vector2(0.0f, 0.0f),
-            Math::Vector3(0.0f, 0.0f, -1.0f)};
-        m_Vertices[2] = Vertex{
-            Math::Vector3(0.5f, -0.5f, 0.0f),
-            Math::Vector3(0.0f, 0.0f, 1.0f),
-            Math::Vector2(1.0f, 0.0f),
-            Math::Vector3(0.0f, 0.0f, -1.0f)};
-        m_Vertices[3] = Vertex{
-            Math::Vector3(0.5f, 0.5f, 0.0f),
-            Math::Vector3(1.0f, 1.0f, 0.0f),
-            Math::Vector2(1.0f, 1.0f),
-            Math::Vector3(0.0f, 0.0f, -1.0f)};
-
-        m_Indices[0] = 0;
-        m_Indices[1] = 1;
-        m_Indices[2] = 2;
-        m_Indices[3] = 0;
-        m_Indices[4] = 2;
-        m_Indices[5] = 3;
-
-        File::PFile vertexShader = p_FileLoader->LoadShader("VertexCore.glsl");
-        File::PFile fragmentShader = p_FileLoader->LoadShader("FragmentCore.glsl");
-
-        if (vertexShader.fileName == "" || fragmentShader.fileName == "")
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to open the core shaders");
-            return false;
-        }
-
-        p_Shader = p_ShaderFactory->Create(vertexShader.content, fragmentShader.content);
-
-        if (p_Shader == nullptr)
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to create the shader");
-            return false;
-        }
-
-        std::vector<std::string> texturesToLoad;
-
-        // texturesToLoad.push_back("bg.png");
-        texturesToLoad.push_back("pngegg.png");
-
-        // texture
-        if (!p_TextureManager->LoadTextures(texturesToLoad))
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] Unable to load the texture");
-
-            return false;
-        }
-
-        m_Textures = p_TextureManager->GetTextures();
-
-        // materials
-        for (Texture *texture : m_Textures)
-        {
-            Material material = p_MaterialManager->CreateMaterial(
-                Math::Vector3(0.1f, 0.1f, 0.1f),
-                Math::Vector3(1.0f, 1.0f, 1.0f),
-                Math::Vector3(1.0f, 1.0f, 1.0f),
-                50.0f,
-                texture, texture);
-
-            if (material.DiffuseTexture == nullptr || material.SpecularTexture == nullptr)
-            {
-                Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] material textures are null");
-                return false;
-            }
-
-            if (material.DiffuseTexture->Id == 0 || material.SpecularTexture->Id == 0)
-            {
-                Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] material textures are null");
-                return false;
-            }
-
-            m_Materials.push_back(material);
-        }
-
-        p_Shader->Use();
-
-        std::vector<Vertex> vertices(std::begin(m_Vertices), std::end(m_Vertices));
-        std::vector<unsigned int> indices(std::begin(m_Indices), std::end(m_Indices));
-
-        // matrices
-        if (!p_Mesh->Create(vertices, indices, Math::Vector3(0.0f, 0.0f, 0.0f), Math::Vector3(0.0f, 0.0f, 0.0f), Math::Vector3(1.0f, 1.0f, 1.0f)))
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to create the mesh");
-            return false;
-        }
-
-        p_MatrixManager->CreateViewMatrix();
+        p_VPMatrixManager->CreateViewMatrix();
 
         float fWidth = static_cast<float>(apiData->pState->width);
         float fHeight = static_cast<float>(apiData->pState->height);
-        p_MatrixManager->CreateProjectionMatrix(fWidth, fHeight);
+        p_VPMatrixManager->CreateProjectionMatrix(fWidth, fHeight);
 
         // lights
         p_LightManager->SetLightPosition(Math::Vector3(0.0f, 0.0f, 1.0f));
 
-        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
-        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
-        p_MatrixManager->UniformCameraPosition(p_Shader->GetId());
-        p_LightManager->UniformLightPosition(p_Shader->GetId());
+        if (!p_PipelineDataBuilder->Build())
+        {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to build the pipeline data");
+            return false;
+        }
+
+        m_PipelineData = p_PipelineDataBuilder->Get();
+
+        p_VPMatrixManager->UniformViewMatrix(m_PipelineData.shaders[0]->GetId());
+        p_VPMatrixManager->UniforProjectionMatrix(m_PipelineData.shaders[0]->GetId());
+        p_VPMatrixManager->UniformCameraPosition(m_PipelineData.shaders[0]->GetId());
+        p_LightManager->UniformLightPosition(m_PipelineData.shaders[0]->GetId());
 
         return true;
     }
 
     void OpenGLGraphicsPipeline::Shutdown()
     {
-        p_Shader->Destroy();
-        p_Mesh->Destroy();
+        m_PipelineData.shaders[0]->Destroy();
     }
 
     void OpenGLGraphicsPipeline::RegisterHooks()
@@ -153,25 +75,50 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        p_Shader->Use();
+        m_PipelineData.shaders[0]->Use();
 
-        p_MatrixManager->UniformViewMatrix(p_Shader->GetId());
-        p_MatrixManager->UniforProjectionMatrix(p_Shader->GetId());
+        p_VPMatrixManager->UniformViewMatrix(m_PipelineData.shaders[0]->GetId());
+        p_VPMatrixManager->UniforProjectionMatrix(m_PipelineData.shaders[0]->GetId());
 
-        if (!p_TextureManager->ActivateTextures(p_Shader->GetId()))
+        if (!p_TextureManager->ActivateTextures(m_PipelineData.shaders[0]->GetId()))
         {
             return false;
         }
 
-        for (Material material : m_Materials)
+        for (unsigned int i = 0; i < m_PipelineData.materials.size(); ++i)
         {
-            p_MaterialManager->SendMaterialToShader(material, p_Shader.get());
+            p_MaterialManager->SendMaterialToShader(m_PipelineData.materials[i].get(), m_PipelineData.shaders[0].get());
         }
 
-        if (!p_Mesh->Draw(p_Shader.get(), m_Textures, m_Materials))
+        for (unsigned int i = 0; i < m_PipelineData.meshes.size(); ++i)
         {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to draw the mesh");
-            return false;
+            OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(m_PipelineData.meshes[i].get());
+
+            int textureCount = m_PipelineData.textures.size();
+            int materialCount = m_PipelineData.materials.size();
+            Texture **textures = new Texture *[textureCount];
+            Material **materials = new Material *[materialCount];
+
+            for (int i = 0; i < textureCount; ++i)
+            {
+                textures[i] = m_PipelineData.textures[i].get();
+            }
+            for (int i = 0; i < materialCount; ++i)
+            {
+                materials[i] = m_PipelineData.materials[i].get();
+            }
+
+            if (!p_MeshManager->Draw(m_PipelineData.shaders[0].get(), openGLMesh, textures, materials, textureCount, materialCount))
+            {
+                Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to draw the mesh");
+
+                delete[] textures;
+                delete[] materials;
+                return false;
+            }
+
+            delete[] textures;
+            delete[] materials;
         }
 
         return true;
@@ -179,7 +126,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
     bool OpenGLGraphicsPipeline::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
-        p_Shader->Destroy();
+        m_PipelineData.shaders[0]->Destroy();
         return p_Driver->EndFrame(apiData, deltaTime, pState);
     }
 
@@ -188,7 +135,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         float fWidth = static_cast<float>(width);
         float fHeight = static_cast<float>(height);
 
-        p_MatrixManager->ResetProjectionMatrix(fWidth, fHeight);
+        p_VPMatrixManager->ResetProjectionMatrix(fWidth, fHeight);
 
         return true;
     }
@@ -212,6 +159,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         sy = eData.data.f[7];
         sz = eData.data.f[8];
 
-        p_MatrixManager->UpdateModelMatrix(px, py, pz, rx, ry, rz, sx, sy, sz);
+        for (int i = 0; i < m_PipelineData.meshes.size(); ++i)
+        {
+            OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(m_PipelineData.meshes[i].get());
+
+            p_MeshManager->UpdateModelMatrix(openGLMesh, px, py, pz, rx, ry, rz, sx, sy, sz);
+        }
     }
+
 }
