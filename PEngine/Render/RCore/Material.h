@@ -25,7 +25,7 @@ namespace Picasso::Engine::Render::Core
                  Texture *diffuseTexture,
                  Texture *specularTexture)
             : Ambient(ambient), Diffuse(diffuse), Specular(specular), Shininess(shininess), DiffuseTexture(diffuseTexture), SpecularTexture(specularTexture) {}
-    };
+        };
 }
 
 #endif // MATERIAL_H

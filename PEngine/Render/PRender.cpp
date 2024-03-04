@@ -1,9 +1,23 @@
+/**
+ * @file PRender.cpp
+ * @brief Implementation of the PRender class.
+ */
 #include <PEngine/Render/PRender.h>
 
 namespace Picasso::Engine::Render
 {
     using Picasso::Engine::Render::Core::RDRIVERS;
 
+    /**
+     * @brief Initializes the PRender class.
+     *
+     * This method initializes the PRender class by creating the internal render and setting up the render data.
+     *
+     * @param appName The name of the application.
+     * @param pState Pointer to the platform state.
+     * @param engineState Pointer to the engine state.
+     * @return Returns true if initialization is successful, false otherwise.
+     */
     bool PRender::Init(const char *appName, PPlatformState *pState, EngineState *engineState)
     {
         if (m_renderData != nullptr)
@@ -24,12 +38,26 @@ namespace Picasso::Engine::Render
         return true;
     }
 
+    /**
+     * @brief Shuts down the PRender class.
+     *
+     * This method shuts down the PRender class by releasing the render data and destroying the internal render.
+     */
     void PRender::Shutdown()
     {
         m_renderData.reset();
         m_internalRender->Destroy();
     }
 
+    /**
+     * @brief Renders a frame.
+     *
+     * This method renders a frame using the internal render.
+     *
+     * @param rData Pointer to the render data.
+     * @param pState Pointer to the platform state.
+     * @return Returns true if rendering is successful, false otherwise.
+     */
     bool PRender::RenderFrame(RenderData *rData, PPlatformState *pState)
     {
         if (m_renderData == nullptr)
@@ -54,6 +82,14 @@ namespace Picasso::Engine::Render
         return true;
     }
 
+    /**
+     * @brief Handles the resize event.
+     *
+     * This method handles the resize event by resizing the render data.
+     *
+     * @param width The new width of the render area.
+     * @param height The new height of the render area.
+     */
     void PRender::OnResize(u_int16_t width, u_int16_t height)
     {
         m_internalRender->Resize(m_renderData.get(), width, height);

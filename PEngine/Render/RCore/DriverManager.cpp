@@ -5,6 +5,13 @@
 
 namespace Picasso::Engine::Render::Core
 {
+    /**
+     * @brief Get the driver implementation based on the specified driver type.
+     *
+     * @param driver The driver type.
+     * @return std::unique_ptr<DriverImplementation> The driver implementation.
+     *         Returns nullptr if the driver type is not supported.
+     */
     std::unique_ptr<DriverImplementation> DriverManager::GetDriver(RDRIVERS driver)
     {
         switch (driver)

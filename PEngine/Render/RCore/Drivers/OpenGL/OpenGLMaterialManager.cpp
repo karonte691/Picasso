@@ -37,7 +37,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         shader->SetVector("material.specular", material->Specular);
         shader->SetVector("material.shininess", material->Shininess);
 
-              material->DiffuseTexture->UniformTexture(material->DiffuseTexture->TextureUnit, shader->GetId(), "material.diffuseTexture");
+        material->DiffuseTexture->UniformTexture(material->DiffuseTexture->TextureUnit, shader->GetId(), "material.diffuseTexture");
         material->SpecularTexture->UniformTexture(material->SpecularTexture->TextureUnit, shader->GetId(), "material.specularTexture");
     }
 }
