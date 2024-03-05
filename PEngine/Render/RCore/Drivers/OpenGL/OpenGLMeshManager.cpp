@@ -44,7 +44,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         if (mesh->getIndexCount() == 0)
         {
-            CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, 0));
+            CHECK_GL_ERROR(glDrawArrays(GL_TRIANGLES, 0, mesh->getVertexCount()));
 
             return true;
         }
@@ -58,7 +58,11 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         glDeleteVertexArrays(1, &mesh->VAO);
         glDeleteBuffers(1, &mesh->VBO);
-        glDeleteBuffers(1, &mesh->EBO);
+
+        if (mesh->getIndexCount() != 0)
+        {
+            glDeleteBuffers(1, &mesh->EBO);
+        }
     }
 
     void OpenGLMeshManager::UpdateModelMatrix(OpenGLMesh *mesh, float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz)
@@ -89,9 +93,12 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO));
         CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh->getVertexCount(), primitive->GetVertices().data(), GL_STATIC_DRAW));
 
-        CHECK_GL_ERROR(glGenBuffers(1, &mesh->EBO));
-        CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->EBO));
-        CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh->getIndexCount(), primitive->GetIndices().data(), GL_STATIC_DRAW));
+        if (mesh->getIndexCount() != 0)
+        {
+            CHECK_GL_ERROR(glGenBuffers(1, &mesh->EBO));
+            CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->EBO));
+            CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh->getIndexCount(), primitive->GetIndices().data(), GL_STATIC_DRAW));
+        }
 
         // position
         CHECK_GL_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position)));

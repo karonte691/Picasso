@@ -1,6 +1,6 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/Pipeline/OpenGLMeshBuilder.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMeshManager.h>
-#include <PEngine/Render/RCore/Primitives/Quad.h>
+#include <PEngine/Render/RCore/Primitives/Pyramid.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLMesh.h>
 
 #include <PEngine/Logger/Logger.h>
@@ -20,8 +20,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
      */
     bool OpenGLMeshBuilder::Build(Pipeline::PipelineData *pipelineData)
     {
-        Primitives::Quad *pQuad = new Primitives::Quad();
-        std::unique_ptr<Mesh> p_Mesh = p_MeshManager->Create(pQuad,
+        Primitives::Pyramid *pPyramid = new Primitives::Pyramid();
+        std::unique_ptr<Mesh> p_Mesh = p_MeshManager->Create(pPyramid,
                                                              Math::Vector3(0.0f, 0.0f, 0.0f),
                                                              Math::Vector3(0.0f, 0.0f, 0.0f),
                                                              Math::Vector3(1.0f, 1.0f, 1.0f));
@@ -32,7 +32,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        delete pQuad;
+        delete pPyramid;
+
         pipelineData->meshes.push_back(std::move(p_Mesh));
 
         return true;

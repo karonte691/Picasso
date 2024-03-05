@@ -21,7 +21,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         std::vector<std::string> texturesToLoad;
 
-        texturesToLoad.push_back("pngegg.png");
+        texturesToLoad.push_back("zelda.png");
 
         if (!p_TextureManager->LoadTextures(texturesToLoad))
         {

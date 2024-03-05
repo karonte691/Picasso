@@ -29,6 +29,7 @@ if(UNIX AND NOT APPLE)
                 Render/RCore/Primitives/Primitive.cpp
                 Render/RCore/Primitives/Quad.cpp
                 Render/RCore/Primitives/Triangle.cpp
+                Render/RCore/Primitives/Pyramid.cpp
         )
 
                 if(${DRIVER} STREQUAL "OpenGl")
