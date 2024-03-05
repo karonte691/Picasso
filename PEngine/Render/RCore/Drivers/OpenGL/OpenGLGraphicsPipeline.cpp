@@ -24,21 +24,13 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
      */
     bool OpenGLGraphicsPipeline::Init(RAPIData *apiData)
     {
-        p_TextureManager = std::make_unique<OpenGLTextureManager>();
-        p_VPMatrixManager = std::make_unique<OpenGLVPMatrixManager>();
-        p_LightManager = std::make_unique<OpenGLLightManager>();
         p_PipelineDataBuilder = std::make_unique<OpenGLPipelineDataBuilderManager>();
-        p_MaterialManager = std::make_unique<OpenGLMaterialManager>();
-        p_MeshManager = std::make_unique<OpenGLMeshManager>();
-
-        p_VPMatrixManager->CreateViewMatrix();
+        p_GraphicsRender = std::make_unique<OpenGLGraphicsRender>();
 
         float fWidth = static_cast<float>(apiData->pState->width);
         float fHeight = static_cast<float>(apiData->pState->height);
-        p_VPMatrixManager->CreateProjectionMatrix(fWidth, fHeight);
 
-        // lights
-        p_LightManager->SetLightPosition(Math::Vector3(0.0f, 0.0f, 1.0f));
+        p_GraphicsRender->SetUp(fWidth, fHeight);
 
         if (!p_PipelineDataBuilder->Build())
         {
@@ -48,17 +40,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         m_PipelineData = p_PipelineDataBuilder->Get();
 
-        p_VPMatrixManager->UniformViewMatrix(m_PipelineData.shaders[0]->GetId());
-        p_VPMatrixManager->UniforProjectionMatrix(m_PipelineData.shaders[0]->GetId());
-        p_VPMatrixManager->UniformCameraPosition(m_PipelineData.shaders[0]->GetId());
-        p_LightManager->UniformLightPosition(m_PipelineData.shaders[0]->GetId());
+        p_GraphicsRender->Uniforms(&m_PipelineData);
 
         return true;
     }
 
     void OpenGLGraphicsPipeline::Shutdown()
     {
-        m_PipelineData.shaders[0]->Destroy();
+        m_PipelineData.shader->Destroy();
     }
 
     void OpenGLGraphicsPipeline::RegisterHooks()
@@ -75,53 +64,10 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             return false;
         }
 
-        m_PipelineData.shaders[0]->Use();
-
-        int textureCount = m_PipelineData.textures.size();
-        int materialCount = m_PipelineData.materials.size();
-        Texture **textures = new Texture *[textureCount];
-        Material **materials = new Material *[materialCount];
-
-        for (int i = 0; i < textureCount; ++i)
+        if (!p_GraphicsRender->BeginRenderFrame(&m_PipelineData))
         {
-            textures[i] = m_PipelineData.textures[i].get();
-        }
-        for (int i = 0; i < materialCount; ++i)
-        {
-            materials[i] = m_PipelineData.materials[i].get();
-        }
-
-        p_VPMatrixManager->UniformViewMatrix(m_PipelineData.shaders[0]->GetId());
-        p_VPMatrixManager->UniforProjectionMatrix(m_PipelineData.shaders[0]->GetId());
-
-        if (!p_TextureManager->ActivateTextures(m_PipelineData.shaders[0]->GetId(), textures, textureCount))
-        {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to activate textures");
-            delete[] textures;
-            delete[] materials;
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to begin render frame");
             return false;
-        }
-
-        for (unsigned int i = 0; i < m_PipelineData.materials.size(); ++i)
-        {
-            p_MaterialManager->SendMaterialToShader(m_PipelineData.materials[i].get(), m_PipelineData.shaders[0].get());
-        }
-
-        for (unsigned int i = 0; i < m_PipelineData.meshes.size(); ++i)
-        {
-            OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(m_PipelineData.meshes[i].get());
-
-            if (!p_MeshManager->Draw(m_PipelineData.shaders[0].get(), openGLMesh, textures, materials, textureCount, materialCount))
-            {
-                Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to draw the mesh");
-
-                delete[] textures;
-                delete[] materials;
-                return false;
-            }
-
-            delete[] textures;
-            delete[] materials;
         }
 
         return true;
@@ -129,7 +75,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
     bool OpenGLGraphicsPipeline::EndFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
     {
-        m_PipelineData.shaders[0]->Destroy();
+        p_GraphicsRender->EndRenderFrame(&m_PipelineData);
+
         return p_Driver->EndFrame(apiData, deltaTime, pState);
     }
 
@@ -138,7 +85,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         float fWidth = static_cast<float>(width);
         float fHeight = static_cast<float>(height);
 
-        p_VPMatrixManager->ResetProjectionMatrix(fWidth, fHeight);
+        p_GraphicsRender->ResizeFrame(fWidth, fHeight);
 
         return true;
     }
@@ -162,12 +109,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         sy = eData.data.f[7];
         sz = eData.data.f[8];
 
-        for (int i = 0; i < m_PipelineData.meshes.size(); ++i)
-        {
-            OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(m_PipelineData.meshes[i].get());
-
-            p_MeshManager->UpdateModelMatrix(openGLMesh, px, py, pz, rx, ry, rz, sx, sy, sz);
-        }
+        p_GraphicsRender->OnRenderUpdate(&m_PipelineData, px, py, pz, rx, ry, rz, sx, sy, sz);
     }
 
 }

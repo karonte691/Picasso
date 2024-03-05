@@ -16,7 +16,7 @@ namespace Picasso::Engine::Render::Core::Pipeline
 {
     struct PipelineData
     {
-        std::vector<std::unique_ptr<Shader>> shaders;
+        std::unique_ptr<Shader> shader;
         std::vector<std::unique_ptr<Mesh>> meshes;
         std::vector<std::unique_ptr<Texture>> textures;
         std::vector<std::unique_ptr<Material>> materials;

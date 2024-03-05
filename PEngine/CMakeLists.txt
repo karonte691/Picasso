@@ -61,7 +61,9 @@ if(UNIX AND NOT APPLE)
                         )
 
                         set(PICASSO_ENGINE_SRC ${PICASSO_ENGINE_SRC}
+                                Render/RCore/Drivers/OpenGL/OpenGLGraphicsRender.cpp
                                 Render/RCore/Drivers/OpenGL/OpenGLGraphicsPipeline.cpp
+
                         )
                 endif()
 
