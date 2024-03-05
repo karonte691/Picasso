@@ -32,20 +32,19 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
-    bool OpenGLTextureManager::ActivateTextures(const unsigned int shaderProgram)
+    bool OpenGLTextureManager::ActivateTextures(const unsigned int shaderProgram, Texture **textures, int tSize)
     {
-        unsigned int tSize = m_Textures.size();
-
         if (tSize == 0)
         {
             // no texture to activate, quit
-            return true;
+            return false;
         }
 
         for (unsigned int i = 0; i < tSize; ++i)
         {
-            if (!m_Textures[i].ActivateTexture(i))
+            if (!textures[i]->ActivateTexture(i))
             {
+                Picasso::Engine::Logger::Logger::Error("[OpenGLTextureLoader] unable to activate texture %d", i);
                 return false;
             }
         }

@@ -35,6 +35,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         pipelineData->shaders.push_back(std::move(pShader));
 
+        Picasso::Engine::Logger::Logger::Debug("[OpenGLShadersBuilder] Shaders loaded correctly");
+
         return true;
     }
 }

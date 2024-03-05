@@ -51,7 +51,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         GLenum error = glGetError();
         if (error != GL_NO_ERROR)
         {
-            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Error setting texture sampler %d -> '%s': %u", unit, samplerName, error);
+            const GLubyte *eb = gluErrorString(error);
+
+            Picasso::Engine::Logger::Logger::Error("[OpenGLTexture] Error setting texture sampler %d -> '%s': %u -> %s", unit, samplerName, error, eb);
             return false;
         }
 

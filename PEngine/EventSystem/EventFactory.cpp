@@ -1,3 +1,8 @@
+/**
+ * @file EventFactory.cpp
+ * @brief Implementation of the EventFactory class.
+ */
+
 #include <PEngine/EventSystem/EventFactory.h>
 #include <PEngine/EventSystem/Events/KeyPressedEvent.h>
 #include <PEngine/EventSystem/Events/KeyReleasedEvent.h>
@@ -15,6 +20,11 @@
 
 namespace Picasso::Engine::EventSystem
 {
+    /**
+     * @brief Get the corresponding event object based on the given event type.
+     * @param event The event type.
+     * @return A pointer to the corresponding event object, or nullptr if the event type is invalid.
+     */
     BaseEvent<PEvent> *EventFactory::GetEvent(PEvent event)
     {
         switch (event)

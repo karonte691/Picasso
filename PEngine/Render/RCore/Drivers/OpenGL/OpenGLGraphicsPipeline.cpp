@@ -77,11 +77,28 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
         m_PipelineData.shaders[0]->Use();
 
+        int textureCount = m_PipelineData.textures.size();
+        int materialCount = m_PipelineData.materials.size();
+        Texture **textures = new Texture *[textureCount];
+        Material **materials = new Material *[materialCount];
+
+        for (int i = 0; i < textureCount; ++i)
+        {
+            textures[i] = m_PipelineData.textures[i].get();
+        }
+        for (int i = 0; i < materialCount; ++i)
+        {
+            materials[i] = m_PipelineData.materials[i].get();
+        }
+
         p_VPMatrixManager->UniformViewMatrix(m_PipelineData.shaders[0]->GetId());
         p_VPMatrixManager->UniforProjectionMatrix(m_PipelineData.shaders[0]->GetId());
 
-        if (!p_TextureManager->ActivateTextures(m_PipelineData.shaders[0]->GetId()))
+        if (!p_TextureManager->ActivateTextures(m_PipelineData.shaders[0]->GetId(), textures, textureCount))
         {
+            Picasso::Engine::Logger::Logger::Error("[OpenGLGraphicsPipeline] unable to activate textures");
+            delete[] textures;
+            delete[] materials;
             return false;
         }
 
@@ -93,20 +110,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         for (unsigned int i = 0; i < m_PipelineData.meshes.size(); ++i)
         {
             OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(m_PipelineData.meshes[i].get());
-
-            int textureCount = m_PipelineData.textures.size();
-            int materialCount = m_PipelineData.materials.size();
-            Texture **textures = new Texture *[textureCount];
-            Material **materials = new Material *[materialCount];
-
-            for (int i = 0; i < textureCount; ++i)
-            {
-                textures[i] = m_PipelineData.textures[i].get();
-            }
-            for (int i = 0; i < materialCount; ++i)
-            {
-                materials[i] = m_PipelineData.materials[i].get();
-            }
 
             if (!p_MeshManager->Draw(m_PipelineData.shaders[0].get(), openGLMesh, textures, materials, textureCount, materialCount))
             {

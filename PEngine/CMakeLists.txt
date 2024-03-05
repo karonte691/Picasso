@@ -113,5 +113,6 @@ if(UNIX AND NOT APPLE)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGL.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libglfw.so)
         target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGLEW.so)
+        target_link_libraries(PEngine /usr/lib/x86_64-linux-gnu/libGLU.so)
 endif()
 

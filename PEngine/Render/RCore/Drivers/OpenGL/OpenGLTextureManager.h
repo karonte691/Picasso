@@ -22,7 +22,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     public:
         bool LoadTextures(const std::vector<std::string> textures) override;
         std::vector<std::unique_ptr<Texture>> GetTextures() override;
-        bool ActivateTextures(const unsigned int shaderProgram) override;
+        bool ActivateTextures(const unsigned int shaderProgram, Texture **textures, int tSize) override;
         bool BindTextures(const unsigned int shaderProgram) override;
 
     private:
