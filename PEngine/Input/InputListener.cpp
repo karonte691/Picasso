@@ -78,16 +78,16 @@ namespace Picasso::Engine::Input
             direction = InputAction::RIGHT;
             break;
         case P_KEY_Q:
-            direction = InputAction::FORWARD;
+            direction = InputAction::ROTATE_Y_AXIS_FORWARD;
             break;
         case P_KEY_E:
-            direction = InputAction::BACKWARD;
+            direction = InputAction::ROTATE_Y_AXIS_BACKWARD;
             break;
         case P_KEY_Z:
-            direction = InputAction::SCALE_UP;
+            direction = InputAction::ROTATE_X_AXIS_FORWARD;
             break;
-        case P_KEY_X:
-            direction = InputAction::SCALE_DOWN;
+        case P_KEY_C:
+            direction = InputAction::ROTATE_X_AXIS_BACKWARD;
             break;
         default:
             return;

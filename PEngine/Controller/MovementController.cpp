@@ -62,10 +62,7 @@ namespace Picasso::Engine::Controller
             return;
         }
 
-        // Create a temporary vector for scaling
-        Math::Vector3 *sVec = new Math::Vector3{0.1f, 0.1f, 0.1f};
-
-        // Update position, rotation, or scale based on current direction
+        // Update position or rotation based on current direction
         switch (m_CurrentDirection)
         {
         case Input::InputAction::UP:
@@ -80,23 +77,21 @@ namespace Picasso::Engine::Controller
         case Input::InputAction::RIGHT:
             m_Position.x += 0.01f;
             break;
-        case Input::InputAction::BACKWARD:
-            m_Rotation.y -= 1.0f;
+        case Input::InputAction::ROTATE_Y_AXIS_BACKWARD:
+            m_Rotation.y -= 0.01f;
             break;
-        case Input::InputAction::FORWARD:
-            m_Rotation.y += 1.0f;
+        case Input::InputAction::ROTATE_Y_AXIS_FORWARD:
+            m_Rotation.y += 0.01f;
             break;
-        case Input::InputAction::SCALE_UP:
-            m_Scale.Add(sVec);
+        case Input::InputAction::ROTATE_X_AXIS_FORWARD:
+            m_Rotation.x -= 0.01f;
             break;
-        case Input::InputAction::SCALE_DOWN:
-            m_Scale.Sub(sVec);
+        case Input::InputAction::ROTATE_X_AXIS_BACKWARD:
+            m_Rotation.x += 0.01f;
             break;
         default:
             return;
         }
-
-        delete sVec;
 
         // Dispatch the update event
         _DispatchUpdate();
@@ -158,13 +153,13 @@ namespace Picasso::Engine::Controller
             return "LEFT";
         case Input::InputAction::RIGHT:
             return "RIGHT";
-        case Input::InputAction::FORWARD:
+        case Input::InputAction::ROTATE_Y_AXIS_FORWARD:
             return "FORWARD";
-        case Input::InputAction::BACKWARD:
+        case Input::InputAction::ROTATE_Y_AXIS_BACKWARD:
             return "BACKWARD";
-        case Input::InputAction::SCALE_UP:
+        case Input::InputAction::ROTATE_X_AXIS_FORWARD:
             return "SCALE_UP";
-        case Input::InputAction::SCALE_DOWN:
+        case Input::InputAction::ROTATE_X_AXIS_BACKWARD:
             return "SCALE_DOWN";
         case Input::InputAction::NONE:
             return "NONE";

@@ -13,10 +13,10 @@ namespace Picasso::Engine::Input
         DOWN,
         LEFT,
         RIGHT,
-        FORWARD,
-        BACKWARD,
-        SCALE_UP,
-        SCALE_DOWN,
+        ROTATE_Y_AXIS_FORWARD,
+        ROTATE_Y_AXIS_BACKWARD,
+        ROTATE_X_AXIS_FORWARD,
+        ROTATE_X_AXIS_BACKWARD,
         NONE
     };
 
