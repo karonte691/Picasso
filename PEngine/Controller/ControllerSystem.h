@@ -13,6 +13,7 @@ namespace Picasso::Engine::Controller
     {
     public:
         ControllerSystem();
+        ~ControllerSystem();
 
         bool LoadControllers();
         void UpdateControllers();

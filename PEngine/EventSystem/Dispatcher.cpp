@@ -5,6 +5,8 @@
 
 #include <PEngine/EventSystem/Dispatcher.h>
 
+#include <thread>
+
 namespace Picasso::Engine::EventSystem
 {
     using Events::BaseEvent;
@@ -18,17 +20,53 @@ namespace Picasso::Engine::EventSystem
      */
     Dispatcher::Dispatcher()
     {
-        m_eventFactory = std::make_unique<EventFactory>();
+        m_EventFactory = std::make_unique<EventFactory>();
+        m_ThreadPool = std::make_unique<Core::ThreadPool>(std::thread::hardware_concurrency());
     }
 
     /**
-     * @brief Subscribe a slot to a specific event.
+     * @brief Subscribes a slot to the specified event.
+     *
+     * This function adds the specified slot to the list of listeners for the given event.
+     *
      * @param eventName The event to subscribe to.
-     * @param slot The slot to be called when the event is triggered.
+     * @param slot The slot to subscribe.
+     * @return The unique identifier for the slot.
      */
-    void Dispatcher::Subscribe(const PEvent &eventName, SlotType &&slot)
+    std::size_t Dispatcher::Subscribe(const PEvent &eventName, SlotType &&slot)
     {
-        m_listeners[eventName].push_back(slot);
+        std::size_t slotId = m_NextSlotId++;
+        m_Listeners[eventName].emplace_back(std::move(slot), slotId);
+        return slotId;
+    }
+
+    /**
+     * @brief Unsubscribes a listener from an event.
+     *
+     * This function removes a listener with the specified slotId from the list of listeners
+     * associated with the given eventName. If the listeners list becomes empty after removing
+     * the listener, the eventName is also removed from the map of listeners.
+     *
+     * @param eventName The event name to unsubscribe from.
+     * @param slotId The ID of the listener slot to remove.
+     */
+    void Dispatcher::Unsubscribe(const PEvent &eventName, std::size_t slotId)
+    {
+        auto it = m_Listeners.find(eventName);
+
+        if (it != m_Listeners.end())
+        {
+            auto &listenersForEvent = it->second;
+            listenersForEvent.erase(std::remove_if(listenersForEvent.begin(), listenersForEvent.end(),
+                                                   [slotId](const SlotWrapper &wrapper)
+                                                   { return wrapper.id == slotId; }),
+                                    listenersForEvent.end());
+
+            if (listenersForEvent.empty())
+            {
+                m_Listeners.erase(it);
+            }
+        }
     }
 
     /**
@@ -37,35 +75,36 @@ namespace Picasso::Engine::EventSystem
      */
     void Dispatcher::Post(const PEvent eventType) const
     {
-        BaseEvent<PEvent> *event = m_eventFactory->GetEvent(eventType);
+        m_ThreadPool->Enqueue([this, eventType]
+                              {
+                                    BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
 
-        if (!event)
-        {
-            Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
-            return;
-        }
+                                    if (!event)
+                                    {
+                                        Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
+                                        return;
+                                    }
 
-        PEvent type = event->type();
+                                    PEvent type = event->type();
 
-        if (m_listeners.find(type) == m_listeners.end())
-        {
-            delete event;
-            return;
-        }
+                                    auto it = m_Listeners.find(type);
+                                    if (it == m_Listeners.end())
+                                    {
+                                        delete event;
+                                        return;
+                                    }
 
-        auto &&observers = m_listeners.at(type);
+                                    for (auto &&observer : it->second)
+                                    {
+                                        observer(event);
 
-        for (auto &&observer : observers)
-        {
-            observer(event);
+                                        if (event->IsHandled())
+                                        {
+                                            break;
+                                        }
+                                    }
 
-            if (event->IsHandled())
-            {
-                break;
-            }
-        }
-
-        delete event;
+                                    delete event; });
     }
 
     /**
@@ -75,39 +114,42 @@ namespace Picasso::Engine::EventSystem
      */
     void Dispatcher::Post(const PEvent eventType, PEventData eventData) const
     {
-        BaseEvent<PEvent> *event = m_eventFactory->GetEvent(eventType);
+        m_ThreadPool->Enqueue([this, eventType, eventData]
+                              {
+                                    BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
 
-        if (!event)
-        {
-            Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
-            return;
-        }
+                                    if (!event)
+                                    {
+                                        Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
+                                        return;
+                                    }
 
-        event->SetData(eventData);
+                                    event->SetData(eventData);
 
-        PEvent type = event->type();
+                                    PEvent type = event->type();
 
-        if (m_listeners.find(type) == m_listeners.end())
-        {
-            if (event != nullptr)
-            {
-                delete event;
-            }
-            return;
-        }
+                                    if (m_Listeners.find(type) == m_Listeners.end())
+                                    {
+                                        if (event != nullptr)
+                                        {
+                                            delete event;
+                                        }
+                                        return;
+                                    }
 
-        auto &&observers = m_listeners.at(type);
+                                    auto &&observers = m_Listeners.at(type);
 
-        for (auto &&observer : observers)
-        {
-            observer(event);
+                                    for (auto &&observer : observers)
+                                    {
+                                        observer(event);
 
-            if (event->IsHandled())
-            {
-                break;
-            }
-        }
+                                        if (event->IsHandled())
+                                        {
+                                            break;
+                                        }
+                                    }
 
-        delete event;
+                                    delete event; });
     }
+
 }

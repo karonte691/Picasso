@@ -13,7 +13,8 @@
 #include <PEngine/EventSystem/Events/PlatformExposeEvent.h>
 #include <PEngine/EventSystem/Events/ResizeEvent.h>
 #include <PEngine/EventSystem/Events/ControllerMoveEvent.h>
-#include <PEngine/EventSystem/Events/CameraUpdateEvent.h>
+#include <PEngine/EventSystem/Events/CameraUpdatePositionEvent.h>
+#include <PEngine/EventSystem/Events/CameraUpdateViewEvent.h>
 #include <PEngine/EventSystem/Events/RendererUpdateEvent.h>
 
 #include <unordered_map>
@@ -47,8 +48,10 @@ namespace Picasso::Engine::EventSystem
             return new Events::ResizeEvent();
         case PEvent::CONTROLLER_MOVEMENT:
             return new Events::ControllerMoveEvent();
-        case PEvent::CAMERA_UPDATE:
-            return new Events::CameraUpdateEvent();
+        case PEvent::CAMERA_UPDATE_POSITION:
+            return new Events::CameraUpdatePositionEvent();
+        case PEvent::CAMERA_UPDATE_VIEW:
+            return new Events::CameraUpdateViewEvent();
         case PEvent::RENDERER_UPDATE:
             return new Events::RendererUpdateEvent();
         default:

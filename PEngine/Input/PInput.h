@@ -18,7 +18,6 @@ namespace Picasso::Engine::Input
         void Shutdown();
 
     private:
-        pInputState m_inputState;
         std::unique_ptr<InputListener> p_InputListener;
     };
 }

@@ -16,11 +16,13 @@ namespace Picasso::Engine::Input
     {
     public:
         void Init();
+        void Destroy();
 
     private:
         void _ProcessInput(BaseEvent<PEvent> *&event);
 
         void _ProcessKeyInput(PEventData &eData, bool pressed);
+        void _ProcessMouseInput(PEventData &eData);
     };
 }
 #endif // INPUT_LISTENER_H

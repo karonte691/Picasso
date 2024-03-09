@@ -47,12 +47,14 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
     void OpenGLGraphicsPipeline::Shutdown()
     {
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::RENDERER_UPDATE);
+
         m_PipelineData.shader->Destroy();
     }
 
     void OpenGLGraphicsPipeline::RegisterHooks()
     {
-        PicassoRegistry::Subscribe(PEvent::RENDERER_UPDATE, [this](BaseEvent<PEvent> *&event)
+        PicassoRegistry::Subscribe(this, PEvent::RENDERER_UPDATE, [this](BaseEvent<PEvent> *&event)
                                    { this->_onRenderUpdate(event); });
     }
 

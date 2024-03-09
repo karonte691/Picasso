@@ -23,6 +23,7 @@ namespace Picasso::Engine::Controller
         MovementController() : PicassoController("MovementController"){};
         bool InitController() override;
         void Update() override;
+        void Destroy() override;
 
     private:
         Math::Vector3 m_Position;

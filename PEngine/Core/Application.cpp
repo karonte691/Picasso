@@ -1,11 +1,11 @@
-#include <PEngine/Application.h>
+#include <PEngine/Core/Application.h>
 
 #include <chrono>
 #include <thread>
 #include <iostream>
-namespace Picasso::Engine
+namespace Picasso::Engine::Core
 {
-    Picasso::Engine::EngineState *Picasso::Engine::Application::engineState;
+    Picasso::Engine::EngineState *Picasso::Engine::Core::Application::engineState;
 
     Application::Application()
     {
@@ -25,6 +25,8 @@ namespace Picasso::Engine
 
     Application::~Application()
     {
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::RESIZED);
+
         if (engineState != nullptr)
         {
             delete engineState;
@@ -103,7 +105,7 @@ namespace Picasso::Engine
         engineState->suspended = false;
 
         // setting up listener to the resize event
-        PicassoRegistry::Subscribe(PEvent::RESIZED, [this](BaseEvent<PEvent> *&event)
+        PicassoRegistry::Subscribe(this, PEvent::RESIZED, [this](BaseEvent<PEvent> *&event)
                                    { this->_OnResize(event); });
 
         return true;

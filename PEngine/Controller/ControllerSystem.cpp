@@ -20,6 +20,19 @@ namespace Picasso::Engine::Controller
     }
 
     /**
+     * @brief Default destructor for the ControllerSystem class.
+     */
+    ControllerSystem::~ControllerSystem()
+    {
+        for (auto &controller : p_Controllers)
+        {
+            controller->Destroy();
+        }
+
+        p_Controllers.clear();
+    }
+
+    /**
      * @brief Loads and initializes the controllers.
      * @return True if all controllers are successfully initialized, false otherwise.
      */

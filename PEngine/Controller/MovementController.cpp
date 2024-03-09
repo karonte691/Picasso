@@ -26,7 +26,7 @@ namespace Picasso::Engine::Controller
         m_CurrentDirection = Input::InputAction::NONE;
 
         // Subscribe to the CONTROLLER_MOVEMENT event
-        PicassoRegistry::Subscribe(PEvent::CONTROLLER_MOVEMENT, [this](BaseEvent<PEvent> *&event)
+        PicassoRegistry::Subscribe(this, PEvent::CONTROLLER_MOVEMENT, [this](BaseEvent<PEvent> *&event)
                                    { this->_onMovement(event); });
 
         // Log initialization message
@@ -57,46 +57,23 @@ namespace Picasso::Engine::Controller
     {
         if (!m_IsPressed)
         {
-            // Reset current direction if not pressed
-            m_CurrentDirection = Input::InputAction::NONE;
             return;
         }
 
         // Update position or rotation based on current direction
-        switch (m_CurrentDirection)
-        {
-        case Input::InputAction::UP:
-            m_Position.z -= 0.01f;
-            break;
-        case Input::InputAction::DOWN:
-            m_Position.z += 0.01f;
-            break;
-        case Input::InputAction::LEFT:
-            m_Position.x -= 0.01f;
-            break;
-        case Input::InputAction::RIGHT:
-            m_Position.x += 0.01f;
-            break;
-        case Input::InputAction::ROTATE_Y_AXIS_BACKWARD:
-            m_Rotation.y -= 0.01f;
-            break;
-        case Input::InputAction::ROTATE_Y_AXIS_FORWARD:
-            m_Rotation.y += 0.01f;
-            break;
-        case Input::InputAction::ROTATE_X_AXIS_FORWARD:
-            m_Rotation.x -= 0.01f;
-            break;
-        case Input::InputAction::ROTATE_X_AXIS_BACKWARD:
-            m_Rotation.x += 0.01f;
-            break;
-        default:
-            return;
-        }
 
         // Dispatch the update event
         _DispatchUpdate();
     }
 
+    /**
+     * @brief Destroys the MovementController.
+     */
+    void MovementController::Destroy()
+    {
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::CONTROLLER_MOVEMENT);
+        Picasso::Engine::Logger::Logger::Debug("MovementController destroyed");
+    }
     /**
      * @brief Dispatches the update event with the current position, rotation, and scale.
      */
@@ -104,19 +81,11 @@ namespace Picasso::Engine::Controller
     {
         EventSystem::Events::PEventData eDataOut;
 
-        // Set event data with current position, rotation, and scale
-        eDataOut.data.f[0] = m_Position.x;
-        eDataOut.data.f[1] = m_Position.y;
-        eDataOut.data.f[2] = m_Position.z;
-        eDataOut.data.f[3] = m_Rotation.x;
-        eDataOut.data.f[4] = m_Rotation.y;
-        eDataOut.data.f[5] = m_Rotation.z;
-        eDataOut.data.f[6] = m_Scale.x;
-        eDataOut.data.f[7] = m_Scale.y;
-        eDataOut.data.f[8] = m_Scale.z;
+        // Set the event data
+        eDataOut.data.i[0] = static_cast<int>(m_CurrentDirection);
 
         // Dispatch the event
-        PicassoRegistry::Dispatch(PEvent::CAMERA_UPDATE, eDataOut);
+        PicassoRegistry::Dispatch(PEvent::RENDERER_UPDATE, eDataOut);
     }
 
     /**

@@ -34,6 +34,7 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         Math::Vector3 m_CamFront;
 
         void _initProjectionMatrix(float width, float height);
+        void _ResetViewMatrix();
     };
 }
 #endif

@@ -100,7 +100,7 @@ if(UNIX AND NOT APPLE)
                 Controller/CameraController.cpp
                 Controller/ControllerSystem.cpp
                 
-                Application.cpp
+                Core/Application.cpp
                 PicassoEngine.cpp
         )
 

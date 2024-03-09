@@ -23,17 +23,22 @@ namespace Picasso
      */
     extern "C" void destroy_object(PEngine *obj)
     {
+        if (obj == nullptr)
+        {
+            return;
+        }
+
         delete obj;
     }
 
     /**
      * @brief Constructs a PEngine object.
      *
-     * This constructor initializes the m_app member variable with a new instance of the Picasso::Engine::Application class.
+     * This constructor initializes the m_app member variable with a new instance of the Picasso::Engine::Core::Application class.
      */
     PEngine::PEngine()
     {
-        m_app = new Picasso::Engine::Application();
+        m_app = new Picasso::Engine::Core::Application();
     }
 
     /**

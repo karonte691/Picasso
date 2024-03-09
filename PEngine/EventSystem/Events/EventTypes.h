@@ -12,7 +12,8 @@ namespace Picasso::Engine::EventSystem::Events
         APPLICATION_QUIT,
         RESIZED,
         PLATFORM_EXPOSE,
-        CAMERA_UPDATE,
+        CAMERA_UPDATE_VIEW,
+        CAMERA_UPDATE_POSITION,
         RENDERER_UPDATE,
 
         // keyboard

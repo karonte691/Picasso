@@ -17,6 +17,7 @@ namespace Picasso::Engine::Math
 
         Vector3 Add(const Vector3 *otherVector);
         Vector3 Sub(const Vector3 *otherVector);
+        Vector3 Multiply(float scalar);
         float Magnitude();
         float SqrMagnitude();
         float Distance(const Vector3 *otherVector);

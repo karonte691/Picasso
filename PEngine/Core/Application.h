@@ -17,7 +17,7 @@
 #include <PEngine/Input/PInput.h>
 #include <PEngine/Controller/ControllerSystem.h>
 
-namespace Picasso::Engine
+namespace Picasso::Engine::Core
 {
     using Picasso::Engine::Controller::ControllerSystem;
     using Picasso::Engine::Core::Clock;

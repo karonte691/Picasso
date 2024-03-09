@@ -4,8 +4,7 @@
 #define PICASSO_ENGINE_H
 
 #include <PEngine/PBuild.h>
-#include <PEngine/Application.h>
-
+#include <PEngine/Core/Application.h>
 
 namespace Picasso
 {
@@ -14,11 +13,11 @@ namespace Picasso
     public:
         PEngine();
         ~PEngine();
-        
-        virtual void Run(Picasso::Config::AppConfig* config);
-    
+
+        void Run(Picasso::Config::AppConfig *config);
+
     private:
-        Picasso::Engine::Application* m_app;
+        Picasso::Engine::Core::Application *m_app;
     };
 }
 

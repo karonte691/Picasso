@@ -21,6 +21,15 @@ namespace Picasso::Engine::Math
         return Vector3{newVectorX, newVectorY, newVectorZ};
     }
 
+    Vector3 Vector3::Multiply(float scalar)
+    {
+        float newVectorX = x * scalar;
+        float newVectorY = y * scalar;
+        float newVectorZ = z * scalar;
+
+        return Vector3{newVectorX, newVectorY, newVectorZ};
+    }
+
     float Vector3::Dot(const Vector3 *otherVector)
     {
         float dotProduct = 0.0f;
