@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <map>
+#include <mutex>
 
 namespace Picasso::Engine::EventSystem
 {
@@ -24,6 +25,7 @@ namespace Picasso::Engine::EventSystem
 
     private:
         std::map<std::string, std::vector<PEventData>> m_EventsDataMap;
+        std::mutex m_Mutex; // Mutex for thread-safe access
     };
 }
 
