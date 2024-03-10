@@ -17,6 +17,7 @@ if(UNIX AND NOT APPLE)
                 File/PFLoader.cpp
 
                 EventSystem/EventFactory.cpp
+                EventSystem/DeferredEventStore.cpp
                 EventSystem/Dispatcher.cpp
 
                 Input/Translator/KeyCodeTranslator.cpp

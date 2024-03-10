@@ -1,5 +1,10 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLGraphicsRender.h>
 #include <PEngine/Logger/Logger.h>
+#include <PEngine/EventSystem/DeferredEventsStore.h>
+#include <PEngine/EventSystem/Events/EventTypes.h>
+
+#include <vector>
+#include <map>
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
@@ -11,7 +16,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
      */
     void OpenGLGraphicsRender::SetUp(float width, float height)
     {
-        p_VPMatrixManager->CreateViewMatrix();
         p_VPMatrixManager->CreateProjectionMatrix(width, height);
 
         // lights
@@ -38,7 +42,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         p_VPMatrixManager->UniformViewMatrix(pipelineData->shader->GetId());
         p_VPMatrixManager->UniforProjectionMatrix(pipelineData->shader->GetId());
-        p_VPMatrixManager->UniformCameraPosition(pipelineData->shader->GetId());
         p_LightManager->UniformLightPosition(pipelineData->shader->GetId());
     }
 
@@ -65,6 +68,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         {
             materials[i] = pipelineData->materials[i].get();
         }
+
+        _UpdateData(pipelineData);
 
         p_VPMatrixManager->UniformViewMatrix(pipelineData->shader->GetId());
         p_VPMatrixManager->UniforProjectionMatrix(pipelineData->shader->GetId());
@@ -114,26 +119,44 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     }
 
     /**
-     * @brief Updates the renderer matrices for the OpenGL graphics render.
+     * Sets the uniforms for rendering using the provided pipeline data.
      *
-     * @param pipelineData The pipeline data containing the shader, textures, materials, and meshes.
+     * @param pipelineData A pointer to the PipelineData object containing the necessary data for rendering.
      */
-    void OpenGLGraphicsRender::OnRenderUpdate(const Pipeline::PipelineData *pipelineData,
-                                              float px,
-                                              float py,
-                                              float pz,
-                                              float rx,
-                                              float ry,
-                                              float rz,
-                                              float sx,
-                                              float sy,
-                                              float sz)
+    void OpenGLGraphicsRender::_UpdateData(const Pipeline::PipelineData *pipelineData)
     {
-        for (int i = 0; i < pipelineData->meshes.size(); ++i)
-        {
-            OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(pipelineData->meshes[i].get());
+        std::vector<Picasso::Engine::EventSystem::PEventData> deferredRenderEvents =
+            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDERER_UPDATE);
 
-            p_MeshManager->UpdateModelMatrix(openGLMesh, px, py, pz, rx, ry, rz, sx, sy, sz);
+        if (deferredRenderEvents.size() == 0)
+        {
+            return;
+        }
+
+        float px, py, pz, rx, ry, rz;
+        float sx, sy, sz;
+
+        for (Picasso::Engine::EventSystem::PEventData eData : deferredRenderEvents)
+        {
+            px = eData.data.f[0];
+            py = eData.data.f[1];
+            pz = eData.data.f[2];
+            rx = eData.data.f[3];
+            ry = eData.data.f[4];
+            rz = eData.data.f[5];
+            sx = eData.data.f[6];
+            sy = eData.data.f[7];
+            sz = eData.data.f[8];
+
+            for (int i = 0; i < pipelineData->meshes.size(); ++i)
+            {
+                OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(pipelineData->meshes[i].get());
+
+                p_MeshManager->UpdateModelMatrix(openGLMesh, px, py, pz, rx, ry, rz, sx, sy, sz);
+            }
+
+            // reset the coordinates
+            px = py = pz = rx = ry = rz = sx = sy = sz = 0.0f;
         }
     }
 }

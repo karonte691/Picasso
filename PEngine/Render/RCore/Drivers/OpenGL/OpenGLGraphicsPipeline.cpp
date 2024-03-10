@@ -4,6 +4,8 @@
 #include <PEngine/Math/PMath.h>
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLError.h>
 #include <PEngine/Render/RCore/Primitives/Quad.h>
+#include <PEngine/EventSystem/DeferredEventsStore.h>
+#include <PEngine/EventSystem/Events/EventTypes.h>
 
 #include <vector>
 #include <string>
@@ -96,22 +98,10 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         EventSystem::Events::PEventData eData = event->GetData();
 
-        Picasso::Engine::Logger::Logger::Debug("OpenGLGraphicsPipeline: Updating renderer matrices");
-
-        float px, py, pz, rx, ry, rz;
-        float sx, sy, sz;
-
-        px = eData.data.f[0];
-        py = eData.data.f[1];
-        pz = eData.data.f[2];
-        rx = eData.data.f[3];
-        ry = eData.data.f[4];
-        rz = eData.data.f[5];
-        sx = eData.data.f[6];
-        sy = eData.data.f[7];
-        sz = eData.data.f[8];
-
-        p_GraphicsRender->OnRenderUpdate(&m_PipelineData, px, py, pz, rx, ry, rz, sx, sy, sz);
+        // we cannot just process it right now, because maybe there are multiple threads that
+        //  are trying to update the data and we risk to loose some
+        // so we post process it. The main processing will be done in the BeginFrame function in OpenGLGraphicsRender
+        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDERER_UPDATE, eData);
     }
 
 }

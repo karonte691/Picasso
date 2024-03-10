@@ -4,7 +4,7 @@
 #define EVENT_TYPES_H
 
 #include <cstdint>
-
+#include <string>
 namespace Picasso::Engine::EventSystem::Events
 {
     enum class PEvent

@@ -45,6 +45,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<OpenGLLightManager> p_LightManager;
         std::unique_ptr<OpenGLMaterialManager> p_MaterialManager;
         std::unique_ptr<OpenGLMeshManager> p_MeshManager;
+
+        void _UpdateData(const Pipeline::PipelineData *pipelineData);
     };
 }
 

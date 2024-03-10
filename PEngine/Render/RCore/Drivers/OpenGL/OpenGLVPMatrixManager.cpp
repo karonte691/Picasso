@@ -1,66 +1,89 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLVPMatrixManager.h>
 
 #include <PEngine/Math/PMath.h>
+#include <PEngine/Camera/Camera.h> //need this for viewMatrix
 
 namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 {
+    /**
+     * @brief The field of view (FOV) for the projection matrix.
+     */
     static const float FOV = 90.0f;
+
+    /**
+     * @brief The distance to the near clipping plane for the projection matrix.
+     */
     static const float NEAR_PLANE = 0.1f;
+
+    /**
+     * @brief The distance to the far clipping plane for the projection matrix.
+     */
     static const float FAR_PLANE = 1000.0f;
 
-    void OpenGLVPMatrixManager::CreateViewMatrix()
-    {
-        m_CamPosition = Math::Vector3(0.0f, 0.0f, 1.0f); // (0.0f, 0.0f, 3.0f
-        m_WorlUp = Math::Vector3(0.0f, 1.0f, 0.0f);
-        m_CamFront = Math::Vector3(0.0f, 0.0f, -1.0f);
-
-        _ResetViewMatrix();
-    }
-
+    /**
+     * @brief Uniformly sets the view matrix in the shader program.
+     *
+     * @param shaderId The ID of the shader program.
+     */
     void OpenGLVPMatrixManager::UniformViewMatrix(GLuint shaderId)
     {
-        _ResetViewMatrix();
+        const Math::Mat4 *viewMatrix = Picasso::Engine::Camera::Camera::Instance->GetViewMatrix();
 
-        glUniformMatrix4fv(glGetUniformLocation(shaderId, "ViewMatrix"), 1, GL_FALSE, &p_ViewMatrix->m[0]);
-        UniformCameraPosition(shaderId);
+        glUniformMatrix4fv(glGetUniformLocation(shaderId, "ViewMatrix"), 1, GL_FALSE, &viewMatrix->m[0]);
     }
 
+    /**
+     * @brief Creates the projection matrix based on the given width and height.
+     *
+     * @param width The width of the viewport.
+     * @param height The height of the viewport.
+     */
     void OpenGLVPMatrixManager::CreateProjectionMatrix(float width, float height)
     {
         _initProjectionMatrix(width, height);
     }
 
+    /**
+     * @brief Uniformly sets the projection matrix in the shader program.
+     *
+     * @param shaderId The ID of the shader program.
+     */
     void OpenGLVPMatrixManager::UniforProjectionMatrix(GLuint shaderId)
     {
         glUniformMatrix4fv(glGetUniformLocation(shaderId, "ProjectionMatrix"), 1, GL_FALSE, &p_ProjectionMatrix->m[0]);
     }
 
+    /**
+     * @brief Resets the projection matrix based on the given width and height.
+     *
+     * @param width The width of the viewport.
+     * @param height The height of the viewport.
+     */
     void OpenGLVPMatrixManager::ResetProjectionMatrix(float width, float height)
     {
         _initProjectionMatrix(width, height);
     }
 
+    /**
+     * @brief Uniformly sets both the view matrix and the projection matrix in the shader program.
+     *
+     * @param shaderId The ID of the shader program.
+     */
     void OpenGLVPMatrixManager::UniformMatrices(GLuint shaderId)
     {
         UniformViewMatrix(shaderId);
         UniforProjectionMatrix(shaderId);
     }
 
-    void OpenGLVPMatrixManager::UniformCameraPosition(unsigned int shaderProgram)
-    {
-        int camPosLocation = glGetUniformLocation(shaderProgram, "cameraPosition");
-        glUniform3fv(camPosLocation, 1, &m_CamPosition.x);
-    }
-
+    /**
+     * @brief Initializes the projection matrix based on the given width and height.
+     *
+     * @param width The width of the viewport.
+     * @param height The height of the viewport.
+     */
     void OpenGLVPMatrixManager::_initProjectionMatrix(float width, float height)
     {
         p_ProjectionMatrix = Math::Mat4::Identity();
         p_ProjectionMatrix->Perspective(Math::PMath::Deg2Rad(FOV), width / height, NEAR_PLANE, FAR_PLANE);
-    }
-
-    void OpenGLVPMatrixManager::_ResetViewMatrix()
-    {
-        p_ViewMatrix = Math::Mat4::Identity();
-        p_ViewMatrix->LookAt(m_CamPosition, m_CamPosition.Add(&m_CamFront), m_WorlUp);
     }
 }

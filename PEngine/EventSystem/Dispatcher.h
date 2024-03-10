@@ -46,6 +46,8 @@ namespace Picasso::Engine::EventSystem
         std::map<PEvent, std::vector<SlotType>, Events::BaseEventComparator> m_Listeners;
         std::unique_ptr<EventFactory> m_EventFactory;
         std::unique_ptr<Core::ThreadPool> m_ThreadPool;
+        std::vector<PEventData> m_RenderEventData;
+        bool m_RenderEventDataReady = false;
 
         std::size_t m_NextSlotId = 0;
     };

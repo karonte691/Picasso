@@ -58,4 +58,45 @@ namespace Picasso::Engine::EventSystem
             return nullptr;
         }
     }
-}
+
+    /**
+     * @brief Convert the given event type to a string.
+     * @param event The event type.
+     * @return The string representation of the event type.
+     */
+    const std::string EventFactory::PEventToString(PEvent event)
+    {
+        switch (event)
+        {
+        case PEvent::APPLICATION_QUIT:
+            return "APPLICATION_QUIT";
+        case PEvent::RESIZED:
+            return "RESIZED";
+        case PEvent::PLATFORM_EXPOSE:
+            return "PLATFORM_EXPOSE";
+        case PEvent::CAMERA_UPDATE_VIEW:
+            return "CAMERA_UPDATE_VIEW";
+        case PEvent::CAMERA_UPDATE_POSITION:
+            return "CAMERA_UPDATE_POSITION";
+        case PEvent::RENDERER_UPDATE:
+            return "RENDERER_UPDATE";
+        case PEvent::KEY_PRESSED:
+            return "KEY_PRESSED";
+        case PEvent::KEY_RELEASED:
+            return "KEY_RELEASED";
+        case PEvent::BUTTON_PRESSED:
+            return "BUTTON_PRESSED";
+        case PEvent::BUTTON_RELEASED:
+            return "BUTTON_RELEASED";
+        case PEvent::MOUSE_MOVED:
+            return "MOUSE_MOVED";
+        case PEvent::MOUSE_WHEEL:
+            return "MOUSE_WHEEL";
+        case PEvent::CONTROLLER_MOVEMENT:
+            return "CONTROLLER_MOVEMENT";
+        case PEvent::CONTROLLER_SCALE:
+            return "CONTROLLER_SCALE";
+        default:
+            return "UNKNOWN_EVENT";
+        }
+    }

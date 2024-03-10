@@ -115,7 +115,7 @@ namespace Picasso::Engine::EventSystem
     void Dispatcher::Post(const PEvent eventType, PEventData eventData) const
     {
         m_ThreadPool->Enqueue([this, eventType, eventData]
-                              {
+                              {     
                                     BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
 
                                     if (!event)
