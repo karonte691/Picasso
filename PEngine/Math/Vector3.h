@@ -24,6 +24,7 @@ namespace Picasso::Engine::Math
         float Dot(const Vector3 *otherVector);
         Vector3 Cross(const Vector3 *otherVector);
         void Normalize();
+        Vector3 GetNormalizedCopy();
         bool Equals(const Vector3 *otherVector, float tollerance);
 
         static Vector3 Zero();

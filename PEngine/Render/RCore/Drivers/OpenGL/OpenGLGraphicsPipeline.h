@@ -39,7 +39,9 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<OpenGLGraphicsRender> p_GraphicsRender;
         Pipeline::PipelineData m_PipelineData;
 
-        void _onRenderUpdate(BaseEvent<PEvent> *&event);
+        void _OnRenderUpdateMovement(BaseEvent<PEvent> *&event);
+        void _OnRenderUpdateCameraView(BaseEvent<PEvent> *&event);
+        void _OnRenderUpdateCameraPosition(BaseEvent<PEvent> *&event);
     };
 }
 

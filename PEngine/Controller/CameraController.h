@@ -5,7 +5,10 @@
 
 #include <PEngine/Controller/PicassoController.h>
 #include <PEngine/EventSystem/PERegistry.h>
+#include <PEngine/Input/InputState.h>
+#include <PEngine/Camera/Camera.h>
 
+#include <memory>
 namespace Picasso::Engine::Controller
 {
     using Picasso::Engine::EventSystem::PicassoRegistry;
@@ -18,9 +21,14 @@ namespace Picasso::Engine::Controller
         CameraController() : PicassoController("CameraController"){};
         bool InitController() override;
         void Update() override;
+        void Destroy();
 
     private:
-        void _onCameraUpdate(BaseEvent<PEvent> *&event);
+        unsigned int m_PrevX;
+        unsigned int m_PrevY;
+
+        void _OnCameraUpdateView(BaseEvent<PEvent> *&event);
+        void _OnCameraUpdatePosition(BaseEvent<PEvent> *&event);
     };
 }
 

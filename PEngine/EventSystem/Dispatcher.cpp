@@ -5,8 +5,6 @@
 
 #include <PEngine/EventSystem/Dispatcher.h>
 
-#include <thread>
-
 namespace Picasso::Engine::EventSystem
 {
     using Events::BaseEvent;
@@ -21,7 +19,6 @@ namespace Picasso::Engine::EventSystem
     Dispatcher::Dispatcher()
     {
         m_EventFactory = std::make_unique<EventFactory>();
-        m_ThreadPool = std::make_unique<Core::ThreadPool>(std::thread::hardware_concurrency());
     }
 
     /**
@@ -75,36 +72,35 @@ namespace Picasso::Engine::EventSystem
      */
     void Dispatcher::Post(const PEvent eventType) const
     {
-        m_ThreadPool->Enqueue([this, eventType]
-                              {
-                                    BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
 
-                                    if (!event)
-                                    {
-                                        Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
-                                        return;
-                                    }
+        BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
 
-                                    PEvent type = event->type();
+        if (!event)
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
+            return;
+        }
 
-                                    auto it = m_Listeners.find(type);
-                                    if (it == m_Listeners.end())
-                                    {
-                                        delete event;
-                                        return;
-                                    }
+        PEvent type = event->type();
 
-                                    for (auto &&observer : it->second)
-                                    {
-                                        observer(event);
+        auto it = m_Listeners.find(type);
+        if (it == m_Listeners.end())
+        {
+            delete event;
+            return;
+        }
 
-                                        if (event->IsHandled())
-                                        {
-                                            break;
-                                        }
-                                    }
+        for (auto &&observer : it->second)
+        {
+            observer.callback(event);
 
-                                    delete event; });
+            if (event->IsHandled())
+            {
+                break;
+            }
+        }
+
+        delete event;
     }
 
     /**
@@ -114,42 +110,40 @@ namespace Picasso::Engine::EventSystem
      */
     void Dispatcher::Post(const PEvent eventType, PEventData eventData) const
     {
-        m_ThreadPool->Enqueue([this, eventType, eventData]
-                              {     
-                                    BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
+        BaseEvent<PEvent> *event = m_EventFactory->GetEvent(eventType);
 
-                                    if (!event)
-                                    {
-                                        Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
-                                        return;
-                                    }
+        if (!event)
+        {
+            Picasso::Engine::Logger::Logger::Fatal("Error while trying to factor event");
+            return;
+        }
 
-                                    event->SetData(eventData);
+        event->SetData(eventData);
 
-                                    PEvent type = event->type();
+        PEvent type = event->type();
 
-                                    if (m_Listeners.find(type) == m_Listeners.end())
-                                    {
-                                        if (event != nullptr)
-                                        {
-                                            delete event;
-                                        }
-                                        return;
-                                    }
+        if (m_Listeners.find(type) == m_Listeners.end())
+        {
+            if (event != nullptr)
+            {
+                delete event;
+            }
+            return;
+        }
 
-                                    auto &&observers = m_Listeners.at(type);
+        auto &&observers = m_Listeners.at(type);
 
-                                    for (auto &&observer : observers)
-                                    {
-                                        observer(event);
+        for (auto &&observer : observers)
+        {
+            observer.callback(event);
 
-                                        if (event->IsHandled())
-                                        {
-                                            break;
-                                        }
-                                    }
+            if (event->IsHandled())
+            {
+                break;
+            }
+        }
 
-                                    delete event; });
+        delete event;
     }
 
 }

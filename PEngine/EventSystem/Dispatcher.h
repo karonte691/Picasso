@@ -24,10 +24,10 @@ namespace Picasso::Engine::EventSystem
 
     struct SlotWrapper
     {
-        SlotType slot;
+        SlotType callback;
         std::size_t id;
 
-        SlotWrapper(SlotType slot, std::size_t id) : slot(std::move(slot)), id(id) {}
+        SlotWrapper(SlotType &&callback, std::size_t id) : callback(std::move(callback)), id(id) {}
     };
 
     class Dispatcher
@@ -43,9 +43,8 @@ namespace Picasso::Engine::EventSystem
         void Post(const PEvent eventType, PEventData eventData) const;
 
     private:
-        std::map<PEvent, std::vector<SlotType>, Events::BaseEventComparator> m_Listeners;
+        std::map<PEvent, std::vector<SlotWrapper>, Events::BaseEventComparator> m_Listeners;
         std::unique_ptr<EventFactory> m_EventFactory;
-        std::unique_ptr<Core::ThreadPool> m_ThreadPool;
         std::vector<PEventData> m_RenderEventData;
         bool m_RenderEventDataReady = false;
 

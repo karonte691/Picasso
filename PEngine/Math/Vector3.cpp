@@ -104,6 +104,13 @@ namespace Picasso::Engine::Math
         z /= length;
     }
 
+    Vector3 Vector3::GetNormalizedCopy()
+    {
+        float length = this->SqrMagnitude();
+
+        return Vector3{x / length, y / length, z / length};
+    }
+
     Vector3 Vector3::Zero()
     {
         return Vector3{0.0f, 0.0f, 0.0f};

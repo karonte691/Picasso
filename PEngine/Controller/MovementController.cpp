@@ -85,7 +85,7 @@ namespace Picasso::Engine::Controller
         eDataOut.data.i[0] = static_cast<int>(m_CurrentDirection);
 
         // Dispatch the event
-        PicassoRegistry::Dispatch(PEvent::RENDERER_UPDATE, eDataOut);
+        PicassoRegistry::Dispatch(PEvent::RENDER_UPDATE_MOVEMENT, eDataOut);
     }
 
     /**

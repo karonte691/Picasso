@@ -1,7 +1,11 @@
 #include <PEngine/Controller/CameraController.h>
 
+#include <PEngine/Camera/Camera.h>
+
 namespace Picasso::Engine::Controller
 {
+    using Picasso::Engine::Camera::Camera;
+
     /**
      * @brief Initializes the camera controller.
      *
@@ -11,8 +15,13 @@ namespace Picasso::Engine::Controller
      */
     bool CameraController::InitController()
     {
-        PicassoRegistry::Subscribe(PEvent::CAMERA_UPDATE, [this](BaseEvent<PEvent> *&event)
-                                   { this->_onCameraUpdate(event); });
+        Picasso::Engine::Camera::Camera::Instance = new Camera(Math::Vector3{0.0f, 0.0f, 1.0f}, Math::Vector3{0.0f, 1.0f, 0.0f});
+
+        PicassoRegistry::Subscribe(this, PEvent::CAMERA_UPDATE_VIEW, [this](BaseEvent<PEvent> *&event)
+                                   { this->_OnCameraUpdateView(event); });
+        PicassoRegistry::Subscribe(this, PEvent::CAMERA_UPDATE_POSITION, [this](BaseEvent<PEvent> *&event)
+                                   { this->_OnCameraUpdatePosition(event); });
+
         return true;
     }
 
@@ -26,20 +35,43 @@ namespace Picasso::Engine::Controller
         // nothing to do here
     }
 
-    /**
-     * @brief Handles the camera update event.
-     *
-     * This function is a bridge to update the position, rotation, and scale of the matrices in the renderer.
-     * It logs a debug message and dispatches the RENDERER_UPDATE event with the event data.
-     *
-     * @param event The camera update event.
-     */
-    void CameraController::_onCameraUpdate(BaseEvent<PEvent> *&event)
+    void CameraController::Destroy()
+    {
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::CAMERA_UPDATE_POSITION);
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::CAMERA_UPDATE_VIEW);
+
+        delete Picasso::Engine::Camera::Camera::Instance;
+    }
+
+    void CameraController::_OnCameraUpdateView(BaseEvent<PEvent> *&event)
     {
         EventSystem::Events::PEventData eData = event->GetData();
 
-        Picasso::Engine::Logger::Logger::Debug("CameraController: Updating camera position, rotation, and scale");
+        unsigned int x = eData.data.u16[0];
+        unsigned int y = eData.data.u16[1];
 
-        PicassoRegistry::Dispatch(PEvent::RENDERER_UPDATE, eData);
+        if (m_PrevX == x && m_PrevY == y)
+        {
+            // do nothing
+            return;
+        }
+
+        m_PrevX = x;
+        m_PrevY = y;
+
+        Picasso::Engine::Camera::Camera::Instance->UpdateCameraView(x, y);
+
+        PicassoRegistry::Dispatch(PEvent::RENDERER_UPDATE_CAMERA_VIEW);
+    }
+
+    void CameraController::_OnCameraUpdatePosition(BaseEvent<PEvent> *&event)
+    {
+        EventSystem::Events::PEventData eData = event->GetData();
+
+        Input::InputAction direction = static_cast<Input::InputAction>(eData.data.i[0]);
+
+        Picasso::Engine::Camera::Camera::Instance->UpdateCameraPosition(direction);
+
+        PicassoRegistry::Dispatch(PEvent::RENDERER_UPDATE_CAMERA_POSITION);
     }
 }

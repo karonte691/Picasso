@@ -2,10 +2,10 @@
 include_directories(vendor)
 
 if(UNIX AND NOT APPLE)
-        set(PICASSO_ENGINE_SRC        
+        set(PICASSO_ENGINE_SRC    
                 Core/Clock.cpp
                 Core/PTime.cpp
-                
+        
                 Math/Vector2.cpp
                 Math/Vector3.cpp
                 Math/Vector4.cpp
@@ -17,8 +17,9 @@ if(UNIX AND NOT APPLE)
                 File/PFLoader.cpp
 
                 EventSystem/EventFactory.cpp
-                EventSystem/DeferredEventStore.cpp
+                EventSystem/DeferredEventsStore.cpp
                 EventSystem/Dispatcher.cpp
+                EventSystem/PERegistry.cpp
 
                 Input/Translator/KeyCodeTranslator.cpp
                 Input/Translator/MouseCodeTranslator.cpp
@@ -26,6 +27,8 @@ if(UNIX AND NOT APPLE)
                 Input/Listener/MouseListener.cpp
                 Input/InputListener.cpp
                 Input/PInput.cpp
+                
+                Camera/Camera.cpp
 
                 Render/RCore/Primitives/Primitive.cpp
                 Render/RCore/Primitives/Quad.cpp

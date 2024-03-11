@@ -125,8 +125,27 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
      */
     void OpenGLGraphicsRender::_UpdateData(const Pipeline::PipelineData *pipelineData)
     {
+        // UPDATE CAMERA ViEW
+        std::vector<Picasso::Engine::EventSystem::PEventData> deferredCameraEvents =
+            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDERER_UPDATE_CAMERA_VIEW);
+
+        if (deferredCameraEvents.size() != 0)
+        {
+            p_VPMatrixManager->UniformViewMatrix(pipelineData->shader->GetId());
+        }
+
+        // UPDATE CAMERA POSITION
+        std::vector<Picasso::Engine::EventSystem::PEventData> deferredCameraPositionEvents =
+            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDERER_UPDATE_CAMERA_POSITION);
+
+        if (deferredCameraPositionEvents.size() != 0)
+        {
+            p_VPMatrixManager->UniformCameraPosition(pipelineData->shader->GetId());
+        }
+
+        // UPDATE MODELs
         std::vector<Picasso::Engine::EventSystem::PEventData> deferredRenderEvents =
-            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDERER_UPDATE);
+            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDER_UPDATE_MOVEMENT);
 
         if (deferredRenderEvents.size() == 0)
         {

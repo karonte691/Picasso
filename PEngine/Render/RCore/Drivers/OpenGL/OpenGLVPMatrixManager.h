@@ -17,6 +17,8 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     public:
         void UniformViewMatrix(GLuint shaderId);
 
+        void UniformCameraPosition(GLuint shaderId);
+
         void CreateProjectionMatrix(float width, float height);
         void UniforProjectionMatrix(GLuint shaderId);
         void ResetProjectionMatrix(float width, float height);

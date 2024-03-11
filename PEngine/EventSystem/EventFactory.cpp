@@ -15,7 +15,9 @@
 #include <PEngine/EventSystem/Events/ControllerMoveEvent.h>
 #include <PEngine/EventSystem/Events/CameraUpdatePositionEvent.h>
 #include <PEngine/EventSystem/Events/CameraUpdateViewEvent.h>
-#include <PEngine/EventSystem/Events/RendererUpdateEvent.h>
+#include <PEngine/EventSystem/Events/RenderUpdateCameraViewEvent.h>
+#include <PEngine/EventSystem/Events/RenderUpdateCameraPositionEvent.h>
+#include <PEngine/EventSystem/Events/RendererUpdateMovementEvent.h>
 
 #include <unordered_map>
 
@@ -52,8 +54,12 @@ namespace Picasso::Engine::EventSystem
             return new Events::CameraUpdatePositionEvent();
         case PEvent::CAMERA_UPDATE_VIEW:
             return new Events::CameraUpdateViewEvent();
-        case PEvent::RENDERER_UPDATE:
-            return new Events::RendererUpdateEvent();
+        case PEvent::RENDERER_UPDATE_CAMERA_VIEW:
+            return new Events::RendererUpdateCameraViewEvent();
+        case PEvent::RENDERER_UPDATE_CAMERA_POSITION:
+            return new Events::RendererUpdateCameraPositionEvent();
+        case PEvent::RENDER_UPDATE_MOVEMENT:
+            return new Events::RendererUpdateMovementEvent();
         default:
             return nullptr;
         }
@@ -78,8 +84,12 @@ namespace Picasso::Engine::EventSystem
             return "CAMERA_UPDATE_VIEW";
         case PEvent::CAMERA_UPDATE_POSITION:
             return "CAMERA_UPDATE_POSITION";
-        case PEvent::RENDERER_UPDATE:
-            return "RENDERER_UPDATE";
+        case PEvent::RENDERER_UPDATE_CAMERA_VIEW:
+            return "RENDERER_UPDATE_CAMERA_VIEW";
+        case PEvent::RENDERER_UPDATE_CAMERA_POSITION:
+            return "RENDERER_UPDATE_CAMERA_POSITION";
+        case PEvent::RENDER_UPDATE_MOVEMENT:
+            return "RENDER_UPDATE_MOVEMENT";
         case PEvent::KEY_PRESSED:
             return "KEY_PRESSED";
         case PEvent::KEY_RELEASED:
@@ -100,3 +110,4 @@ namespace Picasso::Engine::EventSystem
             return "UNKNOWN_EVENT";
         }
     }
+} // namespace Picasso::Engine::EventSystem

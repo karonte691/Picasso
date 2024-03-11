@@ -33,6 +33,18 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     }
 
     /**
+     * @brief Uniformly sets the camera position in the shader program.
+     *
+     * @param shaderId The ID of the shader program.
+     */
+    void OpenGLVPMatrixManager::UniformCameraPosition(GLuint shaderId)
+    {
+        const Math::Vector3 *position = Picasso::Engine::Camera::Camera::Instance->GetPosition();
+
+        glUniform3f(glGetUniformLocation(shaderId, "CameraPosition"), position->x, position->y, position->z);
+    }
+
+    /**
      * @brief Creates the projection matrix based on the given width and height.
      *
      * @param width The width of the viewport.

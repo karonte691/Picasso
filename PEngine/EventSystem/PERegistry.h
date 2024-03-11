@@ -6,6 +6,8 @@
 #include <PEngine/EventSystem/Events/BaseEvent.h>
 #include <PEngine/EventSystem/Events/EventTypes.h>
 #include <PEngine/EventSystem/Dispatcher.h>
+#include <PEngine/EventSystem/EventFactory.h>
+#include <PEngine/EventSystem/DeferredEventsStore.h>
 
 #include <vector>
 #include <unordered_map>
@@ -27,10 +29,11 @@ namespace Picasso::Engine::EventSystem
     {
     public:
         /**
-         * @brief Initializes the PicassoRegistry by creating a new Dispatcher instance.
+         * @brief Initializes the PicassoRegistry by creating a new DeferredEventsStore and Dispatcher instance.
          */
         static void Init()
         {
+            DeferredEventsStore::Instance = new DeferredEventsStore();
             Dispatcher::Instance = new Dispatcher();
         }
 
@@ -99,6 +102,9 @@ namespace Picasso::Engine::EventSystem
         {
             delete Dispatcher::Instance;
             Dispatcher::Instance = nullptr;
+
+            delete DeferredEventsStore::Instance;
+            DeferredEventsStore::Instance = nullptr;
         }
 
     private:
@@ -117,47 +123,10 @@ namespace Picasso::Engine::EventSystem
         {
             std::ostringstream oss;
             std::hash<std::string> hasher;
-            auto eventNameStr = _PEventToString(eventName);
+            auto eventNameStr = EventFactory::PEventToString(eventName);
             auto eventNameHash = hasher(eventNameStr);
             oss << typeid(T).name() << "@" << std::hex << reinterpret_cast<uintptr_t>(instance) << "#" << eventNameHash;
             return oss.str();
-        }
-
-        std::string _PEventToString(PEvent event)
-        {
-            switch (event)
-            {
-            case PEvent::APPLICATION_QUIT:
-                return "APPLICATION_QUIT";
-            case PEvent::RESIZED:
-                return "RESIZED";
-            case PEvent::PLATFORM_EXPOSE:
-                return "PLATFORM_EXPOSE";
-            case PEvent::CAMERA_UPDATE_VIEW:
-                return "CAMERA_UPDATE_VIEW";
-            case PEvent::CAMERA_UPDATE_POSITION:
-                return "CAMERA_UPDATE_POSITION";
-            case PEvent::RENDERER_UPDATE:
-                return "RENDERER_UPDATE";
-            case PEvent::KEY_PRESSED:
-                return "KEY_PRESSED";
-            case PEvent::KEY_RELEASED:
-                return "KEY_RELEASED";
-            case PEvent::BUTTON_PRESSED:
-                return "BUTTON_PRESSED";
-            case PEvent::BUTTON_RELEASED:
-                return "BUTTON_RELEASED";
-            case PEvent::MOUSE_MOVED:
-                return "MOUSE_MOVED";
-            case PEvent::MOUSE_WHEEL:
-                return "MOUSE_WHEEL";
-            case PEvent::CONTROLLER_MOVEMENT:
-                return "CONTROLLER_MOVEMENT";
-            case PEvent::CONTROLLER_SCALE:
-                return "CONTROLLER_SCALE";
-            default:
-                return "UNKNOWN_EVENT";
-            }
         }
     };
 }

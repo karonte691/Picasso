@@ -20,6 +20,7 @@ namespace Picasso::Engine::EventSystem
     public:
         static DeferredEventsStore *Instance;
 
+        void Store(const PEvent event);
         void Store(const PEvent event, const PEventData eventData);
         std::vector<PEventData> Consume(const PEvent event);
 

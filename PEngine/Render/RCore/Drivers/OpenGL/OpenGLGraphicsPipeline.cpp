@@ -49,15 +49,21 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
 
     void OpenGLGraphicsPipeline::Shutdown()
     {
-        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::RENDERER_UPDATE);
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::RENDER_UPDATE_MOVEMENT);
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::RENDERER_UPDATE_CAMERA_POSITION);
+        Picasso::Engine::EventSystem::PicassoRegistry::Unsubscribe(this, PEvent::RENDERER_UPDATE_CAMERA_VIEW);
 
         m_PipelineData.shader->Destroy();
     }
 
     void OpenGLGraphicsPipeline::RegisterHooks()
     {
-        PicassoRegistry::Subscribe(this, PEvent::RENDERER_UPDATE, [this](BaseEvent<PEvent> *&event)
-                                   { this->_onRenderUpdate(event); });
+        PicassoRegistry::Subscribe(this, PEvent::RENDER_UPDATE_MOVEMENT, [this](BaseEvent<PEvent> *&event)
+                                   { this->_OnRenderUpdateMovement(event); });
+        PicassoRegistry::Subscribe(this, PEvent::RENDERER_UPDATE_CAMERA_POSITION, [this](BaseEvent<PEvent> *&event)
+                                   { this->_OnRenderUpdateCameraPosition(event); });
+        PicassoRegistry::Subscribe(this, PEvent::RENDERER_UPDATE_CAMERA_VIEW, [this](BaseEvent<PEvent> *&event)
+                                   { this->_OnRenderUpdateCameraView(event); });
     }
 
     bool OpenGLGraphicsPipeline::BeginFrame(RAPIData *apiData, float deltaTime, PPlatformState *pState)
@@ -94,14 +100,21 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         return true;
     }
 
-    void OpenGLGraphicsPipeline::_onRenderUpdate(BaseEvent<PEvent> *&event)
+    void OpenGLGraphicsPipeline::_OnRenderUpdateMovement(BaseEvent<PEvent> *&event)
     {
         EventSystem::Events::PEventData eData = event->GetData();
 
-        // we cannot just process it right now, because maybe there are multiple threads that
-        //  are trying to update the data and we risk to loose some
-        // so we post process it. The main processing will be done in the BeginFrame function in OpenGLGraphicsRender
-        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDERER_UPDATE, eData);
+        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDER_UPDATE_MOVEMENT, eData);
+    }
+
+    void OpenGLGraphicsPipeline::_OnRenderUpdateCameraView(BaseEvent<PEvent> *&event)
+    {
+        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDERER_UPDATE_CAMERA_VIEW);
+    }
+
+    void OpenGLGraphicsPipeline::_OnRenderUpdateCameraPosition(BaseEvent<PEvent> *&event)
+    {
+        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDERER_UPDATE_CAMERA_POSITION);
     }
 
 }

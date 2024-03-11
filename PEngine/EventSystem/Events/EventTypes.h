@@ -14,7 +14,11 @@ namespace Picasso::Engine::EventSystem::Events
         PLATFORM_EXPOSE,
         CAMERA_UPDATE_VIEW,
         CAMERA_UPDATE_POSITION,
-        RENDERER_UPDATE,
+
+        // pipeline
+        RENDERER_UPDATE_CAMERA_VIEW,
+        RENDERER_UPDATE_CAMERA_POSITION,
+        RENDER_UPDATE_MOVEMENT,
 
         // keyboard
         KEY_PRESSED,
