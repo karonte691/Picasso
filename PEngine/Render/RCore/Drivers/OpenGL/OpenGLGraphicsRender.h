@@ -28,16 +28,10 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         void Uniforms(const Pipeline::PipelineData *pipelineData);
         bool BeginRenderFrame(const Pipeline::PipelineData *pipelineData);
         void EndRenderFrame(const Pipeline::PipelineData *pipelineData);
-        void OnRenderUpdate(const Pipeline::PipelineData *pipelineData,
-                            float px,
-                            float py,
-                            float pz,
-                            float rx,
-                            float ry,
-                            float rz,
-                            float sx,
-                            float sy,
-                            float sz);
+        void UpdateView(const Pipeline::PipelineData *pipelineData);
+        void UpdateCameraPosition(const Pipeline::PipelineData *pipelineData);
+        void UpdateMeshesModelMatrix(const Pipeline::PipelineData *pipelineData,
+                                     float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz);
 
     private:
         std::unique_ptr<OpenGLTextureManager> p_TextureManager;
@@ -45,8 +39,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
         std::unique_ptr<OpenGLLightManager> p_LightManager;
         std::unique_ptr<OpenGLMaterialManager> p_MaterialManager;
         std::unique_ptr<OpenGLMeshManager> p_MeshManager;
-
-        void _UpdateData(const Pipeline::PipelineData *pipelineData);
     };
 }
 

@@ -1,6 +1,5 @@
 #include <PEngine/Render/RCore/Drivers/OpenGL/OpenGLGraphicsRender.h>
 #include <PEngine/Logger/Logger.h>
-#include <PEngine/EventSystem/DeferredEventsStore.h>
 #include <PEngine/EventSystem/Events/EventTypes.h>
 
 #include <vector>
@@ -69,8 +68,6 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
             materials[i] = pipelineData->materials[i].get();
         }
 
-        _UpdateData(pipelineData);
-
         p_VPMatrixManager->UniformViewMatrix(pipelineData->shader->GetId());
         p_VPMatrixManager->UniforProjectionMatrix(pipelineData->shader->GetId());
 
@@ -119,63 +116,48 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     }
 
     /**
-     * Sets the uniforms for rendering using the provided pipeline data.
+     * @brief Updates the view for the OpenGL graphics render.
      *
-     * @param pipelineData A pointer to the PipelineData object containing the necessary data for rendering.
+     * @param pipelineData The pipeline data containing the shader and other data.
      */
-    void OpenGLGraphicsRender::_UpdateData(const Pipeline::PipelineData *pipelineData)
+    void OpenGLGraphicsRender::UpdateView(const Pipeline::PipelineData *pipelineData)
     {
-        // UPDATE CAMERA ViEW
-        std::vector<Picasso::Engine::EventSystem::PEventData> deferredCameraEvents =
-            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDERER_UPDATE_CAMERA_VIEW);
+        p_VPMatrixManager->UniformViewMatrix(pipelineData->shader->GetId());
+    }
 
-        if (deferredCameraEvents.size() != 0)
-        {
-            p_VPMatrixManager->UniformViewMatrix(pipelineData->shader->GetId());
-        }
+    /**
+     * @brief Updates the camera position for the OpenGL graphics render.
+     *
+     * @param pipelineData The pipeline data containing the shader and other data.
+     */
+    void OpenGLGraphicsRender::UpdateCameraPosition(const Pipeline::PipelineData *pipelineData)
+    {
+        p_VPMatrixManager->UniformCameraPosition(pipelineData->shader->GetId());
+    }
 
-        // UPDATE CAMERA POSITION
-        std::vector<Picasso::Engine::EventSystem::PEventData> deferredCameraPositionEvents =
-            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDERER_UPDATE_CAMERA_POSITION);
-
-        if (deferredCameraPositionEvents.size() != 0)
-        {
-            p_VPMatrixManager->UniformCameraPosition(pipelineData->shader->GetId());
-        }
-
+    /**
+     * @brief Updates the OpenGL graphics render.
+     *
+     * @param pipelineData The pipeline data containing the shader, textures, materials, and meshes.
+     * @param px The x position.
+     * @param py The y position.
+     * @param pz The z position.
+     * @param rx The x rotation.
+     * @param ry The y rotation.
+     * @param rz The z rotation.
+     * @param sx The x scale.
+     * @param sy The y scale.
+     * @param sz The z scale.
+     */
+    void OpenGLGraphicsRender::UpdateMeshesModelMatrix(const Pipeline::PipelineData *pipelineData,
+                                                       float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz)
+    {
         // UPDATE MODELs
-        std::vector<Picasso::Engine::EventSystem::PEventData> deferredRenderEvents =
-            Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Consume(Picasso::Engine::EventSystem::PEvent::RENDER_UPDATE_MOVEMENT);
-
-        if (deferredRenderEvents.size() == 0)
+        for (int i = 0; i < pipelineData->meshes.size(); ++i)
         {
-            return;
-        }
+            OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(pipelineData->meshes[i].get());
 
-        float px, py, pz, rx, ry, rz;
-        float sx, sy, sz;
-
-        for (Picasso::Engine::EventSystem::PEventData eData : deferredRenderEvents)
-        {
-            px = eData.data.f[0];
-            py = eData.data.f[1];
-            pz = eData.data.f[2];
-            rx = eData.data.f[3];
-            ry = eData.data.f[4];
-            rz = eData.data.f[5];
-            sx = eData.data.f[6];
-            sy = eData.data.f[7];
-            sz = eData.data.f[8];
-
-            for (int i = 0; i < pipelineData->meshes.size(); ++i)
-            {
-                OpenGLMesh *openGLMesh = static_cast<OpenGLMesh *>(pipelineData->meshes[i].get());
-
-                p_MeshManager->UpdateModelMatrix(openGLMesh, px, py, pz, rx, ry, rz, sx, sy, sz);
-            }
-
-            // reset the coordinates
-            px = py = pz = rx = ry = rz = sx = sy = sz = 0.0f;
+            p_MeshManager->UpdateModelMatrix(openGLMesh, px, py, pz, rx, ry, rz, sx, sy, sz);
         }
     }
 }

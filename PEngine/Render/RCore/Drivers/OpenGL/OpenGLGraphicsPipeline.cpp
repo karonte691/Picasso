@@ -104,17 +104,29 @@ namespace Picasso::Engine::Render::Core::Drivers::OpenGL
     {
         EventSystem::Events::PEventData eData = event->GetData();
 
-        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDER_UPDATE_MOVEMENT, eData);
+        float px, py, pz, rx, ry, rz, sx, sy, sz;
+
+        px = eData.data.f[0];
+        py = eData.data.f[1];
+        pz = eData.data.f[2];
+        rx = eData.data.f[3];
+        ry = eData.data.f[4];
+        rz = eData.data.f[5];
+        sx = eData.data.f[6];
+        sy = eData.data.f[7];
+        sz = eData.data.f[8];
+
+        p_GraphicsRender->UpdateMeshesModelMatrix(&m_PipelineData, px, py, pz, rx, ry, rz, sx, sy, sz);
     }
 
     void OpenGLGraphicsPipeline::_OnRenderUpdateCameraView(BaseEvent<PEvent> *&event)
     {
-        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDERER_UPDATE_CAMERA_VIEW);
+        p_GraphicsRender->UpdateView(&m_PipelineData);
     }
 
     void OpenGLGraphicsPipeline::_OnRenderUpdateCameraPosition(BaseEvent<PEvent> *&event)
     {
-        Picasso::Engine::EventSystem::DeferredEventsStore::Instance->Store(PEvent::RENDERER_UPDATE_CAMERA_POSITION);
+        p_GraphicsRender->UpdateCameraPosition(&m_PipelineData);
     }
 
 }
